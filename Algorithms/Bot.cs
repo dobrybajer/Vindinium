@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Data;
 using System.Diagnostics;
 using System.Threading;
 
 namespace vindinium.Algorithms
 {
-    abstract class Bot
+    internal abstract class Bot
     {
         protected readonly ServerStuff ServerStuff;
         private readonly string _botName;
 
-        protected Bot(ServerStuff serverStuff, string botName = "random")
+        protected Bot(ServerStuff serverStuff, string botName = "Random")
         {
             ServerStuff = serverStuff;
             _botName = botName;
@@ -47,29 +46,8 @@ namespace vindinium.Algorithms
             Console.Out.WriteLine(_botName + " bot finished");
         }
 
-        protected virtual string GetDirection()
-        {
-            var random = new Random();
-            switch (random.Next(0, 6))
-            {
-                case 0:
-                    return Direction.East;
-                case 1:
-                    return Direction.North;
-                case 2:
-                    return Direction.South;
-                case 3:
-                    return Direction.Stay;
-                case 4:
-                    return Direction.West;
-                default:
-                    return Direction.Stay; 
-            }
-        }
+        protected abstract string GetDirection();
 
-        protected virtual double EvaluateState(Tile tile)
-        {
-            return 0.0;
-        }
+        protected abstract double EvaluateState(Tile tile, int closestMine, Pos newPos = null);
     }
 }

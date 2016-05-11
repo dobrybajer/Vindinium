@@ -6,7 +6,7 @@ using System.Text;
 
 namespace vindinium
 {
-    class ServerStuff
+    internal class ServerStuff
     {
         private readonly string _key;
         private readonly bool _trainingMode;
@@ -36,11 +36,9 @@ namespace vindinium
             _serverUrl = serverUrl;
 
             //the reaons im doing the if statement here is so that i dont have to do it later
-            if (trainingMode)
-            {
-                _turns = turns;
-                _map = map;
-            }
+            if (!trainingMode) return;
+            _turns = turns;
+            _map = map;
         }
 
         //initializes a new game, its syncronised

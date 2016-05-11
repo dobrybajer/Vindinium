@@ -1,16 +1,20 @@
-﻿namespace vindinium.Algorithms
+﻿using System.Linq.Expressions;
+
+namespace vindinium.Algorithms
 {
-    class RandomBot : Bot
+    internal class RandomBot : Bot
     {
 
-        public RandomBot(ServerStuff serverStuff) : base(serverStuff, "Random")
-        {
-
-        }
+        public RandomBot(ServerStuff serverStuff) : base(serverStuff, "Random") { }
 
         protected override string GetDirection()
         {
-            return Direction.East;
+            return Direction.GetRandomDirection();
+        }
+
+        protected override double EvaluateState(Tile tile, int closestMine, Pos newPos = null)
+        {
+            return 0.0;
         }
     }
 }

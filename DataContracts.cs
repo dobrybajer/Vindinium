@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace vindinium
 {
     [DataContract]
-    class GameResponse
+    internal class GameResponse
     {
         [DataMember]
         internal Game game;
@@ -23,7 +23,7 @@ namespace vindinium
     }
 
     [DataContract]
-    class Game
+    internal class Game
     {
         [DataMember]
         internal string id;
@@ -45,7 +45,7 @@ namespace vindinium
     }
 
     [DataContract]
-    class Hero
+    internal class Hero
     {
         [DataMember]
         internal int id;
@@ -76,7 +76,7 @@ namespace vindinium
     }
 
     [DataContract]
-    class Pos
+    internal class Pos
     {
         [DataMember]
         internal int x;
@@ -86,7 +86,7 @@ namespace vindinium
     }
 
     [DataContract]
-    class Board
+    internal class Board
     {
         [DataMember]
         internal int size;

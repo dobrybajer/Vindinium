@@ -3,7 +3,7 @@ using vindinium.Algorithms;
 
 namespace vindinium
 {
-    class Client
+    internal class Client
     {
         /**
          * Launch client.
@@ -12,7 +12,8 @@ namespace vindinium
          * @param args args[2] number of turns
          * @param args args[3] HTTP URL of Vindinium server (optional)
          */
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
             var serverUrl = args.Length == 4 ? args[3] : "http://vindinium.org";
 
@@ -21,7 +22,7 @@ namespace vindinium
             var serverStuff = new ServerStuff(args[0], args[1] != "arena", uint.Parse(args[2]), serverUrl, null);
 
             //create the random bot, replace this with your own bot
-            var bot = new RandomBot(serverStuff);
+            var bot = new EvaluationBot(serverStuff);
             
             //create the evaluation
             //var bot = new EvaluationBot(serverStuff);
