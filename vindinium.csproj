@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\Bot.cs" />
-    <Compile Include="Algorithms\EvaluationBot.cs" />
+    <Compile Include="Algorithms\NeatBot.cs" />
     <Compile Include="Algorithms\RandomBot.cs" />
     <Compile Include="DataContracts.cs" />
     <Compile Include="Enums.cs" />

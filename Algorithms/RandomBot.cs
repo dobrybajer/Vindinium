@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace vindinium.Algorithms
+﻿namespace vindinium.Algorithms
 {
     internal class RandomBot : Bot
     {
@@ -10,11 +8,6 @@ namespace vindinium.Algorithms
         protected override string GetDirection()
         {
             return Direction.GetRandomDirection();
-        }
-
-        protected override double EvaluateState(Tile tile, int closestMine, Pos newPos = null)
-        {
-            return 0.0;
         }
     }
 }

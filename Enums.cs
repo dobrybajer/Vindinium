@@ -35,5 +35,24 @@ namespace vindinium
             var index = r.Next(myList.Count);
             return myList[index];
         }
+
+        public static string GetDirectionByNumber(int number)
+        {
+            switch (number)
+            {
+                case 0:
+                    return Stay;
+                case 1:
+                    return West;
+                case 2:
+                    return North;
+                case 3:
+                    return East;
+                case 4:
+                    return South;
+                default:
+                    return Stay;
+            }
+        }
     }
 }
