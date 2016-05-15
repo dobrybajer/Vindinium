@@ -60,6 +60,7 @@ namespace vindinium
             var myParameters = "key=" + _key;
             if (_trainingMode) myParameters += "&turns=" + _turns;
             if (_map != null) myParameters += "&map=" + _map;
+            myParameters += "&timeout_move=" + 100000;
 
             //make the request
             using (var client = new WebClient())

@@ -1,4 +1,4 @@
-namespace vindinium.Algorithms
+namespace vindinium.Algorithm
 {
     internal class NeatBot : Bot
     {

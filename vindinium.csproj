@@ -42,12 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithms\Bot.cs" />
-    <Compile Include="Algorithms\NeatBot.cs" />
-    <Compile Include="Algorithms\RandomBot.cs" />
+    <Compile Include="Algorithm\Bot.cs" />
+    <Compile Include="Algorithm\NeatBot.cs" />
+    <Compile Include="Algorithm\RandomBot.cs" />
     <Compile Include="DataContracts.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="PathFinding\AStar.cs" />
+    <Compile Include="PathFinding\Helpers.cs" />
+    <Compile Include="PathFinding\PriorityQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerStuff.cs" />
   </ItemGroup>

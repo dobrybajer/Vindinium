@@ -1,5 +1,5 @@
 ﻿using System;
-using vindinium.Algorithms;
+using vindinium.Algorithm;
 
 namespace vindinium
 {
@@ -18,7 +18,7 @@ namespace vindinium
             var serverUrl = args.Length == 4 ? args[3] : "http://vindinium.org";
 
             //create the server stuff, when not in training mode, it doesnt matter what you use as the number of turns
-            var serverStuff = new ServerStuff(args[0], args[1] != "arena", uint.Parse(args[2]), serverUrl, null);
+            var serverStuff = new ServerStuff(args[0], args[1] != "arena", uint.Parse(args[2]), serverUrl, "m2");
 
 
             // ---------------------- OWN CODE ----------------------
@@ -28,7 +28,7 @@ namespace vindinium
             var neatBot = new NeatBot(serverStuff);
 
             bot.Run();
-
+            
             // -------------------- END OWN CODE --------------------
 
 
