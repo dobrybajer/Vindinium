@@ -8,12 +8,18 @@ namespace vindinium.Neat
 {
     class Genotype
     {
-        public List<ConnectionGenesModel> Genome;
+        public List<ConnectionGenesModel> GenomeConnection;
+        public List<NodeGenesModel> NodeGens;
 
-        public Genotype(List<ConnectionGenesModel> genome)
+        public Genotype(List<ConnectionGenesModel> genomeConnection, List<NodeGenesModel> nodeGens)
         {
-            Genome = genome;
+            GenomeConnection = genomeConnection;
+            NodeGens = nodeGens;
         }
 
+        public int GetCurrentInnovation()
+        {
+            return GenomeConnection[GenomeConnection.Count - 1].Innovation;
+        }
     }
 }
