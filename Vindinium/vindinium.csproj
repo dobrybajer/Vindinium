@@ -57,6 +57,8 @@
     <Compile Include="NEAT\Crossover\CorrelationProvider.cs" />
     <Compile Include="NEAT\Genotype.cs" />
     <Compile Include="NEAT\Helpers\NodeGenesExtensions.cs" />
+    <Compile Include="NEAT\Mutation\IMutationProvider.cs" />
+    <Compile Include="NEAT\Mutation\MutationProvider.cs" />
     <Compile Include="NEAT\Neat.cs" />
     <Compile Include="NEAT\NodeGenesModel.cs" />
     <Compile Include="PathFinding\AStar.cs" />
