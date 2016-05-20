@@ -2,7 +2,8 @@
 {
     internal enum NodeType
     {
-        Sensor,
+        Bias,
+        Input,
         Output,
         Hidden
     }

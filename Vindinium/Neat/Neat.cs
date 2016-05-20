@@ -1,4 +1,5 @@
 ﻿using System;
+using vindinium.NEAT.Helpers;
 
 namespace vindinium.NEAT
 {
@@ -76,6 +77,33 @@ namespace vindinium.NEAT
             });
 
             return genotype;
+        }
+
+
+        private ConnectionGenesModel MutateDeleteConnection(Genotype genotype)
+        {
+            var connectionNumber = genotype.GenomeConnection.Count;
+            var random = new Random();
+            var choosenConnectionId = random.Next(1, connectionNumber);
+            var connectionToDelete = genotype.GenomeConnection[choosenConnectionId];
+
+            genotype.GenomeConnection.RemoveAt(choosenConnectionId);
+
+            var srcNeuronIdx = genotype.NodeGens[connectionToDelete.InNode].NodeNumber;
+            var srcNeuronGene = genotype.NodeGens[srcNeuronIdx];
+            srcNeuronGene.TargetNodes.Remove(connectionToDelete.OutNode);
+
+            if (srcNeuronGene.IsNodeRedundant())
+                genotype.NodeGens.RemoveAt(srcNeuronIdx);
+
+            var tgtNeuronIdx = genotype.NodeGens[connectionToDelete.OutNode].NodeNumber;
+            var tgtNeuronGene = genotype.NodeGens[tgtNeuronIdx];
+            tgtNeuronGene.SourceNodes.Remove(connectionToDelete.InNode);
+
+            if (srcNeuronGene != tgtNeuronGene && tgtNeuronGene.IsNodeRedundant())
+                genotype.NodeGens.RemoveAt(tgtNeuronIdx);
+
+            return connectionToDelete;
         }
 
         public void MatchingGenomes(Genotype genotype1, Genotype genotype2)
