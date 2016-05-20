@@ -48,6 +48,11 @@
     <Compile Include="DataContracts.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="NEAT\ConnectionGenesModel.cs" />
+    <Compile Include="NEAT\EnumsNeat .cs" />
+    <Compile Include="NEAT\Genotype.cs" />
+    <Compile Include="NEAT\Neat.cs" />
+    <Compile Include="NEAT\NodeGenesModel.cs" />
     <Compile Include="PathFinding\AStar.cs" />
     <Compile Include="PathFinding\Helpers.cs" />
     <Compile Include="PathFinding\PriorityQueue.cs" />
@@ -57,6 +62,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
