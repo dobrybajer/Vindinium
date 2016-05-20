@@ -49,8 +49,14 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="NEAT\ConnectionGenesModel.cs" />
+    <Compile Include="NEAT\Crossover\CorrelationItemType.cs" />
+    <Compile Include="NEAT\Crossover\CorrelationItem.cs" />
+    <Compile Include="NEAT\Crossover\CorrelationResults.cs" />
+    <Compile Include="NEAT\Crossover\CorrelationStats.cs" />
     <Compile Include="NEAT\EnumsNeat .cs" />
+    <Compile Include="NEAT\Crossover\CorrelationProvider.cs" />
     <Compile Include="NEAT\Genotype.cs" />
+    <Compile Include="NEAT\Helpers\NodeGenesExtensions.cs" />
     <Compile Include="NEAT\Neat.cs" />
     <Compile Include="NEAT\NodeGenesModel.cs" />
     <Compile Include="PathFinding\AStar.cs" />
