@@ -2,6 +2,6 @@
 {
     internal interface IMutationProvider
     {
-        void Mutate();
+        Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters);
     }
 }

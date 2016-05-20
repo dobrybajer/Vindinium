@@ -1,16 +1,52 @@
 ﻿using System;
+using System.Diagnostics;
+using Redzen.Numerics;
 using vindinium.NEAT.Helpers;
 
 namespace vindinium.NEAT.Mutation
 {
     internal class MutationProvider : IMutationProvider
     {
-        public void Mutate()
+        public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters)
         {
+            var xorRandom = new XorShiftRandom();
+            var rouletteWheelLayoutInitial = (genotype.GenomeConnection.Count < 2) ?
+                  nodeGeneParameters.RouletteWheelLayoutNonDestructive
+                : nodeGeneParameters.RouletteWheelLayout;
 
+            var rouletteWheelLayoutCurrent = rouletteWheelLayoutInitial;
+            Genotype mutatedGenotype = null;
+            while (mutatedGenotype == null)
+            {
+                var outcome = DiscreteDistributionUtils.Sample(rouletteWheelLayoutCurrent, xorRandom);
+                switch (outcome)
+                {
+                    case 0:
+                        mutatedGenotype = MutateAddNode(genotype);
+                        break;
+                    case 1:
+                        mutatedGenotype = MutateAddConnection(genotype);
+                        break;
+                    case 2:
+                        mutatedGenotype = MutateDeleteConnection(genotype);
+                        break;
+                    default:
+                        throw new ArgumentException(nameof(outcome));
+                }
+                if(mutatedGenotype == null && OnMutationFailed(rouletteWheelLayoutCurrent, outcome)) return null;
+            }
+            return mutatedGenotype;
         }
 
-        public Genotype MutateAddConnection(Genotype genotype)
+        private bool OnMutationFailed(DiscreteDistribution rouletteWheelLayoutCurrent, int outcome)
+        {
+            rouletteWheelLayoutCurrent = rouletteWheelLayoutCurrent.RemoveOutcome(outcome);
+            if (0 == rouletteWheelLayoutCurrent.Probabilities.Length)
+                return true;
+            return false;
+        }
+
+        private Genotype MutateAddConnection(Genotype genotype)
         {
             var nodeNumber = genotype.NodeGens.Count;
 
@@ -45,7 +81,7 @@ namespace vindinium.NEAT.Mutation
 
         }
 
-        public Genotype MutateAddNode(Genotype genotype)
+        private Genotype MutateAddNode(Genotype genotype)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
 
@@ -78,7 +114,7 @@ namespace vindinium.NEAT.Mutation
         }
 
 
-        private ConnectionGenesModel MutateDeleteConnection(Genotype genotype)
+        private Genotype MutateDeleteConnection(Genotype genotype)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
             var random = new Random();
@@ -101,7 +137,7 @@ namespace vindinium.NEAT.Mutation
             if (srcNeuronGene != tgtNeuronGene && tgtNeuronGene.IsNodeRedundant())
                 genotype.NodeGens.RemoveAt(tgtNeuronIdx);
 
-            return connectionToDelete;
+            return genotype;
         }
 
         public void MatchingGenomes(Genotype genotype1, Genotype genotype2)
