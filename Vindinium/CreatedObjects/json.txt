@@ -1,0 +1,1 @@
+{"GenomeConnection":[{"InNode":3,"OutNode":4,"Weight":0.4,"Status":0,"Innovation":3,"IsMutated":false}],"NodeGens":[{"NodeNumber":3,"Type":1,"SourceNodes":null,"TargetNodes":null}]}

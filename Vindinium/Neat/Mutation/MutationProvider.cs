@@ -20,7 +20,7 @@ namespace vindinium.NEAT.Mutation
 
             if (inNode < outNode)
             {
-                genotype.GenomeConnection.Add(new ConnectionGenesModel()
+                genotype.GenomeConnection.Add(new ConnectionGenesModel
                 {
                     InNode = inNode,
                     OutNode = outNode,
@@ -31,7 +31,7 @@ namespace vindinium.NEAT.Mutation
             }
             else
             {
-                genotype.GenomeConnection.Add(new ConnectionGenesModel()
+                genotype.GenomeConnection.Add(new ConnectionGenesModel
                 {
                     InNode = outNode,
                     OutNode = inNode,
@@ -52,12 +52,12 @@ namespace vindinium.NEAT.Mutation
             var random = new Random();
             var chooseConnection = random.Next(1, connectionNumber);
             genotype.GenomeConnection[chooseConnection].Status = ConnectionStatus.Disabled;
-            genotype.NodeGens.Add(new NodeGenesModel()
+            genotype.NodeGens.Add(new NodeGenesModel
             {
                 NodeNumber = genotype.NodeGens.Count + 1,
                 Type = NodeType.Hidden
             });
-            genotype.GenomeConnection.Add(new ConnectionGenesModel()
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
                 InNode = genotype.GenomeConnection[chooseConnection].InNode,
                 OutNode = genotype.NodeGens.Count,
@@ -65,7 +65,7 @@ namespace vindinium.NEAT.Mutation
                 Status = ConnectionStatus.Enabled,
                 Innovation = genotype.GetCurrentInnovation() + 1,
             });
-            genotype.GenomeConnection.Add(new ConnectionGenesModel()
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
                 InNode = genotype.NodeGens.Count,
                 OutNode = genotype.GenomeConnection[chooseConnection].OutNode,

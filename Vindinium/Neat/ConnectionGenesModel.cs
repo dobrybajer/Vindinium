@@ -12,7 +12,7 @@
 
         public int Innovation { get; set; }
 
-        public bool IsMutated { get; set; } 
+        public bool IsMutated { get; set; }
 
         public ConnectionGenesModel()
         {
@@ -27,8 +27,5 @@
             Status = status;
             Innovation = innovation;
         }
-
-        
     }
-
 }

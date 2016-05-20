@@ -4,6 +4,7 @@ namespace vindinium.NEAT
 {
     internal class Genotype
     {
+        public double Value;
         public List<ConnectionGenesModel> GenomeConnection;
         public List<NodeGenesModel> NodeGens;
 
@@ -11,6 +12,10 @@ namespace vindinium.NEAT
         {
             GenomeConnection = genomeConnection;
             NodeGens = nodeGens;
+        }
+
+        public Genotype()
+        {
         }
 
         public int GetCurrentInnovation()

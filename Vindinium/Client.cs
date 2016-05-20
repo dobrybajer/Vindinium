@@ -28,13 +28,16 @@ namespace vindinium
             var randomBot = new RandomBot(serverStuff);
             var neatBot = new NeatBot(serverStuff);
 
-            bot.Run();
+            bot.Train();
+          
+            // This is how to read/write objects to/from files.
+            // DataManager.ObjectManager.WriteToJsonFile("json.txt", genotypeBefore);
+            // var genotypeAfter = DataManager.ObjectManager.ReadFromJsonFile<Genotype>("json.txt");
             
             // -------------------- END OWN CODE --------------------
 
 
             Console.Out.WriteLine("done");
-
             Console.Read();
         }
     }

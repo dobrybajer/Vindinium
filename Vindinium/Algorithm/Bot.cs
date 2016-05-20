@@ -16,6 +16,17 @@ namespace vindinium.Algorithm
         private readonly string _botName;
         private MyPathNode[,] _pathGrid;
         private SpatialAStar<MyPathNode, object> _aStar;
+        private readonly List<Pos> _allTavernsPositions;
+        private readonly List<Pos> _allMinesPositions;
+
+        #endregion
+
+        #region Properties
+
+        protected const int MaxBotHp = 100;
+
+        protected int MaxBoardDistance { get; set; }
+
 
         #endregion
 
@@ -25,8 +36,12 @@ namespace vindinium.Algorithm
         {
             ServerStuff = serverStuff;
             _botName = botName;
+            MaxBoardDistance = (serverStuff.Board.Length - 1)*2;
+            _allTavernsPositions = GetAllTaverns();
+            _allMinesPositions = GetAllMines();
         }
 
+        // TODO add possibility to not to run web page (only computation)
         /// <summary>
         /// Starts everything (do not change!).
         /// </summary>
@@ -63,15 +78,16 @@ namespace vindinium.Algorithm
             Console.Out.WriteLine(_botName + " bot finished");
         }
 
+        internal virtual void Train()
+        {
+            Run();
+        }
+
         #endregion
 
-        #region Protected methods
+        #region Methods for calculating closest distances to different objects on board (taverns, mines, enemies) that specify some criterias
 
-        /// <summary>
-        /// Get all mines on the board that do not belong to our hero (GOLD_MINE_1).
-        /// </summary>
-        /// <returns>List of position of mines.</returns>
-        protected List<Pos> GetAllMines()
+        private List<Pos> GetAllMines(bool notNeutral = false)
         {
             var minesList = new List<Pos>();
 
@@ -79,10 +95,7 @@ namespace vindinium.Algorithm
             {
                 for (var j = 0; j < ServerStuff.Board.Length; ++j)
                 {
-                    if (ServerStuff.Board[i][j] == Tile.GOLD_MINE_NEUTRAL ||
-                        ServerStuff.Board[i][j] == Tile.GOLD_MINE_2 ||
-                        ServerStuff.Board[i][j] == Tile.GOLD_MINE_3 ||
-                        ServerStuff.Board[i][j] == Tile.GOLD_MINE_4)
+                    if (!notNeutral && ServerStuff.Board[i][j] == Tile.GOLD_MINE_NEUTRAL || ServerStuff.Board[i][j] == Tile.GOLD_MINE_2 || ServerStuff.Board[i][j] == Tile.GOLD_MINE_3 || ServerStuff.Board[i][j] == Tile.GOLD_MINE_4)
                     {
                         minesList.Add(new Pos { x = i, y = j });
                     }
@@ -96,10 +109,11 @@ namespace vindinium.Algorithm
         /// Return distance to all given mines in manhattan distance. Method uses A* algorithm (or will be soon) to prevent from collision with objects.
         /// </summary>
         /// <param name="from">From where calculate distance to given mines (default: actual position of current hero).</param>
+        /// <param name="notNeutral"></param>
         /// <returns>Distances to all given mines from given position.</returns>
-        protected Dictionary<Pos, int> GetDistancesToMines(Pos from = null)
+        private Dictionary<Pos, int> GetDistancesToMines(Pos from = null, bool notNeutral = false)
         {
-            var minesList = GetAllMines();
+            var minesList = notNeutral ? GetAllMines(true) : _allMinesPositions;
             var dict = new Dictionary<Pos, int>();
 
             foreach (var t in minesList)
@@ -109,6 +123,94 @@ namespace vindinium.Algorithm
             }
 
             return dict;
+        }
+
+        protected double GetDistanceToClosestMine(Pos from = null, bool notNeutral = false)
+        {
+            var distanceToMines = GetDistancesToMines(from, notNeutral);
+            return distanceToMines.Values.Min();
+        }
+
+        /// <summary>
+        /// Get all taverns on the board.
+        /// </summary>
+        /// <returns>List of position of taverns.</returns>
+        private List<Pos> GetAllTaverns()
+        {
+            var tavernsList = new List<Pos>();
+
+            for (var i = 0; i < ServerStuff.Board.Length; ++i)
+            {
+                for (var j = 0; j < ServerStuff.Board.Length; ++j)
+                {
+                    if (ServerStuff.Board[i][j] == Tile.TAVERN)
+                    {
+                        tavernsList.Add(new Pos { x = i, y = j });
+                    }
+                }
+            }
+
+            return tavernsList;
+        }
+
+        private Dictionary<Pos, int> GetDistancesToTaverns(Pos from = null)
+        {
+            var dict = new Dictionary<Pos, int>();
+
+            foreach (var t in _allTavernsPositions)
+            {
+                var x = FindPathLength(from ?? ServerStuff.MyHero.pos, t);
+                dict.Add(t, x);
+            }
+
+            return dict;
+        }
+
+        protected double GetDistanceToClosestTavern(Pos from = null, bool paremeterNotUsesButNeeded = false)
+        {
+            var distanceToTaverns = GetDistancesToTaverns(from);
+            return distanceToTaverns.Values.Min();
+        }
+
+        protected Dictionary<Pos, Hero> GetAllEnemies()
+        {
+            var enemiesList = new Dictionary<Pos, Hero>();
+
+            for (var i = 0; i < ServerStuff.Board.Length; ++i)
+            {
+                for (var j = 0; j < ServerStuff.Board.Length; ++j)
+                {
+                    if (ServerStuff.Board[i][j] == Tile.HERO_2) enemiesList[new Pos {x = i, y = j}] = ServerStuff.Heroes[1];
+                    if (ServerStuff.Board[i][j] == Tile.HERO_3) enemiesList[new Pos {x = i, y = j}] = ServerStuff.Heroes[2];
+                    if (ServerStuff.Board[i][j] == Tile.HERO_4) enemiesList[new Pos {x = i, y = j}] = ServerStuff.Heroes[3];
+                }
+            }
+
+            return enemiesList;
+        }
+
+        protected Dictionary<Hero, int> GetDistancesToEnemies(Pos from = null)
+        {
+            var enemiesList = GetAllEnemies();
+            var dict = new Dictionary<Hero, int>();
+
+            foreach (var t in enemiesList)
+            {
+                var x = FindPathLength(from ?? ServerStuff.MyHero.pos, t.Key);
+                dict.Add(t.Value, x);
+            }
+
+            return dict;
+        }
+
+        protected double GetDistanceToClosestEnemy(Pos pos = null, int? numberOfEnemy = null)
+        {
+            var distanceToEnemies = GetDistancesToEnemies(pos);
+
+            if (!numberOfEnemy.HasValue) return distanceToEnemies.Values.Min();
+
+            var specificEnemy = distanceToEnemies.Keys.First(e => e.id == numberOfEnemy.Value);
+            return distanceToEnemies[specificEnemy];
         }
 
         #endregion
@@ -135,9 +237,8 @@ namespace vindinium.Algorithm
             var myHero = ServerStuff.MyHero;
             var currPos = new Pos {x = myHero.pos.y, y = myHero.pos.x};
 
-            var distanceToMines = GetDistancesToMines();
-            var closestMine = distanceToMines.Values.Min();
-            
+            var closestMine = (int)GetDistanceToClosestMine();
+
             // ------ LEFT ------
             var x = currPos.x - 1;
             var y = currPos.y;
@@ -191,6 +292,60 @@ namespace vindinium.Algorithm
 
             Console.WriteLine(bestDirection);
 
+            return bestDirection;
+        }
+
+        protected virtual string GetDirectionGeneric<TSecondPar>(Func<Pos, TSecondPar, double> delegateFunction, TSecondPar par)
+        {
+            double value;
+            var bestDirection = Direction.Stay;
+
+            var board = ServerStuff.Board;
+            var myHero = ServerStuff.MyHero;
+            var currPos = new Pos { x = myHero.pos.y, y = myHero.pos.x };
+
+            var closestObject = delegateFunction(null, par);
+
+            // ------ LEFT ------
+            var x = currPos.x - 1;
+            var y = currPos.y;
+
+            if (x >= 0)
+            {
+                value = delegateFunction(new Pos { x = x, y = y }, par);
+                if (value < closestObject) bestDirection = Direction.West;
+            }
+            
+            // ------ RIGHT ------
+            x = currPos.x + 1;
+            y = currPos.y;
+
+            if (x < board.Length)
+            {
+                value = delegateFunction(new Pos { x = x, y = y }, par);
+                if (value < closestObject) bestDirection = Direction.East;
+            }
+            
+            // ------ UP ------
+            x = currPos.x;
+            y = currPos.y - 1;
+
+            if (y >= 0)
+            {
+                value = delegateFunction(new Pos { x = x, y = y }, par);
+                if (value < closestObject) bestDirection = Direction.North;
+            }
+            
+            // ------ DOWN ------
+            x = currPos.x;
+            y = currPos.y + 1;
+
+            if (y < board.Length)
+            {
+                value = delegateFunction(new Pos { x = x, y = y }, par);
+                if (value < closestObject) bestDirection = Direction.South;
+            }
+            
             return bestDirection;
         }
 
