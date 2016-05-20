@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace vindinium.Neat
+namespace vindinium.NEAT
 {
-    class Genotype
+    internal class Genotype
     {
         public List<ConnectionGenesModel> GenomeConnection;
         public List<NodeGenesModel> NodeGens;

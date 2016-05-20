@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace vindinium.Neat
+﻿namespace vindinium.NEAT
 {
-    class ConnectionGenesModel
+    internal class ConnectionGenesModel
     {
         public int InNode { get; set; }
+
         public int OutNode { get; set; }
+
         public double Weight { get; set; }
+
         public ConnectionStatus Status { get; set; }
+
         public int Innovation { get; set; }
 
         public ConnectionGenesModel()

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace vindinium.Neat
+﻿namespace vindinium.NEAT
 {
-    class NodeGenesModel
+    internal class NodeGenesModel
     {
         public int NodeNumber { get; set; }
+
         public NodeType Type { get; set; }
 
         public NodeGenesModel() { }
