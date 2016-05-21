@@ -65,17 +65,28 @@ namespace vindinium.NEAT.Mutation
 
         private DiscreteDistribution CreateRouletteWheelLayout()
         {
-            var probabilities = GerProbabilities();
+            var probabilities = GerProbabilitiesForNormal();
             return new DiscreteDistribution(probabilities);
         }
 
         private DiscreteDistribution CreateRouletteWheelLayoutNonDestructive()
         {
-            var probabilities = GerProbabilities();
+            var probabilities = GerProbabilitiesForNonDestructive();
             return new DiscreteDistribution(probabilities);
         }
 
-        private double[] GerProbabilities()
+        private double[] GerProbabilitiesForNormal()
+        {
+            var probabilities = new[]
+            {
+                addNodeMutationProbability,
+                addConnectionMutationProbability,
+                deleteConnectionMutationProbability
+            };
+            return probabilities;
+        }
+
+        private double[] GerProbabilitiesForNonDestructive()
         {
             var probabilities = new[]
             {
