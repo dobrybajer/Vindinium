@@ -9,6 +9,8 @@ namespace vindinium.Algorithm
     {
         private Genotype TrainedModel { get; set; }
 
+        private Genotype CurrentModel { get; set; }
+
         private const string TrainedPhaseOneBot1 = "PhaseOneBot1.txt";
 
         private const string TrainedPhaseOneBot2 = "PhaseOneBot2.txt";
@@ -20,12 +22,47 @@ namespace vindinium.Algorithm
 
         protected override string GetDirection()
         {
-            // TODO use here genotype.Predict()
-            var output = 0.34; // TODO put here result of neural network
+            return Compute();
+        }
 
-            var bestDirection = MapNeuralNetowrkOutputToMove(output);
+        private string Compute()
+        {
+            var input = MapBoardToNeuralNetworskInput();
 
-            return bestDirection;
+            var maxLayer = CurrentModel.NodeGens.Max(g => g.Level);
+
+            var currentLayer = new List<NodeGenesModel>();
+
+            for (var i = 0; i <= maxLayer; ++i)
+            {
+                // ReSharper disable once AccessToModifiedClosure
+                currentLayer = CurrentModel.NodeGens.Where(g => g.Level == i).OrderBy(g => g.NodeNumber).ToList();
+                if (i == 0)
+                {
+                    for (var j = 0; j < currentLayer.Count(); ++j)
+                    {
+                        currentLayer[j].FeedForwardValue = input[j];
+                    }
+                }
+                else
+                {
+                    for (var j = 0; j < currentLayer.Count(); ++j)
+                    {
+                        var value = (from sourceNode in currentLayer[j].SourceNodes
+                            let node = CurrentModel.GetNodeById(sourceNode)
+                            let edge = CurrentModel.GetEnabledConnectionByIds(sourceNode, currentLayer[j].NodeNumber)
+                            where node != null && edge != null
+                            select node.FeedForwardValue*edge.Weight).Sum();
+
+                        // TODO add here activation function value = f(value)
+                        currentLayer[j].FeedForwardValue = value;
+                    }
+                }
+            }
+
+            var output = MapNeuralNetowrkOutputToMove(currentLayer);
+
+            return output;
         }
 
         public List<double> MapBoardToNeuralNetworskInput()
@@ -62,32 +99,19 @@ namespace vindinium.Algorithm
             return featureList;
         }
 
-        public string MapNeuralNetowrkOutputToMove(double output)
+        public string MapNeuralNetowrkOutputToMove(List<NodeGenesModel> outputLayer)
         {
-            if (0 <= output && output <= 0.2)
-            {
-                return GetDirectionGeneric(GetDistanceToClosestMine, false);
-            }
-            if (0.2 < output && output <= 0.4)
-            {
-                return GetDirectionGeneric(GetDistanceToClosestMine, true);
-            }
-            if (0.4 < output && output <= 0.61)
-            {
-                return GetDirectionGeneric(GetDistanceToClosestTavern, true);
-            }
-            if (0.61 < output && output <= 0.74)
-            {
-                return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?) 1);
-            }
-            if (0.74 < output && output <= 0.87)
-            {
-                return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?) 2);
-            }
-            if (0.87 < output && output <= 1)
-            {
-                return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?) 3);
-            }
+            var maxNeuron = outputLayer.Aggregate((i, j) => i.FeedForwardValue > j.FeedForwardValue ? i : j);
+            var index = maxNeuron.NodeNumber;
+            var minIndex = outputLayer.Min(o => o.NodeNumber);
+
+            if (index == minIndex + 0) return GetDirectionGeneric(GetDistanceToClosestMine, false);
+            if (index == minIndex + 1) return GetDirectionGeneric(GetDistanceToClosestMine, true);
+            if (index == minIndex + 2) return GetDirectionGeneric(GetDistanceToClosestTavern, true);
+            if (index == minIndex + 3) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)1);
+            if (index == minIndex + 4) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)2);
+            if (index == minIndex + 5) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)3);
+            
             throw new ArgumentOutOfRangeException();
         }
 
@@ -130,6 +154,7 @@ namespace vindinium.Algorithm
             for (var i = 0; i < 50; i++) // TODO check if restart ServerStuff needed
             {
                 var genotype = new Genotype(); // TODO add function generating random genotype in default constructor
+                CurrentModel = genotype;
 
                 Run();
 
@@ -149,7 +174,8 @@ namespace vindinium.Algorithm
                 population = new List<Genotype>();
                 for (var i = 0; i < 50; i++) // TODO check if restart ServerStuff needed
                 {
-                   var genotype = parentPopulation[i];
+                    var genotype = parentPopulation[i];
+                    CurrentModel = genotype;
 
                     Run();
 
@@ -168,9 +194,9 @@ namespace vindinium.Algorithm
             return parentPopulation;
         }
 
+        // TODO finish this method
         private void TrainPhaseTwo(List<Genotype> startPopulation)
         {
-            // TODO finish this method
             TrainedModel = new Genotype();
         }
     }
