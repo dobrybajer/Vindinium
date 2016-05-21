@@ -24,7 +24,7 @@ namespace vindinium.NEAT.Mutation
                 switch (outcome)
                 {
                     case 0:
-                        mutatedGenotype = MutateAddNode(genotype);
+                        mutatedGenotype = MutateAddNode(genotype, null); //zmienić
                         break;
                     case 1:
                         mutatedGenotype = MutateAddConnection(genotype,null);//Zmienić 
