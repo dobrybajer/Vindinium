@@ -17,6 +17,11 @@ namespace vindinium.Algorithm
 
         private const string TrainedPhaseOneBot3 = "PhaseOneBot3.txt";
 
+        private readonly InitialGenomeBuilder initialGenomeBuilder = new InitialGenomeBuilder();
+
+        private int inputNodesCount = 9;
+        private int outputNodesCount = 6;
+
 
         public NeatBot(ServerStuff serverStuff) : base(serverStuff, "Neat") { }
 
@@ -49,10 +54,10 @@ namespace vindinium.Algorithm
                     for (var j = 0; j < currentLayer.Count(); ++j)
                     {
                         var value = (from sourceNode in currentLayer[j].SourceNodes
-                            let node = CurrentModel.GetNodeById(sourceNode)
-                            let edge = CurrentModel.GetEnabledConnectionByIds(sourceNode, currentLayer[j].NodeNumber)
-                            where node != null && edge != null
-                            select node.FeedForwardValue*edge.Weight).Sum();
+                                     let node = CurrentModel.GetNodeById(sourceNode)
+                                     let edge = CurrentModel.GetEnabledConnectionByIds(sourceNode, currentLayer[j].NodeNumber)
+                                     where node != null && edge != null
+                                     select node.FeedForwardValue * edge.Weight).Sum();
 
                         // TODO add here activation function value = f(value)
                         currentLayer[j].FeedForwardValue = value;
@@ -70,18 +75,18 @@ namespace vindinium.Algorithm
             var heroesGoldMax = ServerStuff.Heroes.Max(h => h.gold);
             var distanceToEnemies = GetDistancesToEnemies();
 
-            var feature1 = (double) ServerStuff.Heroes[1].gold/heroesGoldMax;
-            var feature2 = (double) ServerStuff.Heroes.Where(h => h.id != 1).Max(h => h.gold)/heroesGoldMax;
-            var feature3 = GetDistanceToClosestTavern()/MaxBoardDistance;
-            var feature4 = GetDistanceToClosestMine()/MaxBoardDistance;
-            var feature5 = GetDistanceToClosestMine(null, true)/MaxBoardDistance;
-            var feature6 = distanceToEnemies.Values.Min()/MaxBoardDistance;
+            var feature1 = (double)ServerStuff.Heroes[1].gold / heroesGoldMax;
+            var feature2 = (double)ServerStuff.Heroes.Where(h => h.id != 1).Max(h => h.gold) / heroesGoldMax;
+            var feature3 = GetDistanceToClosestTavern() / MaxBoardDistance;
+            var feature4 = GetDistanceToClosestMine() / MaxBoardDistance;
+            var feature5 = GetDistanceToClosestMine(null, true) / MaxBoardDistance;
+            var feature6 = distanceToEnemies.Values.Min() / MaxBoardDistance;
             var enemyWithMaxGold = distanceToEnemies.Keys.Aggregate((i, j) => i.gold > j.gold ? i : j);
-            var feature7 = distanceToEnemies[enemyWithMaxGold]/MaxBoardDistance;
+            var feature7 = distanceToEnemies[enemyWithMaxGold] / MaxBoardDistance;
             var enemyWithLowestHp = distanceToEnemies.Keys.Aggregate((i, j) => i.life < j.life ? i : j);
-            var feature8 = enemyWithLowestHp.life < 40 ? distanceToEnemies[enemyWithLowestHp]/MaxBoardDistance : 1; // 1 represents infinity
+            var feature8 = enemyWithLowestHp.life < 40 ? distanceToEnemies[enemyWithLowestHp] / MaxBoardDistance : 1; // 1 represents infinity
             var enemyWithGreatestNumberOfMines = distanceToEnemies.Keys.Aggregate((i, j) => i.mineCount > j.mineCount ? i : j);
-            var feature9 = distanceToEnemies[enemyWithGreatestNumberOfMines]/MaxBoardDistance;
+            var feature9 = distanceToEnemies[enemyWithGreatestNumberOfMines] / MaxBoardDistance;
 
             var featureList = new List<double>
             {
@@ -111,7 +116,7 @@ namespace vindinium.Algorithm
             if (index == minIndex + 3) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)1);
             if (index == minIndex + 4) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)2);
             if (index == minIndex + 5) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)3);
-            
+
             throw new ArgumentOutOfRangeException();
         }
 
@@ -153,7 +158,7 @@ namespace vindinium.Algorithm
 
             for (var i = 0; i < 50; i++) // TODO check if restart ServerStuff needed
             {
-                var genotype = new Genotype(); // TODO add function generating random genotype in default constructor
+                var genotype = initialGenomeBuilder.CreateInitialGenotype(inputNodesCount, outputNodesCount);
                 CurrentModel = genotype;
 
                 Run();
@@ -162,7 +167,7 @@ namespace vindinium.Algorithm
                 population.Add(genotype);
             }
 
-            var halfBestPopulation = population.OrderByDescending(i => i.Value).Take(population.Count/2).ToList();
+            var halfBestPopulation = population.OrderByDescending(i => i.Value).Take(population.Count / 2).ToList();
             var changedHalfBestPopulation = halfBestPopulation; // TODO modify genotypes by crossovering and mutating
 
             var parentPopulation = new List<Genotype>();
