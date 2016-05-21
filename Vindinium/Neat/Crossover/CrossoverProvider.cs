@@ -49,7 +49,7 @@ namespace vindinium.NEAT.Crossover
             else if (genotype1.Value < genotype2.Value)
                 crossoverMasterType = CrossoverMasterType.GenotypeTwo;
             else
-                crossoverMasterType = (random.Next(0, 1) == 0) ? CrossoverMasterType.GenotypeOne : CrossoverMasterType.GenotypeTwo;
+                crossoverMasterType = (random.Next(0, 2) == 0) ? CrossoverMasterType.GenotypeOne : CrossoverMasterType.GenotypeTwo;
             return crossoverMasterType == CrossoverMasterType.GenotypeOne ? genotype1 : genotype2;
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Redzen.Numerics;
-using vindinium.NEAT.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 
