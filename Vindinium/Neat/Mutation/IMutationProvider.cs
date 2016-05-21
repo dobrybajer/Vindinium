@@ -1,6 +1,6 @@
 ﻿namespace vindinium.NEAT.Mutation
 {
-    internal interface IMutationProvider
+    public interface IMutationProvider
     {
         Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters);
     }

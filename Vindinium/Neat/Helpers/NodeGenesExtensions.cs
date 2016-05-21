@@ -1,6 +1,6 @@
 ﻿namespace vindinium.NEAT.Helpers
 {
-    internal static class NodeGenesExtensions
+    public static class NodeGenesExtensions
     {
         public static bool IsNodeRedundant(this NodeGenesModel neuronGene)
         {

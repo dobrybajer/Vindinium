@@ -7,7 +7,7 @@ using vindinium.PathFinding;
 
 namespace vindinium.Algorithm
 {
-    internal class Bot
+    public class Bot
     {
         protected readonly ServerStuff ServerStuff;
 
@@ -32,7 +32,7 @@ namespace vindinium.Algorithm
 
         #region Constructor and game initialization (do not change!)
 
-        internal Bot(ServerStuff serverStuff, string botName = "Evaluation")
+        public Bot(ServerStuff serverStuff, string botName = "Evaluation")
         {
             ServerStuff = serverStuff;
             _botName = botName;
@@ -45,7 +45,7 @@ namespace vindinium.Algorithm
         /// <summary>
         /// Starts everything (do not change!).
         /// </summary>
-        internal virtual void Run()
+        public virtual void Run()
         {
             Console.Out.WriteLine(_botName + " bot running");
 
@@ -78,7 +78,7 @@ namespace vindinium.Algorithm
             Console.Out.WriteLine(_botName + " bot finished");
         }
 
-        internal virtual void Train()
+        public virtual void Train()
         {
             Run();
         }

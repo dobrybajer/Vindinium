@@ -1,6 +1,6 @@
 ﻿namespace vindinium.PathFinding
 {
-    internal class MyPathNode : IPathNode<object>
+    public class MyPathNode : IPathNode<object>
     {
         public int X { get; set; }
 

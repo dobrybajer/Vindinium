@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace vindinium.DataManager
 {
-    internal static class ObjectManager
+    public static class ObjectManager
     {
         /// <summary>
         /// Writes the given object instance to a Json file.

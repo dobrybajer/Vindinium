@@ -4,94 +4,94 @@ using System.Runtime.Serialization;
 namespace vindinium
 {
     [DataContract]
-    internal class GameResponse
+    public class GameResponse
     {
         [DataMember]
-        internal Game game;
+        public Game game;
 
         [DataMember]
-        internal Hero hero;
+        public Hero hero;
 
         [DataMember]
-        internal string token;
+        public string token;
 
         [DataMember]
-        internal string viewUrl;
+        public string viewUrl;
 
         [DataMember]
-        internal string playUrl;
+        public string playUrl;
     }
 
     [DataContract]
-    internal class Game
+    public class Game
     {
         [DataMember]
-        internal string id;
+        public string id;
 
         [DataMember]
-        internal int turn;
+        public int turn;
 
         [DataMember]
-        internal int maxTurns;
+        public int maxTurns;
 
         [DataMember]
-        internal List<Hero> heroes;
+        public List<Hero> heroes;
 
         [DataMember]
-        internal Board board;
+        public Board board;
 
         [DataMember]
-        internal bool finished;
+        public bool finished;
     }
 
     [DataContract]
-    internal class Hero
+    public class Hero
     {
         [DataMember]
-        internal int id;
+        public int id;
 
         [DataMember]
-        internal string name;
+        public string name;
 
         [DataMember]
-        internal int elo;
+        public int elo;
 
         [DataMember]
-        internal Pos pos;
+        public Pos pos;
 
         [DataMember]
-        internal int life;
+        public int life;
 
         [DataMember]
-        internal int gold;
+        public int gold;
 
         [DataMember]
-        internal int mineCount;
+        public int mineCount;
 
         [DataMember]
-        internal Pos spawnPos;
+        public Pos spawnPos;
 
         [DataMember]
-        internal bool crashed;
+        public bool crashed;
     }
 
     [DataContract]
-    internal class Pos
+    public class Pos
     {
         [DataMember]
-        internal int x;
+        public int x;
 
         [DataMember]
-        internal int y;
+        public int y;
     }
 
     [DataContract]
-    internal class Board
+    public class Board
     {
         [DataMember]
-        internal int size;
+        public int size;
 
         [DataMember]
-        internal string tiles;
+        public string tiles;
     }
 }

@@ -1,6 +1,6 @@
 namespace vindinium.NEAT.Crossover
 {
-    internal class CorrelationItem
+    public class CorrelationItem
     {
         public CorrelationItem(CorrelationItemType correlationItemType, ConnectionGenesModel connectionGene1, ConnectionGenesModel connectionGene2)
         {

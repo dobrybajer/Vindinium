@@ -3,7 +3,7 @@ using vindinium.Algorithm;
 
 namespace vindinium
 {
-    internal class Client
+    public class Client
     {
         /**
          * Launch client.

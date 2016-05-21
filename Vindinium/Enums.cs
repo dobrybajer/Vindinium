@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace vindinium
 {
-    internal enum Tile
+    public enum Tile
     {
         IMPASSABLE_WOOD,
         FREE,
@@ -19,7 +19,7 @@ namespace vindinium
         GOLD_MINE_4
     }
 
-    internal class Direction
+    public class Direction
     {
         public const string Stay = "Stay";
         public const string North = "North";

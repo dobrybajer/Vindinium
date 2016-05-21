@@ -1,6 +1,6 @@
 ﻿namespace vindinium.NEAT
 {
-    internal enum NodeType
+    public enum NodeType
     {
         Bias,
         Input,
@@ -8,7 +8,7 @@
         Hidden
     }
 
-    internal enum ConnectionStatus
+    public enum ConnectionStatus
     {
         Enabled,
         Disabled

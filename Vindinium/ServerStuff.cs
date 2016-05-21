@@ -6,7 +6,7 @@ using System.Text;
 
 namespace vindinium
 {
-    internal class ServerStuff
+    public class ServerStuff
     {
         private readonly string _key;
         private readonly bool _trainingMode;

@@ -17,7 +17,7 @@ namespace vindinium.PathFinding
         public int Width { get; }
 
         public int Height { get; }
-        
+
         public SpatialAStar(TPathNode[,] inGrid)
         {
             SearchSpace = inGrid;
@@ -49,7 +49,7 @@ namespace vindinium.PathFinding
             return Heuristic(inStart, inEnd);
         }
 
-        internal LinkedList<TPathNode> Search(Pos inStartNode, Pos inEndNode, TUserContext inUserContext)
+        public LinkedList<TPathNode> Search(Pos inStartNode, Pos inEndNode, TUserContext inUserContext)
         {
             var startNode = _mSearchSpace[inStartNode.x, inStartNode.y];
             var endNode = _mSearchSpace[inEndNode.x, inEndNode.y];
@@ -79,7 +79,7 @@ namespace vindinium.PathFinding
             _mOpenSet.Add(startNode);
             _mOrderedOpenSet.Push(startNode);
             _mRuntimeGrid.Add(startNode);
-            
+
             while (!_mOpenSet.IsEmpty)
             {
                 var x = _mOrderedOpenSet.Pop();
@@ -183,13 +183,13 @@ namespace vindinium.PathFinding
         {
             public static readonly PathNode Comparer = new PathNode(0, 0, default(TPathNode));
 
-            public TPathNode UserContext { get; internal set; }
+            public TPathNode UserContext { get; set; }
 
-            public double G { get; internal set; }
+            public double G { get; set; }
 
-            public double H { get; internal set; }
+            public double H { get; set; }
 
-            public double F { get; internal set; }
+            public double F { get; set; }
 
             public int Index { get; set; }
 
@@ -198,9 +198,9 @@ namespace vindinium.PathFinding
                 return UserContext.IsWalkable(inContext);
             }
 
-            public int X { get; internal set; }
+            public int X { get; set; }
 
-            public int Y { get; internal set; }
+            public int Y { get; set; }
 
             public int Compare(PathNode x, PathNode y)
             {

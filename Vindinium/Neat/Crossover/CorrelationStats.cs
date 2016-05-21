@@ -1,6 +1,6 @@
 namespace vindinium.NEAT.Crossover
 {
-    internal class CorrelationStats
+    public class CorrelationStats
     {
         public int MatchingGeneCount { get; set; }
         public int DisjointConnectionGeneCount { get; set; }

@@ -2,7 +2,7 @@
 
 namespace vindinium.PathFinding
 {
-    internal class PriorityQueue<T> where T : IIndexedObject
+    public class PriorityQueue<T> where T : IIndexedObject
     {
         protected List<T> InnerList = new List<T>();
         protected IComparer<T> MComparer;

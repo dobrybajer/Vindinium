@@ -1,6 +1,6 @@
 ﻿namespace vindinium.NEAT
 {
-    internal class ConnectionGenesModel
+    public class ConnectionGenesModel
     {
         public int InNode { get; set; }
 

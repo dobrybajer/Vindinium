@@ -2,7 +2,7 @@
 
 namespace vindinium.NEAT
 {
-    internal class Neat
+    public class Neat
     {
         public IMutationProvider Provider { get; }
 
