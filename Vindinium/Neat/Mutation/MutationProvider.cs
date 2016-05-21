@@ -51,7 +51,6 @@ namespace vindinium.NEAT.Mutation
         private Genotype MutateAddConnection(Genotype genotype, List<Innovationcs> innovation)
         {
             var nodeNumber = genotype.NodeGens.Count;
-            var innovationAdd = innovation.Where(x => x.Type == InnovationcsType.AddConnection);
 
             var random = new Random();
             var inNode = random.Next(1, nodeNumber + 1); 
@@ -63,7 +62,7 @@ namespace vindinium.NEAT.Mutation
             var currentInnovaton = 0;
 
             if (!isConnection)
-                foreach (var el in innovationAdd)
+                foreach (var el in innovation)
                     if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
                         currentInnovaton = el.InnovationNumber;
             
@@ -84,7 +83,6 @@ namespace vindinium.NEAT.Mutation
                 innovation.Add(new Innovationcs
                 {
                     InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
-                    Type = InnovationcsType.AddConnection,
                     InNode =inNode,
                     OutNode =outNode
                 });
@@ -135,7 +133,6 @@ namespace vindinium.NEAT.Mutation
             return genotype;
         }
 
-
         private Genotype MutateDeleteConnection(Genotype genotype)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
@@ -148,6 +145,7 @@ namespace vindinium.NEAT.Mutation
 
         public void MatchingGenomes(Genotype genotype1, Genotype genotype2)
         {
+             //Dopisać funkcje zmieniającą pojedyncze wagi krawidzi
             throw new Exception();
         }
 
