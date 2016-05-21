@@ -14,4 +14,14 @@
         Disabled
     }
 
+    internal enum InnovationcsType
+    {
+        AddConnection,
+        AddNode,
+        DeleteConnection
+        //DeleteNode
+        
+    }
+        
+
 }

@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using Redzen.Numerics;
 using vindinium.NEAT.Helpers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace vindinium.NEAT.Mutation
 {
@@ -25,7 +27,7 @@ namespace vindinium.NEAT.Mutation
                         mutatedGenotype = MutateAddNode(genotype);
                         break;
                     case 1:
-                        mutatedGenotype = MutateAddConnection(genotype);
+                        mutatedGenotype = MutateAddConnection(genotype,null);//Zmienić 
                         break;
                     case 2:
                         mutatedGenotype = MutateDeleteConnection(genotype);
@@ -46,15 +48,27 @@ namespace vindinium.NEAT.Mutation
             return false;
         }
 
-        private Genotype MutateAddConnection(Genotype genotype)
+        private Genotype MutateAddConnection(Genotype genotype, List<Innovationcs> innovation)
         {
             var nodeNumber = genotype.NodeGens.Count;
+            var innovationAdd = innovation.Where(x => x.Type == InnovationcsType.AddConnection);
 
             var random = new Random();
-            var inNode = random.Next(1, nodeNumber - 1); //Dopuszczamy połączenia z samym sobą?
-            var outNode = random.Next(1, nodeNumber);
+            var inNode = random.Next(1, nodeNumber + 1); 
+            var outNode = random.Next(1, nodeNumber + 1);
 
-            if (inNode < outNode)
+            ChangeLevel(inNode, outNode, genotype);
+
+            var isConnection = isConnectionInGenotype(inNode,outNode,genotype);
+            var currentInnovaton = 0;
+
+            if (!isConnection)
+                foreach (var el in innovationAdd)
+                    if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
+                        currentInnovaton = el.InnovationNumber;
+            
+
+            if (!isConnection && currentInnovaton!=0)
             {
                 genotype.GenomeConnection.Add(new ConnectionGenesModel
                 {
@@ -62,21 +76,29 @@ namespace vindinium.NEAT.Mutation
                     OutNode = outNode,
                     Weight = (double)random.Next(0, 100) / 100,
                     Status = ConnectionStatus.Enabled,
-                    Innovation = genotype.GetCurrentInnovation() + 1,
+                    Innovation = currentInnovaton,
                 });
             }
             else
             {
+                innovation.Add(new Innovationcs
+                {
+                    InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
+                    Type = InnovationcsType.AddConnection,
+                    InNode =inNode,
+                    OutNode =outNode
+                });
+
                 genotype.GenomeConnection.Add(new ConnectionGenesModel
                 {
-                    InNode = outNode,
-                    OutNode = inNode,
+                    InNode = inNode,
+                    OutNode = outNode,
                     Weight = (double)random.Next(0, 100) / 100,
                     Status = ConnectionStatus.Enabled,
-                    Innovation = genotype.GetCurrentInnovation() + 1,
+                    Innovation = innovation[innovation.Count-1].InnovationNumber,
                 });
             }
-
+                   
             return genotype;
 
         }
@@ -127,6 +149,27 @@ namespace vindinium.NEAT.Mutation
         public void MatchingGenomes(Genotype genotype1, Genotype genotype2)
         {
             throw new Exception();
+        }
+
+        public bool isConnectionInGenotype(int inNode,int outNode, Genotype genotype)
+        {
+            var isConnection = false;
+            foreach (var el in genotype.GenomeConnection)
+                if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
+                     return isConnection = true;
+            return isConnection;
+        }
+
+        public void ChangeLevel(int inNode, int outNode, Genotype genotype)
+        {
+            var random = new Random();
+            if (genotype.NodeGens[inNode].Level == genotype.NodeGens[outNode].Level)
+            {
+                if (random.Next(0, 2) == 0)
+                    genotype.NodeGens[inNode].Level++;
+                else
+                    genotype.NodeGens[outNode].Level++;
+            }
         }
     }
 }
