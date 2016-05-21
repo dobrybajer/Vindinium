@@ -5,9 +5,9 @@ namespace vindinium.NEAT
 {
     public class Genotype
     {
-        public double Value;
-        public List<ConnectionGenesModel> GenomeConnection;
-        public List<NodeGenesModel> NodeGens;
+        public double Value { get; set; }
+        public List<ConnectionGenesModel> GenomeConnection { get; set; }
+        public List<NodeGenesModel> NodeGens { get; set; }
 
         public Genotype(List<ConnectionGenesModel> genomeConnection, List<NodeGenesModel> nodeGens)
         {
@@ -19,15 +19,9 @@ namespace vindinium.NEAT
         {
         }
 
-        public int GetCurrentInnovation()
-        {
-            return GenomeConnection[GenomeConnection.Count - 1].Innovation;
-        }
+        public int GetCurrentInnovation() => GenomeConnection[GenomeConnection.Count - 1].Innovation;
 
-        public NodeGenesModel GetNodeById(int id)
-        {
-            return NodeGens.FirstOrDefault(n => n.NodeNumber == id);
-        }
+        public NodeGenesModel GetNodeById(int id) => NodeGens.FirstOrDefault(n => n.NodeNumber == id);
 
         public ConnectionGenesModel GetEnabledConnectionByIds(int from, int to)
         {
