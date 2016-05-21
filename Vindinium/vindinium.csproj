@@ -70,6 +70,7 @@
     <Compile Include="NEAT\Crossover\CorrelationProvider.cs" />
     <Compile Include="NEAT\Genotype.cs" />
     <Compile Include="NEAT\Helpers\NodeGenesExtensions.cs" />
+    <Compile Include="NEAT\InitialGenomeBuilder.cs" />
     <Compile Include="NEAT\Innovationcs.cs" />
     <Compile Include="NEAT\Mutation\IMutationProvider.cs" />
     <Compile Include="NEAT\Mutation\MutationProvider.cs" />
