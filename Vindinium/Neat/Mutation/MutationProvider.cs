@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace vindinium.NEAT.Mutation
 {
-    internal class MutationProvider : IMutationProvider
+    public class MutationProvider : IMutationProvider
     {
         public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters)
         {

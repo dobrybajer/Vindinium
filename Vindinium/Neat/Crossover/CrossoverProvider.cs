@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace vindinium.NEAT.Crossover
 {
-    internal enum CrossoverMaster
+    public enum CrossoverMaster
     {
         GenotypeOne,
         GenotypeTwo
     }
-    internal class CrossoverProvider
+    public class CrossoverProvider
     {
         private CorrelationResults correlationResults;
 

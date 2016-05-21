@@ -2,7 +2,7 @@
 
 namespace vindinium.NEAT
 {
-    internal class NodeGenesModel
+    public class NodeGenesModel
     {
         public int NodeNumber { get; set; }
 

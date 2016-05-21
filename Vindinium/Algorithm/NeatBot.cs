@@ -5,7 +5,7 @@ using vindinium.NEAT;
 
 namespace vindinium.Algorithm
 {
-    internal class NeatBot : Bot
+    public class NeatBot : Bot
     {
         private Genotype TrainedModel { get; set; }
 
@@ -115,7 +115,7 @@ namespace vindinium.Algorithm
             throw new ArgumentOutOfRangeException();
         }
 
-        internal override void Train()
+        public override void Train()
         {
             var population1 = TrainPhaseOne("m1");
             var population2 = TrainPhaseOne("m2");

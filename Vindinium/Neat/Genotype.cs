@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace vindinium.NEAT
 {
-    internal class Genotype
+    public class Genotype
     {
         public double Value;
         public List<ConnectionGenesModel> GenomeConnection;
