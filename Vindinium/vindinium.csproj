@@ -67,11 +67,13 @@
     <Compile Include="NEAT\Crossover\CorrelationProvider.cs" />
     <Compile Include="NEAT\Genotype.cs" />
     <Compile Include="NEAT\Helpers\NodeGenesExtensions.cs" />
+    <Compile Include="NEAT\Innovationcs.cs" />
     <Compile Include="NEAT\Mutation\IMutationProvider.cs" />
     <Compile Include="NEAT\Mutation\MutationProvider.cs" />
     <Compile Include="NEAT\Mutation\NodeGeneParameters.cs" />
     <Compile Include="NEAT\Neat.cs" />
     <Compile Include="NEAT\NodeGenesModel.cs" />
+    <Compile Include="NEAT\Population.cs" />
     <Compile Include="PathFinding\AStar.cs" />
     <Compile Include="PathFinding\Helpers.cs" />
     <Compile Include="PathFinding\PriorityQueue.cs" />
