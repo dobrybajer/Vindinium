@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace vindinium.NEAT.Crossover
 {
-    public enum CrossoverMaster
+    public enum CrossoverMasterType
     {
         GenotypeOne,
         GenotypeTwo
     }
-    public class CrossoverProvider
+    public class CrossoverProvider : ICrossoverProvider
     {
         private CorrelationResults correlationResults;
 
@@ -22,35 +22,44 @@ namespace vindinium.NEAT.Crossover
             this.correlationProvider = correlationProvider;
         }
 
-
         public Genotype CrossoverGenotype(Genotype genotype1, Genotype genotype2)
         {
-            var random = new Random();
-            correlationResults = correlationProvider.CorrelateConnections(genotype1.GenomeConnection,
-                genotype2.GenomeConnection);
-            CrossoverMaster crossoverMaster;
-            if (genotype1.Value > genotype2.Value)
-                crossoverMaster = CrossoverMaster.GenotypeOne;
-            else if (genotype1.Value < genotype2.Value)
-                crossoverMaster = CrossoverMaster.GenotypeTwo;
-            else
-                crossoverMaster = (random.Next(0, 1) == 0) ? CrossoverMaster.GenotypeOne : CrossoverMaster.GenotypeTwo;
-
-            var offspringGenome = new Genotype { GenomeConnection = new List<ConnectionGenesModel>() };
-            offspringGenome.GenomeConnection.AddRange(GetConnectionsForCorrelationType(crossoverMaster, CorrelationItemType.Match));
-            offspringGenome.GenomeConnection.AddRange(GetConnectionsForCorrelationType(crossoverMaster, CorrelationItemType.Disjoint));
-            offspringGenome.GenomeConnection.AddRange(GetConnectionsForCorrelationType(crossoverMaster, CorrelationItemType.Excess));
+            correlationResults = correlationProvider.CorrelateConnections(genotype1.GenomeConnection, genotype2.GenomeConnection);
+            CrossoverMasterType crossoverMasterType;
+            var crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2, out crossoverMasterType);
+            
+            var offspringGenome = new Genotype
+            {
+                GenomeConnection = new List<ConnectionGenesModel>(),
+                NodeGens = new List<NodeGenesModel>(crossoverMaster.NodeGens),
+                Value = crossoverMaster.Value
+            };
+            offspringGenome.GenomeConnection.AddRange(GetConnectionsForCorrelationType(crossoverMasterType, CorrelationItemType.Match));
+            offspringGenome.GenomeConnection.AddRange(GetConnectionsForCorrelationType(crossoverMasterType, CorrelationItemType.Disjoint));
+            offspringGenome.GenomeConnection.AddRange(GetConnectionsForCorrelationType(crossoverMasterType, CorrelationItemType.Excess));
             return offspringGenome;
         }
 
-        private List<ConnectionGenesModel> GetConnectionsForCorrelationType(CrossoverMaster crossoverMaster, CorrelationItemType correlationItemType)
+        private Genotype ChooseCrossoverMaster(Genotype genotype1, Genotype genotype2, out CrossoverMasterType crossoverMasterType)
+        {
+            var random = new Random();
+            if (genotype1.Value > genotype2.Value)
+                crossoverMasterType = CrossoverMasterType.GenotypeOne;
+            else if (genotype1.Value < genotype2.Value)
+                crossoverMasterType = CrossoverMasterType.GenotypeTwo;
+            else
+                crossoverMasterType = (random.Next(0, 1) == 0) ? CrossoverMasterType.GenotypeOne : CrossoverMasterType.GenotypeTwo;
+            return crossoverMasterType == CrossoverMasterType.GenotypeOne ? genotype1 : genotype2;
+        }
+
+        private List<ConnectionGenesModel> GetConnectionsForCorrelationType(CrossoverMasterType crossoverMasterType, CorrelationItemType correlationItemType)
         {
             var connectionWithGivenType = new List<ConnectionGenesModel>();
             foreach (var correlationItem in correlationResults.CorrelationItems)
             {
                 if (correlationItem.CorrelationItemType == correlationItemType)
                 {
-                    connectionWithGivenType.Add(crossoverMaster == CrossoverMaster.GenotypeOne
+                    connectionWithGivenType.Add(crossoverMasterType == CrossoverMasterType.GenotypeOne
                         ? correlationItem.ConnectionGene1
                         : correlationItem.ConnectionGene2);
                 }

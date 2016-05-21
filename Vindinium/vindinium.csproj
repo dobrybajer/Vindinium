@@ -64,6 +64,8 @@
     <Compile Include="NEAT\Crossover\CorrelationResults.cs" />
     <Compile Include="NEAT\Crossover\CorrelationStats.cs" />
     <Compile Include="NEAT\Crossover\CrossoverProvider.cs" />
+    <Compile Include="NEAT\Crossover\ICorrelationProvider.cs" />
+    <Compile Include="NEAT\Crossover\ICrossoverProvider.cs" />
     <Compile Include="NEAT\EnumsNeat .cs" />
     <Compile Include="NEAT\Crossover\CorrelationProvider.cs" />
     <Compile Include="NEAT\Genotype.cs" />

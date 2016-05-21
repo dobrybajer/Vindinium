@@ -4,11 +4,6 @@ using System.Linq;
 
 namespace vindinium.NEAT.Crossover
 {
-    public interface ICorrelationProvider
-    {
-        CorrelationResults CorrelateConnections(List<ConnectionGenesModel> list1, List<ConnectionGenesModel> list2);
-    }
-
     public class CorrelationProvider : ICorrelationProvider
     {
         public CorrelationResults CorrelateConnections(List<ConnectionGenesModel> list1, List<ConnectionGenesModel> list2)
