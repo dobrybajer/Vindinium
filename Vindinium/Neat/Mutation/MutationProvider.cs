@@ -101,26 +101,53 @@ namespace vindinium.NEAT.Mutation
 
         }
 
-        private Genotype MutateAddNode(Genotype genotype)
+        private Genotype MutateAddNode(Genotype genotype, List<Innovationcs> innovation)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
 
             var random = new Random();
             var chooseConnection = random.Next(1, connectionNumber);
             genotype.GenomeConnection[chooseConnection].Status = ConnectionStatus.Disabled;
-            genotype.NodeGens.Add(new NodeGenesModel
+
+            var inNodeIdx = genotype.GenomeConnection[chooseConnection].InNode;
+            var outNodeIdx = genotype.GenomeConnection[chooseConnection].OutNode;
+            var lowerLevel = Math.Min(genotype.NodeGens[inNodeIdx].Level, genotype.NodeGens[outNodeIdx].Level);
+
+            var newNodeGen = new NodeGenesModel
             {
                 NodeNumber = genotype.NodeGens.Count + 1,
-                Type = NodeType.Hidden
+                Type = NodeType.Hidden,
+                Level = lowerLevel + 1
+            };
+
+            if (newNodeGen.Level == genotype.NodeGens[outNodeIdx].Level)
+                genotype.NodeGens[outNodeIdx].Level++;
+
+            genotype.NodeGens.Add(newNodeGen);
+
+            innovation.Add(new Innovationcs
+            {
+                InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
+                InNode = inNodeIdx,
+                OutNode = newNodeGen.NodeNumber
             });
+
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = genotype.GenomeConnection[chooseConnection].InNode,
-                OutNode = genotype.NodeGens.Count,
+                InNode = inNodeIdx,
+                OutNode = newNodeGen.NodeNumber,
                 Weight = (double)random.Next(0, 100) / 100,
                 Status = ConnectionStatus.Enabled,
                 Innovation = genotype.GetCurrentInnovation() + 1,
             });
+
+            innovation.Add(new Innovationcs
+            {
+                InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
+                InNode = newNodeGen.NodeNumber,
+                OutNode = outNodeIdx
+            });
+
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
                 InNode = genotype.NodeGens.Count,
@@ -139,7 +166,19 @@ namespace vindinium.NEAT.Mutation
             var random = new Random();
             var choosenConnectionId = random.Next(1, connectionNumber);
 
-            genotype.GenomeConnection[choosenConnectionId].Status = ConnectionStatus.Disabled;
+            var outNode = genotype.GenomeConnection[choosenConnectionId].OutNode;
+            var currLevel = genotype.NodeGens.Where(w => w.Level - 1 == genotype.NodeGens[outNode].Level).Select(s=> s.NodeNumber);
+
+            var isPossible = false;
+
+            for (int i = 0; i < genotype.GenomeConnection.Count; i++)
+                if (genotype.GenomeConnection[i].OutNode == outNode && currLevel.Contains(genotype.GenomeConnection[i].InNode) &&
+                    choosenConnectionId != i)
+                    isPossible = true;
+            
+
+            if(isPossible)
+                genotype.GenomeConnection[choosenConnectionId].Status = ConnectionStatus.Disabled;
             return genotype;
         }
 
