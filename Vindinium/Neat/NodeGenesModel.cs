@@ -8,8 +8,6 @@ namespace vindinium.NEAT
 
         public NodeType Type { get; set; }
 
-        public int Level { get; set; }
-
         public double FeedForwardValue { get; set; }
 
         public HashSet<int> SourceNodes { get; set; }
@@ -18,11 +16,10 @@ namespace vindinium.NEAT
 
         public NodeGenesModel() { }
 
-        public NodeGenesModel(int nodeNumber, NodeType type, int level, double feedForwardVelue)
+        public NodeGenesModel(int nodeNumber, NodeType type, double feedForwardVelue)
         {
             NodeNumber = nodeNumber;
             Type = type;
-            Level = level;
             FeedForwardValue = feedForwardVelue;
         }
     }

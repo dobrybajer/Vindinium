@@ -32,42 +32,43 @@ namespace vindinium.Algorithm
 
         private string Compute()
         {
-            var input = MapBoardToNeuralNetworskInput();
+            //var input = MapBoardToNeuralNetworskInput();
 
-            var maxLayer = CurrentModel.NodeGens.Max(g => g.Level);
+            //var maxLayer = CurrentModel.NodeGens.Max(g => g.Level);
 
-            var currentLayer = new List<NodeGenesModel>();
+            //var currentLayer = new List<NodeGenesModel>();
 
-            for (var i = 0; i <= maxLayer; ++i)
-            {
-                // ReSharper disable once AccessToModifiedClosure
-                currentLayer = CurrentModel.NodeGens.Where(g => g.Level == i).OrderBy(g => g.NodeNumber).ToList();
-                if (i == 0)
-                {
-                    for (var j = 0; j < currentLayer.Count(); ++j)
-                    {
-                        currentLayer[j].FeedForwardValue = input[j];
-                    }
-                }
-                else
-                {
-                    for (var j = 0; j < currentLayer.Count(); ++j)
-                    {
-                        var value = (from sourceNode in currentLayer[j].SourceNodes
-                                     let node = CurrentModel.GetNodeById(sourceNode)
-                                     let edge = CurrentModel.GetEnabledConnectionByIds(sourceNode, currentLayer[j].NodeNumber)
-                                     where node != null && edge != null
-                                     select node.FeedForwardValue * edge.Weight).Sum();
+            //for (var i = 0; i <= maxLayer; ++i)
+            //{
+            //    // ReSharper disable once AccessToModifiedClosure
+            //    currentLayer = CurrentModel.NodeGens.Where(g => g.Level == i).OrderBy(g => g.NodeNumber).ToList();
+            //    if (i == 0)
+            //    {
+            //        for (var j = 0; j < currentLayer.Count(); ++j)
+            //        {
+            //            currentLayer[j].FeedForwardValue = input[j];
+            //        }
+            //    }
+            //    else
+            //    {
+            //        for (var j = 0; j < currentLayer.Count(); ++j)
+            //        {
+            //            var value = (from sourceNode in currentLayer[j].SourceNodes
+            //                         let node = CurrentModel.GetNodeById(sourceNode)
+            //                         let edge = CurrentModel.GetEnabledConnectionByIds(sourceNode, currentLayer[j].NodeNumber)
+            //                         where node != null && edge != null
+            //                         select node.FeedForwardValue * edge.Weight).Sum();
 
-                        // TODO add here activation function value = f(value)
-                        currentLayer[j].FeedForwardValue = value;
-                    }
-                }
-            }
+            //            // TODO add here activation function value = f(value)
+            //            currentLayer[j].FeedForwardValue = value;
+            //        }
+            //    }
+            //}
 
-            var output = MapNeuralNetowrkOutputToMove(currentLayer);
+            //var output = MapNeuralNetowrkOutputToMove(currentLayer);
 
-            return output;
+            //return output;
+            return string.Empty;
         }
 
         public List<double> MapBoardToNeuralNetworskInput()

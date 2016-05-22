@@ -69,7 +69,6 @@
     <Compile Include="NEAT\EnumsNeat .cs" />
     <Compile Include="NEAT\Crossover\CorrelationProvider.cs" />
     <Compile Include="NEAT\Genotype.cs" />
-    <Compile Include="NEAT\Helpers\NodeGenesExtensions.cs" />
     <Compile Include="NEAT\InitialGenomeBuilder.cs" />
     <Compile Include="NEAT\Innovationcs.cs" />
     <Compile Include="NEAT\Mutation\IMutationProvider.cs" />
@@ -87,6 +86,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NEAT\Helpers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
