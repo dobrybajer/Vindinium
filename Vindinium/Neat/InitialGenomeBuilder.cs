@@ -15,7 +15,7 @@ namespace vindinium.NEAT
                 var sourceNodes = new HashSet<int>();
                 for (var j = inputNodesCount; j < inputNodesCount + outputNodesCount; j++)
                 {
-                    connections.Add(new ConnectionGenesModel {InNode = i, OutNode = j, Weight = random.Next()});
+                    connections.Add(new ConnectionGenesModel {InNode = i, OutNode = j, Weight = (double)random.Next(0, 100) / 100 });
                     sourceNodes.Add(j);
                 }
                 var node = new NodeGenesModel {NodeNumber = i, Type = NodeType.Input, SourceNodes = sourceNodes};
