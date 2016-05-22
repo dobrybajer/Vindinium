@@ -7,7 +7,7 @@ namespace vindinium.NEAT.Mutation
 {
     public class MutationProvider : IMutationProvider
     {
-        public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters)
+        public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters,List<Innovations> innovations)
         {
             var xorRandom = new XorShiftRandom();
             var rouletteWheelLayoutInitial = (genotype.GenomeConnection.Count < 2) ?
@@ -22,10 +22,10 @@ namespace vindinium.NEAT.Mutation
                 switch (outcome)
                 {
                     case 0:
-                        mutatedGenotype = MutateAddNode(genotype, null); //zmienić
+                        mutatedGenotype = MutateAddNode(genotype, innovations); //zmienić
                         break;
                     case 1:
-                        mutatedGenotype = MutateAddConnection(genotype, null);//Zmienić 
+                        mutatedGenotype = MutateAddConnection(genotype, innovations);//Zmienić 
                         break;
                     case 2:
                         mutatedGenotype = MutateDeleteConnection(genotype);
@@ -49,7 +49,7 @@ namespace vindinium.NEAT.Mutation
             return false;
         }
 
-        private Genotype MutateAddConnection(Genotype genotype, List<Innovationcs> innovation)
+        private Genotype MutateAddConnection(Genotype genotype, List<Innovations> innovation)
         {
             var nodeNumber = genotype.NodeGens.Count;
 
@@ -79,7 +79,7 @@ namespace vindinium.NEAT.Mutation
             }
             else
             {
-                innovation.Add(new Innovationcs
+                innovation.Add(new Innovations
                 {
                     InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
                     InNode =inNode,
@@ -100,7 +100,7 @@ namespace vindinium.NEAT.Mutation
 
         }
 
-        private Genotype MutateAddNode(Genotype genotype, List<Innovationcs> innovation)
+        private Genotype MutateAddNode(Genotype genotype, List<Innovations> innovation)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
 
@@ -119,7 +119,7 @@ namespace vindinium.NEAT.Mutation
 
             genotype.NodeGens.Add(newNodeGen);
 
-            innovation.Add(new Innovationcs
+            innovation.Add(new Innovations
             {
                 InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
                 InNode = inNodeIdx,
@@ -135,7 +135,7 @@ namespace vindinium.NEAT.Mutation
                 Innovation = genotype.GetCurrentInnovation() + 1,
             });
 
-            innovation.Add(new Innovationcs
+            innovation.Add(new Innovations
             {
                 InnovationNumber = innovation[innovation.Count - 1].InnovationNumber + 1,
                 InNode = newNodeGen.NodeNumber,

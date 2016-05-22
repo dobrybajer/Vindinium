@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace vindinium.NEAT
 {
-    class Innovationcs
+    public class Innovations
     {
         public int InnovationNumber { get; set; }
         public int  InNode { get; set; }
         public int OutNode { get; set; }
 
-        public Innovationcs()
+        public Innovations()
         {
 
         }
 
-        public Innovationcs(int innovationNumber, int inNode, int outNode)
+        public Innovations(int innovationNumber, int inNode, int outNode)
         {
            InnovationNumber = innovationNumber;
            InNode = inNode;
