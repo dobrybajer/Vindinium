@@ -75,6 +75,7 @@
     <Compile Include="NEAT\Mutation\MutationProvider.cs" />
     <Compile Include="NEAT\Mutation\NodeGeneParameters.cs" />
     <Compile Include="NEAT\Neat.cs" />
+    <Compile Include="NEAT\NeatGeneticAlgorithm.cs" />
     <Compile Include="NEAT\NodeGenesModel.cs" />
     <Compile Include="NEAT\Population.cs" />
     <Compile Include="PathFinding\AStar.cs" />
