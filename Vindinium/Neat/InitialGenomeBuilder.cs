@@ -23,10 +23,7 @@ namespace vindinium.NEAT
             }
             for (var i = inputNodesCount; i < outputNodesCount + inputNodesCount; i++)
             {
-                var targetNodes = new HashSet<int>();
-                for (var j = 0; j < inputNodesCount; j++)
-                    targetNodes.Add(j);
-                var node = new NodeGenesModel {NodeNumber = i, Type = NodeType.Output, TargetNodes = targetNodes};
+                var node = new NodeGenesModel {NodeNumber = i, Type = NodeType.Output, TargetNodes = new HashSet<int>() };
                 initialNodes.Add(node);
             }
 

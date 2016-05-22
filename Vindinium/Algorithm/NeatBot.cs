@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using vindinium.NEAT;
 
@@ -17,10 +18,10 @@ namespace vindinium.Algorithm
 
         private const string TrainedPhaseOneBot3 = "PhaseOneBot3.txt";
 
-        private readonly InitialGenomeBuilder initialGenomeBuilder = new InitialGenomeBuilder();
+        private readonly InitialGenomeBuilder _initialGenomeBuilder = new InitialGenomeBuilder();
 
-        private int inputNodesCount = 9;
-        private int outputNodesCount = 6;
+        private const int InputNodesCount = 9;
+        private const int OutputNodesCount = 6;
 
 
         public NeatBot(ServerStuff serverStuff) : base(serverStuff, "Neat") { }
@@ -30,45 +31,56 @@ namespace vindinium.Algorithm
             return Compute();
         }
 
+        private static double ActivationFunction(double input)
+        {
+            var output = input; // f(x) = x
+            //var output = Math.Tanh(input); // f(x) = tanh(x)
+
+            return output;
+        }
+
         private string Compute()
         {
-            //var input = MapBoardToNeuralNetworskInput();
+            var input = MapBoardToNeuralNetworskInput();
 
-            //var maxLayer = CurrentModel.NodeGens.Max(g => g.Level);
+            var nextLevelNodes = new List<Tuple<int, int, double>>();
+            var inputNodes = CurrentModel.NodeGens.Where(n => n.Type == NodeType.Input).ToList();
 
-            //var currentLayer = new List<NodeGenesModel>();
+            foreach (var sn in inputNodes)
+            {
+                sn.FeedForwardValue = input[sn.NodeNumber];
+                nextLevelNodes.AddRange(
+                    sn.TargetNodes.Select(en => new Tuple<int, int, double>(sn.NodeNumber, en, sn.FeedForwardValue)));
+            }
 
-            //for (var i = 0; i <= maxLayer; ++i)
-            //{
-            //    // ReSharper disable once AccessToModifiedClosure
-            //    currentLayer = CurrentModel.NodeGens.Where(g => g.Level == i).OrderBy(g => g.NodeNumber).ToList();
-            //    if (i == 0)
-            //    {
-            //        for (var j = 0; j < currentLayer.Count(); ++j)
-            //        {
-            //            currentLayer[j].FeedForwardValue = input[j];
-            //        }
-            //    }
-            //    else
-            //    {
-            //        for (var j = 0; j < currentLayer.Count(); ++j)
-            //        {
-            //            var value = (from sourceNode in currentLayer[j].SourceNodes
-            //                         let node = CurrentModel.GetNodeById(sourceNode)
-            //                         let edge = CurrentModel.GetEnabledConnectionByIds(sourceNode, currentLayer[j].NodeNumber)
-            //                         where node != null && edge != null
-            //                         select node.FeedForwardValue * edge.Weight).Sum();
+            while (nextLevelNodes.Any())
+            {
+                var currentLevelNodes = new List<Tuple<int, int, double>>(nextLevelNodes);
+                nextLevelNodes.Clear();
 
-            //            // TODO add here activation function value = f(value)
-            //            currentLayer[j].FeedForwardValue = value;
-            //        }
-            //    }
-            //}
+                foreach (var en in currentLevelNodes)
+                {
+                    var node = CurrentModel.GetNodeById(en.Item2);
+                    var edge = CurrentModel.GetEnabledConnectionByIds(en.Item1, en.Item2);
+                    if (node == null || edge == null) throw new ArgumentOutOfRangeException();
 
-            //var output = MapNeuralNetowrkOutputToMove(currentLayer);
+                    node.FeedForwardCount++;
+                    node.FeedForwardValue += edge.Weight*en.Item3;
+                }
 
-            //return output;
-            return string.Empty;
+                foreach (var sn in currentLevelNodes.Select(n => n.Item2).Distinct())
+                {
+                    var node = CurrentModel.GetNodeById(sn);
+                    nextLevelNodes.AddRange(from nn in node.TargetNodes
+                        where node.FeedForwardCount == node.SourceNodes.Count
+                        select new Tuple<int, int, double>(sn, nn, ActivationFunction(node.FeedForwardValue)));
+                }
+            }
+
+            var outputNodes = CurrentModel.NodeGens.Where(n => n.Type == NodeType.Output).ToList();
+            var output = MapNeuralNetowrkOutputToMove(outputNodes);
+
+            return output;
         }
 
         public List<double> MapBoardToNeuralNetworskInput()
@@ -159,7 +171,7 @@ namespace vindinium.Algorithm
 
             for (var i = 0; i < 50; i++) // TODO check if restart ServerStuff needed
             {
-                var genotype = initialGenomeBuilder.CreateInitialGenotype(inputNodesCount, outputNodesCount);
+                var genotype = _initialGenomeBuilder.CreateInitialGenotype(InputNodesCount, OutputNodesCount);
                 CurrentModel = genotype;
 
                 Run();
@@ -204,6 +216,281 @@ namespace vindinium.Algorithm
         private void TrainPhaseTwo(List<Genotype> startPopulation)
         {
             TrainedModel = new Genotype();
+        }
+
+        // To test please change Compute() function to not use map board method
+        public void TestGraphCompute()
+        {
+            var genotype = new Genotype
+            {
+                NodeGens = new List<NodeGenesModel>(),
+                GenomeConnection = new List<ConnectionGenesModel>()
+            };
+
+            // ---- INPUT ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 0,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> {4, 5},
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 1,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 4, 6 },
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 2,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 5, 6 },
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 3,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 6 },
+                Type = NodeType.Input
+            });
+
+            // ---- HIDDEN ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 4,
+                SourceNodes = new HashSet<int> { 0, 1},
+                TargetNodes = new HashSet<int> { 7 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 5,
+                SourceNodes = new HashSet<int> { 0, 2 },
+                TargetNodes = new HashSet<int> { 7 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 6,
+                SourceNodes = new HashSet<int> { 1, 2, 3 },
+                TargetNodes = new HashSet<int> { 8, 10 }, // 10 is 2 "layers" after
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 7,
+                SourceNodes = new HashSet<int> { 4, 5 },
+                TargetNodes = new HashSet<int> { 9 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 8,
+                SourceNodes = new HashSet<int> { 6 },
+                TargetNodes = new HashSet<int> { 9, 10 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 9,
+                SourceNodes = new HashSet<int> { 7, 8 },
+                TargetNodes = new HashSet<int> { 11, 12 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 10,
+                SourceNodes = new HashSet<int> { 6, 8 },
+                TargetNodes = new HashSet<int> { 11, 12 },
+                Type = NodeType.Hidden
+            });
+
+            // ---- OUTPUT ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 11,
+                SourceNodes = new HashSet<int> { 9, 10 },
+                TargetNodes = new HashSet<int>(),
+                Type = NodeType.Output
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 12,
+                SourceNodes = new HashSet<int> { 9, 10 },
+                TargetNodes = new HashSet<int>(),
+                Type = NodeType.Output
+            });
+
+            // ---- EDGES ----
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 0,
+                OutNode = 4,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.1
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 0,
+                OutNode = 5,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.3
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 1,
+                OutNode = 4,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.2
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 1,
+                OutNode = 6,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.4
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 2,
+                OutNode = 5,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.5
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 2,
+                OutNode = 6,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.3
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 3,
+                OutNode = 6,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.4
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 4,
+                OutNode = 7,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.35
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 5,
+                OutNode = 7,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.42
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 6,
+                OutNode = 8,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.18
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 6,
+                OutNode = 10,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.03
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 7,
+                OutNode = 9,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.2
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 8,
+                OutNode = 9,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.7
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 8,
+                OutNode = 10,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.28
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 9,
+                OutNode = 11,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.82
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 9,
+                OutNode = 12,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.3
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 10,
+                OutNode = 11,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.7
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 10,
+                OutNode = 12,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.5
+            });
+
+            CurrentModel = genotype;
+
+            var watch = new Stopwatch();
+            watch.Start();
+
+            Compute();
+            watch.Stop();
+            Console.WriteLine($"elapsed: {watch.ElapsedMilliseconds}ms");
         }
     }
 }

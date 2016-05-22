@@ -16,8 +16,8 @@ namespace vindinium.Algorithm
         private readonly string _botName;
         private MyPathNode[,] _pathGrid;
         private SpatialAStar<MyPathNode, object> _aStar;
-        private readonly List<Pos> _allTavernsPositions;
-        private readonly List<Pos> _allMinesPositions;
+        private List<Pos> _allTavernsPositions;
+        private List<Pos> _allMinesPositions;
 
         #endregion
 
@@ -36,7 +36,11 @@ namespace vindinium.Algorithm
         {
             ServerStuff = serverStuff;
             _botName = botName;
-            MaxBoardDistance = (serverStuff.Board.Length - 1)*2;
+        }
+
+        private void Initialize()
+        {
+            MaxBoardDistance = (ServerStuff.Board.Length - 1) * 2;
             _allTavernsPositions = GetAllTaverns();
             _allMinesPositions = GetAllMines();
         }
@@ -50,6 +54,7 @@ namespace vindinium.Algorithm
             Console.Out.WriteLine(_botName + " bot running");
 
             ServerStuff.CreateGame();
+            Initialize();
 
             if (ServerStuff.Errored == false)
             {

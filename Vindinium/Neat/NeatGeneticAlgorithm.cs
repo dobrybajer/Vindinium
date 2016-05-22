@@ -38,7 +38,7 @@ namespace vindinium.NEAT
                 var genomeId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette.RemoveOutcome(genomeId);
                 mutatedGenomesId.Add(genomeId);
-                outputPopulation.Add(mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters));
+                //outputPopulation.Add(mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters));
             }
 
             for (int i = 0; i < genotypes.Count; i++)
