@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using vindinium.Algorithm;
 using vindinium.Singletons;
 
@@ -23,11 +24,17 @@ namespace vindinium
             if (args.Length >= 2) Parameters.ServerNumberOfTurns = uint.Parse(args[1]);
             if (args.Length >= 3) Parameters.ServerUrl = args[2]; // Parameters.CustomServerUrl
             if (args.Length >= 4) Parameters.PopulationCount = int.Parse(args[3]);
-            if (args.Length >= 5) Parameters.BestOfPopulationPercentage = double.Parse(args[4]);
+            if (args.Length >= 5) Parameters.BestOfPopulationPercentage = double.Parse(args[4], CultureInfo.InvariantCulture);
             if (args.Length >= 6) Parameters.GenerationsPhaseOneCount = int.Parse(args[5]);
             if (args.Length >= 7) Parameters.GenerationsPhaseTwoCount = int.Parse(args[6]);
             if (args.Length >= 8) Parameters.BestGenotypesOfPhaseOneCount = int.Parse(args[7]);
             if (args.Length >= 9) Parameters.ActivationFunction = (ActivationFunction)Enum.Parse(typeof(ActivationFunction), args[8], true);
+            if (args.Length >= 10) Parameters.AddConnectionMutationProbablity = double.Parse(args[9], CultureInfo.InvariantCulture);
+            if (args.Length >= 11) Parameters.DeleteConnectionMutationProbablity = double.Parse(args[10], CultureInfo.InvariantCulture);
+            if (args.Length >= 12) Parameters.AddNodeMutationProbablity = double.Parse(args[11], CultureInfo.InvariantCulture);
+            if (args.Length >= 13) Parameters.ConnectionWeightMutationProbablity = double.Parse(args[12], CultureInfo.InvariantCulture);
+            if (args.Length >= 14) Parameters.MutationWheelPart = double.Parse(args[13], CultureInfo.InvariantCulture);
+            if (args.Length >= 15) Parameters.CrossoverWheelPart = double.Parse(args[14], CultureInfo.InvariantCulture);
 
             // ---------------------- Creating bot and run ----------------------
 
