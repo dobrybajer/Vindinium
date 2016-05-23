@@ -16,6 +16,7 @@ namespace vindinium.NEAT.Crossover
         private CorrelationResults correlationResults;
 
         private readonly ICorrelationProvider correlationProvider;
+        private Genotype offspringGenome;
 
         public CrossoverProvider(ICorrelationProvider correlationProvider)
         {
@@ -29,7 +30,7 @@ namespace vindinium.NEAT.Crossover
             var crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2, out crossoverMasterType);
             var crossoverSecond = ChooseCrossoverSecond(genotype1, genotype2, crossoverMasterType);
             
-            var offspringGenome = new Genotype
+            offspringGenome = new Genotype
             {
                 GenomeConnection = new List<ConnectionGenesModel>(),
                 NodeGens = GetNodesForOffspring(crossoverMaster, crossoverSecond),
@@ -38,6 +39,7 @@ namespace vindinium.NEAT.Crossover
             offspringGenome.GenomeConnection.AddRange(GetConnectionsForMatch(crossoverMasterType));
             offspringGenome.GenomeConnection.AddRange(GetConnectionsForDisjoint());
             offspringGenome.GenomeConnection.AddRange(GetConnectionsForExcess());
+            RebuildNodesInfo();
             return offspringGenome;
         }
 
@@ -68,9 +70,11 @@ namespace vindinium.NEAT.Crossover
             {
                 if (correlationItem.CorrelationItemType == CorrelationItemType.Match)
                 {
-                    connectionWithGivenType.Add(crossoverMasterType == CrossoverMasterType.GenotypeOne
+                    var connection = crossoverMasterType == CrossoverMasterType.GenotypeOne
                         ? correlationItem.ConnectionGene1
-                        : correlationItem.ConnectionGene2);
+                        : correlationItem.ConnectionGene2;
+                    
+                    connectionWithGivenType.Add(connection);
                 }
             }
             return connectionWithGivenType;
@@ -131,6 +135,22 @@ namespace vindinium.NEAT.Crossover
                 }
             }
             return nodesForCorrelationType;
+        }
+
+        private void RebuildNodesInfo()
+        {
+            foreach (var node in offspringGenome.NodeGens)
+            {
+                node.SourceNodes.Clear();
+                node.TargetNodes.Clear();
+            }
+            foreach (var connection in offspringGenome.GenomeConnection)
+            {
+                var sourceNode = offspringGenome.NodeGens.First(node => node.NodeNumber == connection.InNode);
+                var targetNode = offspringGenome.NodeGens.First(node => node.NodeNumber == connection.OutNode);
+                sourceNode.TargetNodes.Add(connection.OutNode);
+                targetNode.SourceNodes.Add(connection.InNode);
+            }
         }
     }
 }

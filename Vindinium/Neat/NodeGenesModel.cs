@@ -10,7 +10,7 @@ namespace vindinium.NEAT
 
         public double FeedForwardValue { get; set; }
 
-        public int FeedForwardCount { get; set; } = 0;
+        public int FeedForwardCount { get; set; }
 
         public HashSet<int> SourceNodes { get; set; }
             
