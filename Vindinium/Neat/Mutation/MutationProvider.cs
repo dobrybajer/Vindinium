@@ -84,19 +84,7 @@ namespace vindinium.NEAT.Mutation
 
                 currentInnovaton = innovation.Count == 0 ? 0 : innovation[innovation.Count - 1].InnovationNumber;
 
-                //if (!isConnection )
-                //{
-                //    genotype.GenomeConnection.Add(new ConnectionGenesModel
-                //    {
-                //        InNode = inNode,
-                //        OutNode = outNode,
-                //        Weight = (double)random.Next(0, 100) / 100,
-                //        Status = ConnectionStatus.Enabled,
-                //        Innovation = currentInnovaton,
-                //    });
-                //}
-                //else
-                //{
+               
                 innovation.Add(new Innovations
                 {
                     InnovationNumber = currentInnovaton + 1,
@@ -112,6 +100,9 @@ namespace vindinium.NEAT.Mutation
                     Status = ConnectionStatus.Enabled,
                     Innovation = currentInnovaton + 1,
                 });
+
+                genotype.NodeGens[inNode].TargetNodes.Add(outNode);
+                genotype.NodeGens[outNode].SourceNodes.Add(inNode);
             }
 
             return genotype;
@@ -185,6 +176,11 @@ namespace vindinium.NEAT.Mutation
                 Innovation = currentInnovaton + 1,
             });
 
+            genotype.NodeGens[inNodeIdx].TargetNodes.Add(newNodeGen.NodeNumber);
+            genotype.NodeGens[outNodeIdx].SourceNodes.Add(newNodeGen.NodeNumber);
+            genotype.NodeGens[newNodeGen.NodeNumber].TargetNodes.Add(outNodeIdx);
+            genotype.NodeGens[newNodeGen.NodeNumber].SourceNodes.Add(inNodeIdx);
+
             return genotype;
         }
 
@@ -196,6 +192,13 @@ namespace vindinium.NEAT.Mutation
             var choosenConnectionId = random.Next(1, connectionNumber);
 
             genotype.GenomeConnection[choosenConnectionId].Status = ConnectionStatus.Disabled;
+
+            var inNode = genotype.GenomeConnection[choosenConnectionId].InNode;
+            var outNode = genotype.GenomeConnection[choosenConnectionId].InNode;
+
+            genotype.NodeGens[inNode].TargetNodes.Remove(outNode);
+            genotype.NodeGens[outNode].SourceNodes.Remove(inNode);
+            
             return genotype;
         }
 
