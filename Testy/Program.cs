@@ -25,21 +25,21 @@ namespace Test
         public static void CrossoverTest()
         {
             var NodeGens1 = new List<NodeGenesModel>() {
-                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  }
+                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 5 }  },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 5 }  },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 }  },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 5, 3 }, TargetNodes=new HashSet<int>()   },
+                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 2 }, TargetNodes=new HashSet<int>() { 4 } }
             };
 
             var NodeGens2 = new List<NodeGenesModel>()
             {
-                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                 new NodeGenesModel { NodeNumber=6, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
+                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 6 }  },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 5 } },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 5, 4} },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 1, 6, 3 }, TargetNodes=new HashSet<int>()  },
+                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 2, 3 }, TargetNodes=new HashSet<int>() { 6 }  },
+                 new NodeGenesModel { NodeNumber=6, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 5 }, TargetNodes=new HashSet<int>() { 4 } },
             };
 
             var Connectionlist1 = new List<ConnectionGenesModel>()
