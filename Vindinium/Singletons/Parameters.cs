@@ -26,5 +26,8 @@
 
         public const string DefaultServerUrl = "http://vindinium.org";
         public const string CustomServerUrl = "http://192.168.0.18:9000";
+
+        public static string ServerSecretKey { get; set; }
+        public static string ServerGameType { get; set; }
     }
 }
