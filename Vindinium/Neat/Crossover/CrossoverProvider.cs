@@ -148,8 +148,9 @@ namespace vindinium.NEAT.Crossover
         {
             foreach (var node in offspringGenome.NodeGens)
             {
-                node.SourceNodes.Clear();
-                node.TargetNodes.Clear();
+                if (node.SourceNodes != null && node.SourceNodes.Count != 0)
+                    node.SourceNodes.Clear();
+                if (node.TargetNodes != null && node.TargetNodes.Count != 0) node.TargetNodes.Clear();
             }
             foreach (var connection in offspringGenome.GenomeConnection)
             {
