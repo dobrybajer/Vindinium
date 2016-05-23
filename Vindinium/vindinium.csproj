@@ -53,9 +53,9 @@
   <ItemGroup>
     <Compile Include="Algorithm\Bot.cs" />
     <Compile Include="Algorithm\NeatBot.cs" />
-    <Compile Include="Algorithm\RandomBot.cs" />
     <Compile Include="DataContracts.cs" />
-    <Compile Include="DataManager\ObjectManager.cs" />
+    <Compile Include="Singletons\ObjectManager.cs" />
+    <Compile Include="Singletons\Parameters.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="NEAT\ConnectionGenesModel.cs" />
@@ -88,9 +88,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NEAT\Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

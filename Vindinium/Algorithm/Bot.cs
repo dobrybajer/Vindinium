@@ -9,8 +9,6 @@ namespace vindinium.Algorithm
 {
     public class Bot
     {
-        protected readonly ServerStuff ServerStuff;
-
         #region Private fields
         
         private readonly string _botName;
@@ -27,6 +25,7 @@ namespace vindinium.Algorithm
 
         protected int MaxBoardDistance { get; set; }
 
+        protected readonly ServerStuff ServerStuff;
 
         #endregion
 
@@ -45,18 +44,17 @@ namespace vindinium.Algorithm
             _allMinesPositions = GetAllMines();
         }
 
-        // TODO add possibility to not to run web page (only computation)
         /// <summary>
         /// Starts everything (do not change!).
         /// </summary>
-        public virtual void Run()
+        public virtual void Run(bool onlyComputation = false)
         {
             Console.Out.WriteLine(_botName + " bot running");
 
             ServerStuff.CreateGame();
             Initialize();
 
-            if (ServerStuff.Errored == false)
+            if (!onlyComputation && ServerStuff.Errored == false)
             {
                 //opens up a webpage so you can view the game, doing it async so we dont time out
                 new Thread(delegate()
@@ -81,11 +79,6 @@ namespace vindinium.Algorithm
             }
 
             Console.Out.WriteLine(_botName + " bot finished");
-        }
-
-        public virtual void Train()
-        {
-            Run();
         }
 
         #endregion
@@ -133,7 +126,7 @@ namespace vindinium.Algorithm
         protected double GetDistanceToClosestMine(Pos from = null, bool notNeutral = false)
         {
             var distanceToMines = GetDistancesToMines(from, notNeutral);
-            return distanceToMines.Values.Min();
+            return distanceToMines.Count > 0 ? distanceToMines.Values.Min() : 1;
         }
 
         /// <summary>
@@ -228,12 +221,6 @@ namespace vindinium.Algorithm
         /// <returns>Name of direction to move.</returns>
         protected virtual string GetDirection()
         {
-            // only for debug reasons
-            if (ServerStuff.CurrentTurn == 12)
-            {
-                Console.WriteLine("DEBUG - stop breakpoint");
-            }
-
             var value = double.MinValue;
             var maxValue = double.MinValue;
             var bestDirection = Direction.Stay;

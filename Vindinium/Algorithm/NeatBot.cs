@@ -3,33 +3,39 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using vindinium.NEAT;
+using vindinium.Singletons;
 
 namespace vindinium.Algorithm
 {
     public class NeatBot : Bot
     {
+        #region Private Fields
+
         private Genotype TrainedModel { get; set; }
 
         private Genotype CurrentModel { get; set; }
 
-        private const string TrainedPhaseOneBot1 = "PhaseOneBot1.txt";
+        private readonly InitialGenomeBuilder _initialGenomeBuilder;
 
-        private const string TrainedPhaseOneBot2 = "PhaseOneBot2.txt";
+        #endregion
 
-        private const string TrainedPhaseOneBot3 = "PhaseOneBot3.txt";
+        #region Constructor
 
-        private readonly InitialGenomeBuilder _initialGenomeBuilder = new InitialGenomeBuilder();
+        public NeatBot(ServerStuff serverStuff) : base(serverStuff, "Neat") { _initialGenomeBuilder = new InitialGenomeBuilder(); }
 
-        private const int InputNodesCount = 9;
-        private const int OutputNodesCount = 6;
+        #endregion
 
-
-        public NeatBot(ServerStuff serverStuff) : base(serverStuff, "Neat") { }
+        #region Main function
 
         protected override string GetDirection()
         {
-            return Compute();
+            //return Compute();
+            return Direction.GetRandomDirection();
         }
+
+        #endregion
+
+        #region Neural Network computation
 
         private static double ActivationFunction(double input)
         {
@@ -133,7 +139,11 @@ namespace vindinium.Algorithm
             throw new ArgumentOutOfRangeException();
         }
 
-        public override void Train()
+        #endregion
+
+        #region Training
+
+        public void Train()
         {
             var population1 = TrainPhaseOne("m1");
             var population2 = TrainPhaseOne("m2");
@@ -142,16 +152,19 @@ namespace vindinium.Algorithm
             var population5 = TrainPhaseOne("m5");
             var population6 = TrainPhaseOne("m6");
 
-            var bestOfPopulation1 = population1.OrderByDescending(i => i.Value).Take(6).ToList();
-            var bestOfPopulation2 = population2.OrderByDescending(i => i.Value).Take(6).ToList();
-            var bestOfPopulation3 = population3.OrderByDescending(i => i.Value).Take(6).ToList();
-            var bestOfPopulation4 = population4.OrderByDescending(i => i.Value).Take(6).ToList();
-            var bestOfPopulation5 = population5.OrderByDescending(i => i.Value).Take(6).ToList();
-            var bestOfPopulation6 = population6.OrderByDescending(i => i.Value).Take(6).ToList();
+            var bestOfPopulation1 = population1.OrderByDescending(i => i.Value).Take(Parameters.BestGenotypesOfPhaseOneCount).ToList();
+            var bestOfPopulation2 = population2.OrderByDescending(i => i.Value).Take(Parameters.BestGenotypesOfPhaseOneCount).ToList();
+            var bestOfPopulation3 = population3.OrderByDescending(i => i.Value).Take(Parameters.BestGenotypesOfPhaseOneCount).ToList();
+            var bestOfPopulation4 = population4.OrderByDescending(i => i.Value).Take(Parameters.BestGenotypesOfPhaseOneCount).ToList();
+            var bestOfPopulation5 = population5.OrderByDescending(i => i.Value).Take(Parameters.BestGenotypesOfPhaseOneCount).ToList();
+            var bestOfPopulation6 = population6.OrderByDescending(i => i.Value).Take(Parameters.BestGenotypesOfPhaseOneCount).ToList();
 
-            DataManager.ObjectManager.WriteToJsonFile(TrainedPhaseOneBot1, bestOfPopulation1.First());
-            DataManager.ObjectManager.WriteToJsonFile(TrainedPhaseOneBot2, bestOfPopulation2.First());
-            DataManager.ObjectManager.WriteToJsonFile(TrainedPhaseOneBot3, bestOfPopulation3.First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap1, bestOfPopulation1.First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap2, bestOfPopulation2.First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap3, bestOfPopulation3.First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap4, bestOfPopulation4.First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap5, bestOfPopulation5.First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap6, bestOfPopulation6.First());
 
             var startPopulationToPhaseTwo = new List<Genotype>();
             startPopulationToPhaseTwo.AddRange(bestOfPopulation1);
@@ -166,47 +179,33 @@ namespace vindinium.Algorithm
 
         // TODO make this for every map from m1 to m6
         private IEnumerable<Genotype> TrainPhaseOne(string map)
-        {
-            var population = new List<Genotype>();
-
-            for (var i = 0; i < 50; i++) // TODO check if restart ServerStuff needed
-            {
-                var genotype = _initialGenomeBuilder.CreateInitialGenotype(InputNodesCount, OutputNodesCount);
-                CurrentModel = genotype;
-
-                Run();
-
-                genotype.Value = ServerStuff.MyHero.gold;
-                population.Add(genotype);
-            }
-
-            var halfBestPopulation = population.OrderByDescending(i => i.Value).Take(population.Count / 2).ToList();
-            var changedHalfBestPopulation = halfBestPopulation; // TODO modify genotypes by crossovering and mutating
-
+        {     
             var parentPopulation = new List<Genotype>();
-            parentPopulation.AddRange(halfBestPopulation);
-            parentPopulation.AddRange(changedHalfBestPopulation);
 
-            for (var j = 0; j < 9; j++)
+            for (var j = 0; j < Parameters.GenerationsPhaseOneCount; j++)
             {
-                population = new List<Genotype>();
-                for (var i = 0; i < 50; i++) // TODO check if restart ServerStuff needed
+                var population = new List<Genotype>();
+
+                for (var i = 0; i < Parameters.PopulationCount; i++) // TODO check if restart ServerStuff needed
                 {
-                    var genotype = parentPopulation[i];
+                    var genotype = i == 0
+                        ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount)
+                        : parentPopulation[i];
+
                     CurrentModel = genotype;
 
-                    Run();
+                    Run(true);
 
                     genotype.Value = ServerStuff.MyHero.gold;
                     population.Add(genotype);
                 }
 
-                halfBestPopulation = population.OrderByDescending(i => i.Value).Take(population.Count / 2).ToList();
-                changedHalfBestPopulation = halfBestPopulation; // TODO modify genotypes by crossovering and mutating
+                var partBestPopulation = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
+                var changedPartBestPopulation = partBestPopulation; // TODO modify genotypes by crossovering and mutating
 
                 parentPopulation = new List<Genotype>();
-                parentPopulation.AddRange(halfBestPopulation);
-                parentPopulation.AddRange(changedHalfBestPopulation);
+                parentPopulation.AddRange(partBestPopulation);
+                parentPopulation.AddRange(changedPartBestPopulation);
             }
 
             return parentPopulation;
@@ -217,6 +216,10 @@ namespace vindinium.Algorithm
         {
             TrainedModel = new Genotype();
         }
+
+        #endregion
+
+        #region Test methods
 
         // To test please change Compute() function to not use map board method
         public void TestGraphCompute()
@@ -492,5 +495,7 @@ namespace vindinium.Algorithm
             watch.Stop();
             Console.WriteLine($"elapsed: {watch.ElapsedMilliseconds}ms");
         }
+
+        #endregion
     }
 }

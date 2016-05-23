@@ -1,8 +1,7 @@
-﻿using System.Configuration;
-using System.IO;
+﻿using System.IO;
 using Newtonsoft.Json;
 
-namespace vindinium.DataManager
+namespace vindinium.Singletons
 {
     public static class ObjectManager
     {
@@ -22,7 +21,7 @@ namespace vindinium.DataManager
             try
             {
                 var contentsToWriteToFile = JsonConvert.SerializeObject(objectToWrite);
-                var path = ConfigurationManager.AppSettings["DefaultPathToWrittenFiles"] + fileName;
+                var path = Parameters.DefaultPathToWrittenFiles + fileName;
                 writer = new StreamWriter(path, append);
                 writer.Write(contentsToWriteToFile);
             }
@@ -44,7 +43,7 @@ namespace vindinium.DataManager
             TextReader reader = null;
             try
             {
-                var path = ConfigurationManager.AppSettings["DefaultPathToWrittenFiles"] + fileName;
+                var path = Parameters.DefaultPathToWrittenFiles + fileName;
                 reader = new StreamReader(path);
                 var fileContents = reader.ReadToEnd();
                 return JsonConvert.DeserializeObject<T>(fileContents);
