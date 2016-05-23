@@ -33,7 +33,7 @@ namespace vindinium.NEAT
             };
         }
 
-        public List<Genotype> CreateNewPopulationWithMutation(List<Genotype> genotypes, List<Innovations> innovationsList)
+        public List<Genotype> CreateNewPopulationWithMutation(List<Genotype> genotypes,ref List<Innovations> innovationsList)
         {
             var outputPopulation = new List<Genotype>();
             var random = new XorShiftRandom();

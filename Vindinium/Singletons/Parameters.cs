@@ -56,13 +56,13 @@ namespace vindinium.Singletons
 
         #region Genetic algorithm settings
 
-        public static double AddConnectionMutationProbablity { get; set; }
+        public static double AddConnectionMutationProbablity { get; set; } = 0.1;
 
-        public static double DeleteConnectionMutationProbablity { get; set; }
+        public static double DeleteConnectionMutationProbablity { get; set; } = 0.01;
 
-        public static double AddNodeMutationProbablity { get; set; }
+        public static double AddNodeMutationProbablity { get; set; } = 0.1;
 
-        public static double ConnectionWeightMutationProbablity { get; set; }
+        public static double ConnectionWeightMutationProbablity { get; set; } = 0.75;
 
         public static double MutationWheelPart { get; set; } = 2;
 
