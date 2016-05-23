@@ -17,7 +17,7 @@ namespace vindinium.Algorithm
 
         private readonly InitialGenomeBuilder _initialGenomeBuilder;
 
-        private readonly NeatGeneticAlgorithm neatGeneticAlgorithm = new NeatGeneticAlgorithm(new CrossoverProvider(new CorrelationProvider()), new MutationProvider());
+        private readonly NeatGeneticAlgorithm _neatGeneticAlgorithm = new NeatGeneticAlgorithm(new CrossoverProvider(new CorrelationProvider()), new MutationProvider());
 
         #endregion
 
@@ -228,15 +228,17 @@ namespace vindinium.Algorithm
 
                 Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
 
-                var partBestPopulation = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
-                var partWorsePopulation = population.OrderBy(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
+                var partBestPopulation1 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
+                var partBestPopulation2 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
+                //var partWorsePopulation = population.OrderBy(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
 
-                var changedPartBestPopulation = neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation);
-                var changedPartWorsePopulation = neatGeneticAlgorithm.CreateNewPopulationWithMutation(partWorsePopulation);
+                var changedPartBestPopulation1 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation1);
+                var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
+                //var changedPartWorsePopulation = _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partWorsePopulation);
 
                 parentPopulation = new List<Genotype>();
-                parentPopulation.AddRange(changedPartBestPopulation);
-                parentPopulation.AddRange(changedPartWorsePopulation);
+                parentPopulation.AddRange(changedPartBestPopulation1);
+                parentPopulation.AddRange(changedPartBestPopulation2);
             }
 
             Console.Out.WriteLine($"-------------------------------------PHASE ONE ENDED (map {map})-------------------------------------");
