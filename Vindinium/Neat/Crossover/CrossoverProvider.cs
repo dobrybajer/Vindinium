@@ -17,6 +17,8 @@ namespace vindinium.NEAT.Crossover
 
         private readonly ICorrelationProvider correlationProvider;
         private Genotype offspringGenome;
+        private HashSet<int> addedNodes;
+        private CrossoverMasterType crossoverMasterType;
 
         public CrossoverProvider(ICorrelationProvider correlationProvider)
         {
@@ -26,24 +28,23 @@ namespace vindinium.NEAT.Crossover
         public Genotype CrossoverGenotype(Genotype genotype1, Genotype genotype2)
         {
             correlationResults = correlationProvider.CorrelateConnections(genotype1.GenomeConnection, genotype2.GenomeConnection);
-            CrossoverMasterType crossoverMasterType;
-            var crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2, out crossoverMasterType);
-            var crossoverSecond = ChooseCrossoverSecond(genotype1, genotype2, crossoverMasterType);
-            
+            var crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2);
+            var crossoverSecond = ChooseCrossoverSecond(genotype1, genotype2);
+
             offspringGenome = new Genotype
             {
                 GenomeConnection = new List<ConnectionGenesModel>(),
                 NodeGens = GetNodesForOffspring(crossoverMaster, crossoverSecond),
                 Value = crossoverMaster.Value
             };
-            offspringGenome.GenomeConnection.AddRange(GetConnectionsForMatch(crossoverMasterType));
+            offspringGenome.GenomeConnection.AddRange(GetConnectionsForMatch());
             offspringGenome.GenomeConnection.AddRange(GetConnectionsForDisjoint());
             offspringGenome.GenomeConnection.AddRange(GetConnectionsForExcess());
             RebuildNodesInfo();
             return offspringGenome;
         }
 
-        private Genotype ChooseCrossoverMaster(Genotype genotype1, Genotype genotype2, out CrossoverMasterType crossoverMasterType)
+        private Genotype ChooseCrossoverMaster(Genotype genotype1, Genotype genotype2)
         {
             var random = new Random();
             if (genotype1.Value > genotype2.Value)
@@ -55,15 +56,14 @@ namespace vindinium.NEAT.Crossover
             return crossoverMasterType == CrossoverMasterType.GenotypeOne ? genotype1 : genotype2;
         }
 
-        private Genotype ChooseCrossoverSecond(Genotype genotype1, Genotype genotype2,
-            CrossoverMasterType crossoverMasterType)
+        private Genotype ChooseCrossoverSecond(Genotype genotype1, Genotype genotype2)
         {
             if (crossoverMasterType == CrossoverMasterType.GenotypeOne)
                 return genotype2;
             return genotype1;
         }
 
-        private List<ConnectionGenesModel> GetConnectionsForMatch(CrossoverMasterType crossoverMasterType)
+        private List<ConnectionGenesModel> GetConnectionsForMatch()
         {
             var connectionWithGivenType = new List<ConnectionGenesModel>();
             foreach (var correlationItem in correlationResults.CorrelationItems)
@@ -73,7 +73,6 @@ namespace vindinium.NEAT.Crossover
                     var connection = crossoverMasterType == CrossoverMasterType.GenotypeOne
                         ? correlationItem.ConnectionGene1
                         : correlationItem.ConnectionGene2;
-                    
                     connectionWithGivenType.Add(connection);
                 }
             }
@@ -86,9 +85,7 @@ namespace vindinium.NEAT.Crossover
             foreach (var correlationItem in correlationResults.CorrelationItems)
             {
                 if (correlationItem.CorrelationItemType == CorrelationItemType.Disjoint)
-                {
                     connectionWithGivenType.Add(correlationItem.ConnectionGene1 ?? correlationItem.ConnectionGene2);
-                }
             }
             return connectionWithGivenType;
         }
@@ -99,9 +96,7 @@ namespace vindinium.NEAT.Crossover
             foreach (var correlationItem in correlationResults.CorrelationItems)
             {
                 if (correlationItem.CorrelationItemType == CorrelationItemType.Excess)
-                {
                     connectionWithGivenType.Add(correlationItem.ConnectionGene1 ?? correlationItem.ConnectionGene2);
-                }
             }
             return connectionWithGivenType;
         }
@@ -109,32 +104,44 @@ namespace vindinium.NEAT.Crossover
         private List<NodeGenesModel> GetNodesForOffspring(Genotype master, Genotype second)
         {
             var nodesForCorrelationType = new List<NodeGenesModel>();
+            addedNodes = new HashSet<int>();
             foreach (var correlationItem in correlationResults.CorrelationItems)
             {
                 switch (correlationItem.CorrelationItemType)
                 {
                     case CorrelationItemType.Match:
-                        nodesForCorrelationType.Add(master.NodeGens.Find(n => n.NodeNumber == correlationItem.ConnectionGene1.InNode));
-                        nodesForCorrelationType.Add(master.NodeGens.Find(n => n.NodeNumber == correlationItem.ConnectionGene1.OutNode));
+                        nodesForCorrelationType.AddRange(SelectNodesFromConnection(master, correlationItem.ConnectionGene1));
                         break;
                     case CorrelationItemType.Disjoint:
                     case CorrelationItemType.Excess:
                         if (correlationItem.ConnectionGene1 != null)
-                        {
-                            nodesForCorrelationType.Add(master.NodeGens.Find(n => n.NodeNumber == correlationItem.ConnectionGene1.InNode));
-                            nodesForCorrelationType.Add(master.NodeGens.Find(n => n.NodeNumber == correlationItem.ConnectionGene1.OutNode));
-                        }
+                            nodesForCorrelationType.AddRange(SelectNodesFromConnection(master, correlationItem.ConnectionGene1));
                         else
-                        {
-                            nodesForCorrelationType.Add(second.NodeGens.Find(n => n.NodeNumber == correlationItem.ConnectionGene2.InNode));
-                            nodesForCorrelationType.Add(second.NodeGens.Find(n => n.NodeNumber == correlationItem.ConnectionGene2.OutNode));
-                        }
+                            nodesForCorrelationType.AddRange(SelectNodesFromConnection(second, correlationItem.ConnectionGene2));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
             return nodesForCorrelationType;
+        }
+
+        private List<NodeGenesModel> SelectNodesFromConnection(Genotype genotype, ConnectionGenesModel connectionGenesModel)
+        {
+            var nodeGenesModelsToAdd = new List<NodeGenesModel>();
+            if (!addedNodes.Contains(connectionGenesModel.InNode))
+            {
+                nodeGenesModelsToAdd.Add(
+                    genotype.NodeGens.Find(n => n.NodeNumber == connectionGenesModel.InNode));
+                addedNodes.Add(connectionGenesModel.InNode);
+            }
+            if (!addedNodes.Contains(connectionGenesModel.OutNode))
+            {
+                nodeGenesModelsToAdd.Add(
+                    genotype.NodeGens.Find(n => n.NodeNumber == connectionGenesModel.OutNode));
+                addedNodes.Add(connectionGenesModel.OutNode);
+            }
+            return nodeGenesModelsToAdd;
         }
 
         private void RebuildNodesInfo()

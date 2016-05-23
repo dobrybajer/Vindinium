@@ -8,7 +8,11 @@ namespace vindinium.NEAT.Crossover
     {
         public CorrelationResults CorrelateConnections(List<ConnectionGenesModel> list1, List<ConnectionGenesModel> list2)
         {
-            var crossoverResults = new CorrelationResults();
+            var crossoverResults = new CorrelationResults
+            {
+                CorrelationItems = new List<CorrelationItem>(),
+                CorrelationStats = new CorrelationStats()
+            };
 
             if (!list1.Any() && list2.Any())
                 return crossoverResults;
