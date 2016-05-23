@@ -4,9 +4,17 @@ namespace vindinium.Singletons
 {
     public static class Parameters
     {
+        #region  Neural Network
+
         public static int InputLayerNeuronsCount { get; set; } = 9;
 
         public static int OutputLayerNeuronsCount { get; set; } = 6;
+
+        public static ActivationFunction ActivationFunction { get; set; } = ActivationFunction.Linear;
+
+        #endregion
+
+        #region Training using genetic algorithm
 
         public static int PopulationCount { get; set; } = 50;
 
@@ -18,7 +26,9 @@ namespace vindinium.Singletons
 
         public static int GenerationsPhaseTwoCount { get; set; } = 10;
 
-        public static ActivationFunction ActivationFunction { get; set; } = ActivationFunction.Linear;
+        #endregion
+
+        #region File managing
 
         public const string DefaultPathToWrittenFiles = "../../CreatedObjects/";
         public const string TrainedPhaseOneMap1 = "PhaseOneBot1.txt";
@@ -29,21 +39,35 @@ namespace vindinium.Singletons
         public const string TrainedPhaseOneMap6 = "PhaseOneBot6.txt";
         public const string TrainedModel = "VindiniumBot.txt";
 
+        #endregion
+
+        #region Server settings
+
         public const string DefaultServerUrl = "http://vindinium.org";
         public const string CustomServerUrl = "http://192.168.0.18:9000";
 
         public static string ServerSecretKey { get; set; }
-        public static string ServerGameType { get; set; }
+
+        public static string ServerUrl { get; set; } = DefaultServerUrl;
+
+        public static uint ServerNumberOfTurns { get; set; } = 10;
+
+        #endregion
+
+        #region Genetic algorithm settings
 
         public static double AddConnectionMutationProbablity { get; set; }
+
         public static double DeleteConnectionMutationProbablity { get; set; }
+
         public static double AddNodeMutationProbablity { get; set; }
+
         public static double ConnectionWeightMutationProbablity { get; set; }
 
         public static double MutationWheelPart { get; set; } = 2;
+
         public static double CrossoverWheelPart { get; set; } = 4;
-        public static bool ServerTrainingMode { get; set; } = true;
-        public static string ServerUrl { get; set; } = DefaultServerUrl;
-        public static uint ServerNumberOfTurns { get; set; } = 10;
+
+        #endregion
     }
 }

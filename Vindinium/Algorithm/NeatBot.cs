@@ -192,9 +192,17 @@ namespace vindinium.Algorithm
 
             var parentPopulation = new List<Genotype>();
 
+            Console.Out.WriteLine($"-------------------------------------PHASE ONE STARTED (map {map})-------------------------------------");
+            
             for (var j = 0; j < Parameters.GenerationsPhaseOneCount; j++)
             {
                 var population = new List<Genotype>();
+
+                Console.Out.WriteLine("-------------------------------------");
+                Console.Out.WriteLine($"Generation nr: {j}");
+
+                var watch = new Stopwatch();
+                watch.Start();
 
                 for (var i = 0; i < Parameters.PopulationCount; i++)
                 {
@@ -202,11 +210,19 @@ namespace vindinium.Algorithm
 
                     CurrentModel = genotype;
 
+                    Console.Out.WriteLine($"Genotype nr: {i}");
+
                     Run(true);
 
+                    Console.Out.WriteLine($"Score (gold): {ServerStuff.MyHero.gold}");
+                    
                     genotype.Value = ServerStuff.MyHero.gold;
                     population.Add(genotype);
                 }
+
+                watch.Stop();
+
+                Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
 
                 var partBestPopulation = population.OrderByDescending(i => i.Value).Take((int) (Parameters.PopulationCount*Parameters.BestOfPopulationPercentage)).ToList();
                 var changedPartBestPopulation = partBestPopulation; // TODO modify genotypes by crossovering and mutating
@@ -215,6 +231,8 @@ namespace vindinium.Algorithm
                 parentPopulation.AddRange(partBestPopulation);
                 parentPopulation.AddRange(changedPartBestPopulation);
             }
+
+            Console.Out.WriteLine($"-------------------------------------PHASE ONE ENDED (map {map})-------------------------------------");
 
             return parentPopulation;
         }
