@@ -101,8 +101,8 @@ namespace vindinium.NEAT.Mutation
                     Innovation = currentInnovaton + 1,
                 });
 
-                genotype.NodeGens[inNode-1].TargetNodes.Add(outNode-1);
-                genotype.NodeGens[outNode-1].SourceNodes.Add(inNode-1);
+                genotype.NodeGens[inNode-1].TargetNodes.Add(outNode);
+                genotype.NodeGens[outNode-1].SourceNodes.Add(inNode);
             }
 
             return genotype;
@@ -178,11 +178,11 @@ namespace vindinium.NEAT.Mutation
                 Innovation = currentInnovaton + 1,
             });
 
-            genotype.NodeGens[inNodeIdx-1].TargetNodes.Add(newNodeGen.NodeNumber-1);
-            genotype.NodeGens[outNodeIdx-1].SourceNodes.Add(newNodeGen.NodeNumber-1);
+            genotype.NodeGens[inNodeIdx-1].TargetNodes.Add(newNodeGen.NodeNumber);
+            genotype.NodeGens[outNodeIdx-1].SourceNodes.Add(newNodeGen.NodeNumber);
             var tmp = newNodeGen.NodeNumber - 1;
-            genotype.NodeGens[tmp].TargetNodes.Add(outNodeIdx-1);
-            genotype.NodeGens[tmp].SourceNodes.Add(inNodeIdx-1);
+            genotype.NodeGens[tmp].TargetNodes.Add(outNodeIdx);
+            genotype.NodeGens[tmp].SourceNodes.Add(inNodeIdx);
 
             return genotype;
         }
@@ -199,8 +199,8 @@ namespace vindinium.NEAT.Mutation
             var inNode = genotype.GenomeConnection[choosenConnectionId].InNode;
             var outNode = genotype.GenomeConnection[choosenConnectionId].InNode;
 
-            genotype.NodeGens[inNode-1].TargetNodes.Remove(outNode-1);
-            genotype.NodeGens[outNode-1].SourceNodes.Remove(inNode-1);
+            genotype.NodeGens[inNode-1].TargetNodes.Remove(outNode);
+            genotype.NodeGens[outNode-1].SourceNodes.Remove(inNode);
             
             return genotype;
         }
