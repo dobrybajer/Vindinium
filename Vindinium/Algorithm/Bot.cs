@@ -9,12 +9,12 @@ namespace vindinium.Algorithm
 {
     public enum ActivationFunction
     {
-        Linear,
-        Unipolar,
-        Sigmoid,
-        ArcTangens,
-        Gaussian,
-        HiperbolicTangens
+        Linear,            // result from 0 to 1 (increasing value)
+        Unipolar,          // result 0 or 1 (increasing value)
+        Sigmoid,           // result from 0.02 to 0.98 (increasing value)
+        ArcTangens,        // result from 0 to 0.98 (increasing value)
+        Gaussian,          // result from 0.05 to 1 (decreasing value)
+        HiperbolicTangens  // result from 0 to 0.99 (increasing value)
     }
 
     public class Bot
