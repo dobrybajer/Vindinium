@@ -11,8 +11,6 @@ namespace vindinium.Algorithm
     {
         #region Private Fields
 
-        private Genotype TrainedModel { get; set; }
-
         private Genotype CurrentModel { get; set; }
 
         private readonly InitialGenomeBuilder _initialGenomeBuilder;
@@ -21,16 +19,23 @@ namespace vindinium.Algorithm
 
         #region Constructor
 
-        public NeatBot(ServerStuff serverStuff) : base(serverStuff, "Neat") { _initialGenomeBuilder = new InitialGenomeBuilder(); }
+        public NeatBot() : base("Neat") { _initialGenomeBuilder = new InitialGenomeBuilder(); }
 
         #endregion
 
-        #region Main function
+        #region Main functions
+
+        public void Play()
+        {
+            ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.ServerUrl, "");
+            CurrentModel = ObjectManager.ReadFromJsonFile<Genotype>(Parameters.TrainedModel);
+            Run();
+        }
 
         protected override string GetDirection()
         {
-            //return Compute();
-            return Direction.GetRandomDirection();
+            return Compute();
+            //return Direction.GetRandomDirection();
         }
 
         #endregion
@@ -39,10 +44,23 @@ namespace vindinium.Algorithm
 
         private static double ActivationFunction(double input)
         {
-            var output = input; // f(x) = x
-            //var output = Math.Tanh(input); // f(x) = tanh(x)
-
-            return output;
+            switch (Parameters.ActivationFunction)
+            {
+                case Algorithm.ActivationFunction.Linear: // result from 0 to 1 (increasing value)
+                    return input; 
+                case Algorithm.ActivationFunction.HiperbolicTangens: // result from 0 to 0.99 (increasing value)
+                    return Math.Tanh(input)*1.3; 
+                case Algorithm.ActivationFunction.Unipolar: // result 0 or 1 (increasing value)
+                    return input < 0.5 ? 0 : 1;
+                case Algorithm.ActivationFunction.Sigmoid: // result from 0.02 to 0.98 (increasing value)
+                    return 1/(1 + Math.Pow(Math.E, -8*(input - 0.5)));
+                case Algorithm.ActivationFunction.ArcTangens: // result from 0 to 0.98 (increasing value)
+                    return Math.Atan(input)*1.25;
+                case Algorithm.ActivationFunction.Gaussian: // result from 0.05 to 1 (decreasing value)
+                    return Math.Pow(Math.E, -3*Math.Pow(input, 2));
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private string Compute()
@@ -55,8 +73,7 @@ namespace vindinium.Algorithm
             foreach (var sn in inputNodes)
             {
                 sn.FeedForwardValue = input[sn.NodeNumber];
-                nextLevelNodes.AddRange(
-                    sn.TargetNodes.Select(en => new Tuple<int, int, double>(sn.NodeNumber, en, sn.FeedForwardValue)));
+                nextLevelNodes.AddRange(sn.TargetNodes.Select(en => new Tuple<int, int, double>(sn.NodeNumber, en, sn.FeedForwardValue)));
             }
 
             while (nextLevelNodes.Any())
@@ -77,9 +94,7 @@ namespace vindinium.Algorithm
                 foreach (var sn in currentLevelNodes.Select(n => n.Item2).Distinct())
                 {
                     var node = CurrentModel.GetNodeById(sn);
-                    nextLevelNodes.AddRange(from nn in node.TargetNodes
-                        where node.FeedForwardCount == node.SourceNodes.Count
-                        select new Tuple<int, int, double>(sn, nn, ActivationFunction(node.FeedForwardValue)));
+                    nextLevelNodes.AddRange(from nn in node.TargetNodes where node.FeedForwardCount == node.SourceNodes.Count select new Tuple<int, int, double>(sn, nn, ActivationFunction(node.FeedForwardValue)));
                 }
             }
 
@@ -94,30 +109,22 @@ namespace vindinium.Algorithm
             var heroesGoldMax = ServerStuff.Heroes.Max(h => h.gold);
             var distanceToEnemies = GetDistancesToEnemies();
 
-            var feature1 = (double)ServerStuff.Heroes[1].gold / heroesGoldMax;
-            var feature2 = (double)ServerStuff.Heroes.Where(h => h.id != 1).Max(h => h.gold) / heroesGoldMax;
-            var feature3 = GetDistanceToClosestTavern() / MaxBoardDistance;
-            var feature4 = GetDistanceToClosestMine() / MaxBoardDistance;
-            var feature5 = GetDistanceToClosestMine(null, true) / MaxBoardDistance;
-            var feature6 = distanceToEnemies.Values.Min() / MaxBoardDistance;
+            var feature1 = (double) ServerStuff.Heroes[1].gold/heroesGoldMax;
+            var feature2 = (double) ServerStuff.Heroes.Where(h => h.id != 1).Max(h => h.gold)/heroesGoldMax;
+            var feature3 = GetDistanceToClosestTavern()/MaxBoardDistance;
+            var feature4 = GetDistanceToClosestMine()/MaxBoardDistance;
+            var feature5 = GetDistanceToClosestMine(null, true)/MaxBoardDistance;
+            var feature6 = distanceToEnemies.Values.Min()/MaxBoardDistance;
             var enemyWithMaxGold = distanceToEnemies.Keys.Aggregate((i, j) => i.gold > j.gold ? i : j);
-            var feature7 = distanceToEnemies[enemyWithMaxGold] / MaxBoardDistance;
+            var feature7 = distanceToEnemies[enemyWithMaxGold]/MaxBoardDistance;
             var enemyWithLowestHp = distanceToEnemies.Keys.Aggregate((i, j) => i.life < j.life ? i : j);
-            var feature8 = enemyWithLowestHp.life < 40 ? distanceToEnemies[enemyWithLowestHp] / MaxBoardDistance : 1; // 1 represents infinity
+            var feature8 = enemyWithLowestHp.life < 40 ? distanceToEnemies[enemyWithLowestHp]/MaxBoardDistance : 1; // 1 represents infinity
             var enemyWithGreatestNumberOfMines = distanceToEnemies.Keys.Aggregate((i, j) => i.mineCount > j.mineCount ? i : j);
-            var feature9 = distanceToEnemies[enemyWithGreatestNumberOfMines] / MaxBoardDistance;
+            var feature9 = distanceToEnemies[enemyWithGreatestNumberOfMines]/MaxBoardDistance;
 
             var featureList = new List<double>
             {
-                feature1,
-                feature2,
-                feature3,
-                feature4,
-                feature5,
-                feature6,
-                feature7,
-                feature8,
-                feature9
+                feature1, feature2, feature3, feature4, feature5, feature6, feature7, feature8, feature9
             };
 
             return featureList;
@@ -132,9 +139,9 @@ namespace vindinium.Algorithm
             if (index == minIndex + 0) return GetDirectionGeneric(GetDistanceToClosestMine, false);
             if (index == minIndex + 1) return GetDirectionGeneric(GetDistanceToClosestMine, true);
             if (index == minIndex + 2) return GetDirectionGeneric(GetDistanceToClosestTavern, true);
-            if (index == minIndex + 3) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)1);
-            if (index == minIndex + 4) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)2);
-            if (index == minIndex + 5) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?)3);
+            if (index == minIndex + 3) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?) 1);
+            if (index == minIndex + 4) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?) 2);
+            if (index == minIndex + 5) return GetDirectionGeneric(GetDistanceToClosestEnemy, (int?) 3);
 
             throw new ArgumentOutOfRangeException();
         }
@@ -143,7 +150,7 @@ namespace vindinium.Algorithm
 
         #region Training
 
-        public void Train()
+        public void Train(bool withPhaseTwo = false)
         {
             var population1 = TrainPhaseOne("m1");
             var population2 = TrainPhaseOne("m2");
@@ -166,6 +173,8 @@ namespace vindinium.Algorithm
             ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap5, bestOfPopulation5.First());
             ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap6, bestOfPopulation6.First());
 
+            if (!withPhaseTwo) return;
+
             var startPopulationToPhaseTwo = new List<Genotype>();
             startPopulationToPhaseTwo.AddRange(bestOfPopulation1);
             startPopulationToPhaseTwo.AddRange(bestOfPopulation2);
@@ -177,20 +186,19 @@ namespace vindinium.Algorithm
             TrainPhaseTwo(startPopulationToPhaseTwo);
         }
 
-        // TODO make this for every map from m1 to m6
         private IEnumerable<Genotype> TrainPhaseOne(string map)
-        {     
+        {
+            ServerStuff = new ServerStuff(Parameters.ServerSecretKey, true, Parameters.ServerNumberOfTurns, Parameters.ServerUrl, map);
+
             var parentPopulation = new List<Genotype>();
 
             for (var j = 0; j < Parameters.GenerationsPhaseOneCount; j++)
             {
                 var population = new List<Genotype>();
 
-                for (var i = 0; i < Parameters.PopulationCount; i++) // TODO check if restart ServerStuff needed
+                for (var i = 0; i < Parameters.PopulationCount; i++)
                 {
-                    var genotype = i == 0
-                        ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount)
-                        : parentPopulation[i];
+                    var genotype = i == 0 ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount) : parentPopulation[i];
 
                     CurrentModel = genotype;
 
@@ -200,7 +208,7 @@ namespace vindinium.Algorithm
                     population.Add(genotype);
                 }
 
-                var partBestPopulation = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
+                var partBestPopulation = population.OrderByDescending(i => i.Value).Take((int) (Parameters.PopulationCount*Parameters.BestOfPopulationPercentage)).ToList();
                 var changedPartBestPopulation = partBestPopulation; // TODO modify genotypes by crossovering and mutating
 
                 parentPopulation = new List<Genotype>();
@@ -214,7 +222,9 @@ namespace vindinium.Algorithm
         // TODO finish this method
         private void TrainPhaseTwo(List<Genotype> startPopulation)
         {
-            TrainedModel = new Genotype();
+            // create appropriate serverstuff
+            var parentPopulation = startPopulation;
+            ObjectManager.WriteToJsonFile(Parameters.TrainedModel, parentPopulation.First());
         }
 
         #endregion
@@ -226,264 +236,171 @@ namespace vindinium.Algorithm
         {
             var genotype = new Genotype
             {
-                NodeGens = new List<NodeGenesModel>(),
-                GenomeConnection = new List<ConnectionGenesModel>()
+                NodeGens = new List<NodeGenesModel>(), GenomeConnection = new List<ConnectionGenesModel>()
             };
 
             // ---- INPUT ----
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 0,
-                SourceNodes = new HashSet<int>(),
-                TargetNodes = new HashSet<int> {4, 5},
-                Type = NodeType.Input
+                NodeNumber = 0, SourceNodes = new HashSet<int>(), TargetNodes = new HashSet<int> {4, 5}, Type = NodeType.Input
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 1,
-                SourceNodes = new HashSet<int>(),
-                TargetNodes = new HashSet<int> { 4, 6 },
-                Type = NodeType.Input
+                NodeNumber = 1, SourceNodes = new HashSet<int>(), TargetNodes = new HashSet<int> {4, 6}, Type = NodeType.Input
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 2,
-                SourceNodes = new HashSet<int>(),
-                TargetNodes = new HashSet<int> { 5, 6 },
-                Type = NodeType.Input
+                NodeNumber = 2, SourceNodes = new HashSet<int>(), TargetNodes = new HashSet<int> {5, 6}, Type = NodeType.Input
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 3,
-                SourceNodes = new HashSet<int>(),
-                TargetNodes = new HashSet<int> { 6 },
-                Type = NodeType.Input
+                NodeNumber = 3, SourceNodes = new HashSet<int>(), TargetNodes = new HashSet<int> {6}, Type = NodeType.Input
             });
 
             // ---- HIDDEN ----
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 4,
-                SourceNodes = new HashSet<int> { 0, 1},
-                TargetNodes = new HashSet<int> { 7 },
+                NodeNumber = 4, SourceNodes = new HashSet<int> {0, 1}, TargetNodes = new HashSet<int> {7}, Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 5, SourceNodes = new HashSet<int> {0, 2}, TargetNodes = new HashSet<int> {7}, Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 6, SourceNodes = new HashSet<int> {1, 2, 3}, TargetNodes = new HashSet<int> {8, 10}, // 10 is 2 "layers" after
                 Type = NodeType.Hidden
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 5,
-                SourceNodes = new HashSet<int> { 0, 2 },
-                TargetNodes = new HashSet<int> { 7 },
-                Type = NodeType.Hidden
+                NodeNumber = 7, SourceNodes = new HashSet<int> {4, 5}, TargetNodes = new HashSet<int> {9}, Type = NodeType.Hidden
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 6,
-                SourceNodes = new HashSet<int> { 1, 2, 3 },
-                TargetNodes = new HashSet<int> { 8, 10 }, // 10 is 2 "layers" after
-                Type = NodeType.Hidden
+                NodeNumber = 8, SourceNodes = new HashSet<int> {6}, TargetNodes = new HashSet<int> {9, 10}, Type = NodeType.Hidden
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 7,
-                SourceNodes = new HashSet<int> { 4, 5 },
-                TargetNodes = new HashSet<int> { 9 },
-                Type = NodeType.Hidden
+                NodeNumber = 9, SourceNodes = new HashSet<int> {7, 8}, TargetNodes = new HashSet<int> {11, 12}, Type = NodeType.Hidden
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 8,
-                SourceNodes = new HashSet<int> { 6 },
-                TargetNodes = new HashSet<int> { 9, 10 },
-                Type = NodeType.Hidden
-            });
-
-            genotype.NodeGens.Add(new NodeGenesModel
-            {
-                NodeNumber = 9,
-                SourceNodes = new HashSet<int> { 7, 8 },
-                TargetNodes = new HashSet<int> { 11, 12 },
-                Type = NodeType.Hidden
-            });
-
-            genotype.NodeGens.Add(new NodeGenesModel
-            {
-                NodeNumber = 10,
-                SourceNodes = new HashSet<int> { 6, 8 },
-                TargetNodes = new HashSet<int> { 11, 12 },
-                Type = NodeType.Hidden
+                NodeNumber = 10, SourceNodes = new HashSet<int> {6, 8}, TargetNodes = new HashSet<int> {11, 12}, Type = NodeType.Hidden
             });
 
             // ---- OUTPUT ----
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 11,
-                SourceNodes = new HashSet<int> { 9, 10 },
-                TargetNodes = new HashSet<int>(),
-                Type = NodeType.Output
+                NodeNumber = 11, SourceNodes = new HashSet<int> {9, 10}, TargetNodes = new HashSet<int>(), Type = NodeType.Output
             });
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
-                NodeNumber = 12,
-                SourceNodes = new HashSet<int> { 9, 10 },
-                TargetNodes = new HashSet<int>(),
-                Type = NodeType.Output
+                NodeNumber = 12, SourceNodes = new HashSet<int> {9, 10}, TargetNodes = new HashSet<int>(), Type = NodeType.Output
             });
 
             // ---- EDGES ----
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 0,
-                OutNode = 4,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.1
+                InNode = 0, OutNode = 4, Status = ConnectionStatus.Enabled, Weight = 0.1
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 0,
-                OutNode = 5,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.3
+                InNode = 0, OutNode = 5, Status = ConnectionStatus.Enabled, Weight = 0.3
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 1,
-                OutNode = 4,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.2
+                InNode = 1, OutNode = 4, Status = ConnectionStatus.Enabled, Weight = 0.2
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 1,
-                OutNode = 6,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.4
+                InNode = 1, OutNode = 6, Status = ConnectionStatus.Enabled, Weight = 0.4
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 2,
-                OutNode = 5,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.5
+                InNode = 2, OutNode = 5, Status = ConnectionStatus.Enabled, Weight = 0.5
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 2,
-                OutNode = 6,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.3
+                InNode = 2, OutNode = 6, Status = ConnectionStatus.Enabled, Weight = 0.3
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 3,
-                OutNode = 6,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.4
+                InNode = 3, OutNode = 6, Status = ConnectionStatus.Enabled, Weight = 0.4
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 4,
-                OutNode = 7,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.35
+                InNode = 4, OutNode = 7, Status = ConnectionStatus.Enabled, Weight = 0.35
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 5,
-                OutNode = 7,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.42
+                InNode = 5, OutNode = 7, Status = ConnectionStatus.Enabled, Weight = 0.42
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 6,
-                OutNode = 8,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.18
+                InNode = 6, OutNode = 8, Status = ConnectionStatus.Enabled, Weight = 0.18
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 6,
-                OutNode = 10,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.03
+                InNode = 6, OutNode = 10, Status = ConnectionStatus.Enabled, Weight = 0.03
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 7,
-                OutNode = 9,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.2
+                InNode = 7, OutNode = 9, Status = ConnectionStatus.Enabled, Weight = 0.2
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 8,
-                OutNode = 9,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.7
+                InNode = 8, OutNode = 9, Status = ConnectionStatus.Enabled, Weight = 0.7
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 8,
-                OutNode = 10,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.28
+                InNode = 8, OutNode = 10, Status = ConnectionStatus.Enabled, Weight = 0.28
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 9,
-                OutNode = 11,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.82
+                InNode = 9, OutNode = 11, Status = ConnectionStatus.Enabled, Weight = 0.82
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 9,
-                OutNode = 12,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.3
+                InNode = 9, OutNode = 12, Status = ConnectionStatus.Enabled, Weight = 0.3
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 10,
-                OutNode = 11,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.7
+                InNode = 10, OutNode = 11, Status = ConnectionStatus.Enabled, Weight = 0.7
             });
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = 10,
-                OutNode = 12,
-                Status = ConnectionStatus.Enabled,
-                Weight = 0.5
+                InNode = 10, OutNode = 12, Status = ConnectionStatus.Enabled, Weight = 0.5
             });
 
             CurrentModel = genotype;

@@ -7,6 +7,16 @@ using vindinium.PathFinding;
 
 namespace vindinium.Algorithm
 {
+    public enum ActivationFunction
+    {
+        Linear,
+        Unipolar,
+        Sigmoid,
+        ArcTangens,
+        Gaussian,
+        HiperbolicTangens
+    }
+
     public class Bot
     {
         #region Private fields
@@ -25,15 +35,14 @@ namespace vindinium.Algorithm
 
         protected int MaxBoardDistance { get; set; }
 
-        protected readonly ServerStuff ServerStuff;
+        protected ServerStuff ServerStuff { get; set; }
 
         #endregion
 
         #region Constructor and game initialization (do not change!)
 
-        public Bot(ServerStuff serverStuff, string botName = "Evaluation")
+        public Bot(string botName = "Evaluation")
         {
-            ServerStuff = serverStuff;
             _botName = botName;
         }
 
@@ -52,8 +61,7 @@ namespace vindinium.Algorithm
             Console.Out.WriteLine(_botName + " bot running");
 
             ServerStuff.CreateGame();
-            Initialize();
-
+            
             if (!onlyComputation && ServerStuff.Errored == false)
             {
                 //opens up a webpage so you can view the game, doing it async so we dont time out
@@ -63,6 +71,7 @@ namespace vindinium.Algorithm
                 }).Start();
             }
 
+            Initialize();
             InitializePathGrid();
             InitializeAStarModel();
 

@@ -16,20 +16,27 @@ namespace vindinium
 
         private static void Main(string[] args)
         {
-            var serverUrl = args.Length == 4 ? args[3] : Parameters.DefaultServerUrl; // Parameters.CustomServerUrl
+            // ----------------------- Setting Parameters -----------------------
 
-            //create the server stuff, when not in training mode, it doesnt matter what you use as the number of turns
-            var serverStuff = new ServerStuff(args[0], args[1] != "arena", uint.Parse(args[2]), serverUrl, "m2");
+            if (args.Length == 0) throw new Exception("Private key missing in program parameters... Ending.");
+            Parameters.ServerSecretKey = args[0];
+            if (args.Length >= 2) Parameters.ServerTrainingMode = args[1] != "arena";
+            if (args.Length >= 3) Parameters.ServerNumberOfTurns = uint.Parse(args[2]);
+            if (args.Length >= 4) Parameters.ServerUrl = args[3]; // Parameters.CustomServerUrl
+            if (args.Length >= 5) Parameters.PopulationCount = int.Parse(args[4]);
+            if (args.Length >= 6) Parameters.BestOfPopulationPercentage = double.Parse(args[5]);
+            if (args.Length >= 7) Parameters.GenerationsPhaseOneCount = int.Parse(args[6]);
+            if (args.Length >= 8) Parameters.GenerationsPhaseTwoCount = int.Parse(args[7]);
+            if (args.Length >= 9) Parameters.BestGenotypesOfPhaseOneCount = int.Parse(args[8]);
+            if (args.Length >= 10) Parameters.ActivationFunction = (ActivationFunction)Enum.Parse(typeof(ActivationFunction), args[9], true);
 
-            // ---------------------- OWN CODE ----------------------
+            // ---------------------- Creating bot and run ----------------------
 
-            var neatBot = new NeatBot(serverStuff);
-            neatBot.Train();
-
-            //neatBot.TestGraphCompute();
-            
-            // -------------------- END OWN CODE --------------------
-
+            var neatBot = new NeatBot();
+            //neatBot.Train();             // Training: only Phase One
+            //neatBot.Train(true);         // Training: Phase One and Two
+            //neatBot.Play();              // Playing on arena using Trained Model (required)
+            //neatBot.TestGraphCompute();  // Test graph created in order to test Compute() function
 
             Console.Out.WriteLine("done");
             Console.Read();
