@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using vindinium.NEAT;
 using vindinium.Singletons;
+using vindinium.NEAT.Crossover;
 
 namespace vindinium.Algorithm
 {
@@ -220,11 +221,16 @@ namespace vindinium.Algorithm
                     population.Add(genotype);
                 }
 
+                var innovationsList= _initialGenomeBuilder.InitInnovationList(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount);
+
                 watch.Stop();
 
                 Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
 
                 var partBestPopulation = population.OrderByDescending(i => i.Value).Take((int) (Parameters.PopulationCount*Parameters.BestOfPopulationPercentage)).ToList();
+             //wywo³ac mutacje - z lista innovationList i krzy¿owanie 
+                var mutationProvider = partBestPopulation;
+
                 var changedPartBestPopulation = partBestPopulation; // TODO modify genotypes by crossovering and mutating
 
                 parentPopulation = new List<Genotype>();

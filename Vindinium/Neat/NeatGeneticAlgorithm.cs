@@ -33,7 +33,7 @@ namespace vindinium.NEAT
             };
         }
 
-        public List<Genotype> CreateNewPopulationWithMutation(List<Genotype> genotypes)
+        public List<Genotype> CreateNewPopulationWithMutation(List<Genotype> genotypes, List<Innovations> innovationsList)
         {
             var outputPopulation = new List<Genotype>();
             var random = new XorShiftRandom();
@@ -50,7 +50,7 @@ namespace vindinium.NEAT
                 var genomeId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette.RemoveOutcome(genomeId);
                 mutatedGenomesId.Add(genomeId);
-                //outputPopulation.Add(mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters));
+                outputPopulation.Add(mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters,ref innovationsList));
             }
 
             for (int i = 0; i < genotypes.Count; i++)

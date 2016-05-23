@@ -7,7 +7,7 @@ namespace vindinium.NEAT.Mutation
 {
     public class MutationProvider : IMutationProvider
     {
-        public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters,List<Innovations> innovations)
+        public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters,ref List<Innovations> innovations)
         {
             var xorRandom = new XorShiftRandom();
             var rouletteWheelLayoutInitial = (genotype.GenomeConnection.Count < 2) ?

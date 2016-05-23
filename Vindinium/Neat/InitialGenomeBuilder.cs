@@ -61,5 +61,28 @@ namespace vindinium.NEAT
 
             return initialGenotype;
         }
+
+        public List<Innovations> InitInnovationList(int inputNodesCount, int outputNodesCount)
+        {
+            var innovationList = new List<Innovations>();
+            var innovationCout = 1;
+
+            for (int i = 0; i < inputNodesCount ; i++)
+            {
+                for (int j = inputNodesCount; j < outputNodesCount+ inputNodesCount; j++)
+                {
+                    innovationList.Add(
+                            new Innovations()
+                            {
+                                InnovationNumber = innovationCout,
+                                InNode=i,
+                                OutNode=j
+                            });
+                    innovationCout++;
+                }
+            }
+
+            return innovationList;
+        }
     }
 }
