@@ -53,6 +53,21 @@ namespace vindinium.NEAT.Mutation
             }
         }
 
+        private double connectionWeightMutationProbability;
+
+        public double ConnectionWeightMutationProbability
+        {
+            get
+            {
+                return connectionWeightMutationProbability;
+            }
+            set
+            {
+                connectionWeightMutationProbability = value;
+                CreateRouletteLayouts();
+            }
+        }
+
         private void CreateRouletteLayouts()
         {
             RouletteWheelLayout = CreateRouletteWheelLayout();
@@ -81,6 +96,7 @@ namespace vindinium.NEAT.Mutation
             {
                 addNodeMutationProbability,
                 addConnectionMutationProbability,
+                connectionWeightMutationProbability,
                 deleteConnectionMutationProbability
             };
             return probabilities;
@@ -92,6 +108,7 @@ namespace vindinium.NEAT.Mutation
             {
                 addNodeMutationProbability,
                 addConnectionMutationProbability,
+                connectionWeightMutationProbability,
                 deleteConnectionMutationProbability
             };
             return probabilities;
