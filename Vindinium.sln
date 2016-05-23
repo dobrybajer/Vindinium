@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vindinium", "Vindinium\vindinium.csproj", "{D92489E7-49E9-4D1B-8E01-FB69223E0BE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testy", "Testy\Testy.csproj", "{E0649BE3-F1B0-429F-BA1F-38C8C10EE028}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D92489E7-49E9-4D1B-8E01-FB69223E0BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D92489E7-49E9-4D1B-8E01-FB69223E0BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D92489E7-49E9-4D1B-8E01-FB69223E0BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0649BE3-F1B0-429F-BA1F-38C8C10EE028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0649BE3-F1B0-429F-BA1F-38C8C10EE028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0649BE3-F1B0-429F-BA1F-38C8C10EE028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0649BE3-F1B0-429F-BA1F-38C8C10EE028}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
