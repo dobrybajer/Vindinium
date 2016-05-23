@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Redzen.Numerics;
 using vindinium.NEAT.Crossover;
 using vindinium.NEAT.Mutation;
+using vindinium.Singletons;
 
 namespace vindinium.NEAT
 {
@@ -21,6 +22,17 @@ namespace vindinium.NEAT
             this.mutationProvider = mutationProvider;
         }
 
+        private void CreateNodeGeneParameters()
+        {
+            NodeGeneParameters = new NodeGeneParameters
+            {
+                AddConnectionMutationProbability = Parameters.AddConnectionMutationProbablity,
+                AddNodeMutationProbability = Parameters.AddNodeMutationProbablity,
+                DeleteConnectionMutationProbability = Parameters.DeleteConnectionMutationProbablity,
+                ConnectionWeightMutationProbability = Parameters.ConnectionWeightMutationProbablity
+            };
+        }
+
         public List<Genotype> CreateNewPopulationWithMutation(List<Genotype> genotypes)
         {
             var outputPopulation = new List<Genotype>();
@@ -31,7 +43,7 @@ namespace vindinium.NEAT
 
             var roulette = new DiscreteDistribution(probabilities.ToArray());
 
-            var attemptsCount = genotypes.Count / 2;
+            var attemptsCount = genotypes.Count / Parameters.MutationWheelPart;
             var mutatedGenomesId = new List<int>();
             for (int i = 0; i < attemptsCount; i++)
             {
@@ -61,7 +73,7 @@ namespace vindinium.NEAT
 
             var roulette = new DiscreteDistribution(probabilities.ToArray());
 
-            var attemptsCount = genotypes.Count / 4;
+            var attemptsCount = genotypes.Count / Parameters.CrossoverWheelPart;
             var crossoveredGenomesId = new List<int>();
             for (int i = 0; i < attemptsCount; i++)
             {
