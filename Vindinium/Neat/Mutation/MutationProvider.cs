@@ -2,11 +2,11 @@
 using Redzen.Numerics;
 using System.Collections.Generic;
 
-
 namespace vindinium.NEAT.Mutation
 {
     public class MutationProvider : IMutationProvider
     {
+        public IRandomGenerator RandomGenerator { get; set; } = new RandomGenerator();
         public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters, ref List<Innovations> innovations)
         {
             var xorRandom = new XorShiftRandom();
@@ -53,14 +53,13 @@ namespace vindinium.NEAT.Mutation
         {
             var nodeNumber = genotype.NodeGens.Count;
 
-            var random = new Random();
-            var inNode = random.Next(1, nodeNumber);
-            var isInNodeInput = genotype.NodeGens[inNode - 1].Type == NodeType.Input ? true : false;
+            var inNode = RandomGenerator.Next(1, nodeNumber);
+            var isInNodeInput = genotype.NodeGens[inNode - 1].Type == NodeType.Input;
             var stop = false;
             var outNode = 0;
             while (!stop)
             {
-                outNode = random.Next(1, nodeNumber);
+                outNode = RandomGenerator.Next(1, nodeNumber);
                 if (isInNodeInput && genotype.NodeGens[outNode - 1].Type != NodeType.Input && outNode != inNode)
                     stop = true;
                 else if (!isInNodeInput && outNode != inNode)
@@ -99,7 +98,7 @@ namespace vindinium.NEAT.Mutation
                 {
                     InNode = inNode,
                     OutNode = outNode,
-                    Weight = (double)random.Next(0, 100) / 100,
+                    Weight = (double)RandomGenerator.Next(0, 100) / 100,
                     Status = ConnectionStatus.Enabled,
                     Innovation = currentInnovaton + 1,
                 });

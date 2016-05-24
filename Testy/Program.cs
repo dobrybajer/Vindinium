@@ -9,6 +9,7 @@ using vindinium.NEAT;
 using vindinium.NEAT.Crossover;
 using System.Threading;
 using System.IO;
+using Testy;
 
 namespace Test
 {
@@ -16,6 +17,7 @@ namespace Test
     {
         static void Main(string[] args)
         {
+            MutationAddConnecionTest();
             AddConnectionTest();
             AddNodeTest();
             //CrossoverTest();
@@ -194,6 +196,46 @@ namespace Test
             WriteToFile(genotypeList, "NodeTest.txt");
         }
 
+        public static void MutationAddConnecionTest()
+        {
+            var NodeGens1 = new List<NodeGenesModel>() {
+                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 4 }  },
+                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 }  },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3 }  },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4, 2 }, TargetNodes=new HashSet<int>()   },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 1 }, TargetNodes=new HashSet<int>() { 3 } }
+            };
+
+            var Connectionlist1 = new List<ConnectionGenesModel>()
+            {
+                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
+                new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
+                new ConnectionGenesModel { InNode=4, OutNode=3, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
+                new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
+            };
+
+
+            var innovationList = new List<Innovations>
+            {
+                new Innovations(1, 0, 3),
+                new Innovations(2, 1, 3),
+                new Innovations(3, 2, 3),
+                new Innovations(4, 1, 4),
+                new Innovations(5, 4, 3),
+                new Innovations(6, 0, 4)
+            };
+
+            var genotype1 = new Genotype { GenomeConnection = new List<ConnectionGenesModel>(Connectionlist1), NodeGens = new List<NodeGenesModel>(NodeGens1), Value = 0 };
+
+            var mutationProvider = new MutationProvider
+            {
+                RandomGenerator = new MockRandom {ValueToReturn = new[] {2, 4}}
+            };
+            var newGenotype = mutationProvider.MutateAddConnection(genotype1, innovationList);
+        }
+
         public static void WriteToFile(List<Genotype> genotype, string nameFile)
         {
             List<string> lines = new List<string>();
@@ -205,7 +247,7 @@ namespace Test
                     var line = "Number: " + itm.NodeNumber + ", Typ: " + itm.Type.ToString();
                     line += ", SourceNodes: ";
                     foreach (var it in itm.SourceNodes)
-                        line += " " +it;
+                        line += " " + it;
                     line += ", TargetNodes: ";
                     foreach (var it in itm.TargetNodes)
                         line += " " + it;
