@@ -54,6 +54,7 @@
     <Compile Include="Algorithm\Bot.cs" />
     <Compile Include="Algorithm\NeatBot.cs" />
     <Compile Include="DataContracts.cs" />
+    <Compile Include="NEAT\IRandomGenerator.cs" />
     <Compile Include="Singletons\ObjectManager.cs" />
     <Compile Include="Singletons\Parameters.cs" />
     <Compile Include="Enums.cs" />
