@@ -78,20 +78,23 @@ namespace vindinium.NEAT.Mutation
 
             if (!isConnection)
             {
+
+                currentInnovaton = innovation.Count == 0 ? 0 : innovation[innovation.Count - 1].InnovationNumber + 1;
+
                 foreach (var el in innovation)
                     if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
                         currentInnovaton = el.InnovationNumber;
 
-                currentInnovaton = innovation.Count == 0 ? 0 : innovation[innovation.Count - 1].InnovationNumber;
 
-
-                innovation.Add(new Innovations
+                if (currentInnovaton == 1 || currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
                 {
-                    InnovationNumber = currentInnovaton + 1,
-                    InNode = inNode,
-                    OutNode = outNode
-                });
-
+                    innovation.Add(new Innovations
+                    {
+                        InnovationNumber = currentInnovaton ,
+                        InNode = inNode,
+                        OutNode = outNode
+                    });
+                }
                 genotype.GenomeConnection.Add(new ConnectionGenesModel
                 {
                     InNode = inNode,
