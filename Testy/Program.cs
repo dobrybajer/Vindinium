@@ -18,51 +18,51 @@ namespace Test
         {
             AddConnectionTest();
             AddNodeTest();
-            CrossoverTest();
+            //CrossoverTest();
 
         }
 
         public static void CrossoverTest()
         {
             var NodeGens1 = new List<NodeGenesModel>() {
-                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 5 }  },
-                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 5 }  },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 }  },
-                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 5, 3 }, TargetNodes=new HashSet<int>()   },
-                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 2 }, TargetNodes=new HashSet<int>() { 4 } }
+                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 4 }  },
+                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 }  },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3 }  },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4, 2 }, TargetNodes=new HashSet<int>()   },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 1 }, TargetNodes=new HashSet<int>() { 3 } }
             };
 
             var NodeGens2 = new List<NodeGenesModel>()
             {
-                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 6 }  },
-                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 5 } },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 5, 4} },
-                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 1, 6, 3 }, TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 2, 3 }, TargetNodes=new HashSet<int>() { 6 }  },
-                 new NodeGenesModel { NodeNumber=6, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 5 }, TargetNodes=new HashSet<int>() { 4 } },
+                 new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 5 }  },
+                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 } },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 3} },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 0, 5, 2 }, TargetNodes=new HashSet<int>()  },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 2 }, TargetNodes=new HashSet<int>() { 5 }  },
+                 new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4 }, TargetNodes=new HashSet<int>() { 3 } },
             };
 
             var Connectionlist1 = new List<ConnectionGenesModel>()
             {
-                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
-                new ConnectionGenesModel { InNode=2, OutNode=4, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=2, OutNode=5, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
-                new ConnectionGenesModel { InNode=5, OutNode=4, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
-                new ConnectionGenesModel { InNode=1, OutNode=5, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
+                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
+                new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
+                new ConnectionGenesModel { InNode=4, OutNode=3, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
+                new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
             };
 
             var Connectionlist2 = new List<ConnectionGenesModel>()
             {
-                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
-                new ConnectionGenesModel { InNode=2, OutNode=4, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=2, OutNode=5, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
-                new ConnectionGenesModel { InNode=4, OutNode=5, Innovation=5, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.4 },
-                new ConnectionGenesModel { InNode=5, OutNode=6, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=6, OutNode=4, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=3, OutNode=5, Innovation=9, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=1, OutNode=6, Innovation=10, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
+                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
+                new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
+                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=5, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.4 },
+                new ConnectionGenesModel { InNode=4, OutNode=5, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=5, OutNode=3, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=2, OutNode=4, Innovation=9, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=0, OutNode=5, Innovation=10, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
             };
 
             var innovationList = new List<Innovations>();
@@ -81,22 +81,22 @@ namespace Test
         public static void AddNodeTest()
         {
             var NodeGens = new List<NodeGenesModel>() {
+                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  }
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  }
             };
 
             var Connectionlist = new List<ConnectionGenesModel>()
             {
-                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
-                new ConnectionGenesModel { InNode=2, OutNode=4, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=2, OutNode=5, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
-                new ConnectionGenesModel { InNode=5, OutNode=4, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
-                new ConnectionGenesModel { InNode=1, OutNode=5, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=4, OutNode=5, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
+                new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
+                new ConnectionGenesModel { InNode=4, OutNode=3, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
+                new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
             };
 
             var innovationList = new List<Innovations>();
@@ -133,31 +133,31 @@ namespace Test
         public static void AddConnectionTest()
         {
             var NodeGens = new List<NodeGenesModel>() {
+                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=6, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=7, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=8, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=9, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=10, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  }
+                new NodeGenesModel { NodeNumber=9, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  }
             };
 
             var Connectionlist = new List<ConnectionGenesModel>()
             {
-                new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
-                new ConnectionGenesModel { InNode=2, OutNode=4, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
-                new ConnectionGenesModel { InNode=4, OutNode=5, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
-                new ConnectionGenesModel { InNode=4, OutNode=6, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
-                new ConnectionGenesModel { InNode=4, OutNode=7, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=5, OutNode=8, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=6, OutNode=10, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=7, OutNode=9, Innovation=9, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=8, OutNode=10, Innovation=10, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=9, OutNode=10, Innovation=11, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
+                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
+                new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
+                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
+                new ConnectionGenesModel { InNode=3, OutNode=5, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
+                new ConnectionGenesModel { InNode=3, OutNode=6, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=4, OutNode=7, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=5, OutNode=9, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=6, OutNode=8, Innovation=9, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=7, OutNode=9, Innovation=10, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+                new ConnectionGenesModel { InNode=8, OutNode=9, Innovation=11, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
 
             };
 
@@ -203,6 +203,13 @@ namespace Test
                 foreach (var itm in el.NodeGens)
                 {
                     var line = "Number: " + itm.NodeNumber + ", Typ: " + itm.Type.ToString();
+                    line += ", SourceNodes: ";
+                    foreach (var it in itm.SourceNodes)
+                        line += " " +it;
+                    line += ", TargetNodes: ";
+                    foreach (var it in itm.TargetNodes)
+                        line += " " + it;
+
                     lines.Add(line);
                 }
                 lines.Add("Connections: ");
