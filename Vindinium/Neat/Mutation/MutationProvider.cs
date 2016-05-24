@@ -129,9 +129,12 @@ namespace vindinium.NEAT.Mutation
             var inNodeIdx = genotype.GenomeConnection[chooseConnection].InNode;
             var outNodeIdx = genotype.GenomeConnection[chooseConnection].OutNode;
 
+            genotype.NodeGens[inNodeIdx].TargetNodes.Remove(outNodeIdx);
+            genotype.NodeGens[outNodeIdx].SourceNodes.Remove(inNodeIdx);
+
             var newNodeGen = new NodeGenesModel
             {
-                NodeNumber = genotype.NodeGens.Count,
+                NodeNumber = genotype.NodeGens.Count-1,
                 Type = NodeType.Hidden,
                 TargetNodes = new HashSet<int>(),
                 SourceNodes = new HashSet<int>(),
