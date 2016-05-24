@@ -136,8 +136,8 @@ namespace vindinium.NEAT.Mutation
             {
                 NodeNumber = genotype.NodeGens.Count-1,
                 Type = NodeType.Hidden,
-                TargetNodes = new HashSet<int>() { outNodeIdx },
-                SourceNodes = new HashSet<int>() { inNodeIdx },
+                TargetNodes = new HashSet<int>(),
+                SourceNodes = new HashSet<int>(),
             };
 
             genotype.NodeGens.Add(newNodeGen);
