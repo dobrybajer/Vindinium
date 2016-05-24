@@ -6,7 +6,7 @@ namespace vindinium.Singletons
     {
         #region  Neural Network
 
-        public static int InputLayerNeuronsCount { get; set; } = 9;
+        public static int InputLayerNeuronsCount { get; set; } = 8;
 
         public static int OutputLayerNeuronsCount { get; set; } = 6;
 
@@ -50,7 +50,7 @@ namespace vindinium.Singletons
 
         public static string ServerUrl { get; set; } = DefaultServerUrl;
 
-        public static uint ServerNumberOfTurns { get; set; } = 10;
+        public static uint ServerNumberOfTurns { get; set; } = 40;
 
         #endregion
 

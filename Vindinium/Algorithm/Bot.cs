@@ -129,12 +129,14 @@ namespace vindinium.Algorithm
         /// <returns>Distances to all given mines from given position.</returns>
         private Dictionary<Pos, int> GetDistancesToMines(Pos from = null, bool notNeutral = false)
         {
-            var minesList = notNeutral ? GetAllMines(true) : _allMinesPositions;
+            // TODO what if we own all mines? Then there is no place to go and we will stay. Should be handled somehow, but possibility of this situation is rather small
+            var minesList = GetAllMines(notNeutral && ServerStuff.Heroes.Where(h => h.id != 0).Sum(h => h.mineCount) > 0);
+
             var dict = new Dictionary<Pos, int>();
 
             foreach (var t in minesList)
             {
-                var x = FindPathLength(from ?? ServerStuff.MyHero.pos, t);
+                var x = FindPathLength(from ?? new Pos { x = ServerStuff.MyHero.pos.y, y = ServerStuff.MyHero.pos.x }, t);
                 dict.Add(t, x);
             }
 
@@ -144,7 +146,7 @@ namespace vindinium.Algorithm
         protected double GetDistanceToClosestMine(Pos from = null, bool notNeutral = false)
         {
             var distanceToMines = GetDistancesToMines(from, notNeutral);
-            return distanceToMines.Count > 0 ? distanceToMines.Values.Min() : 1;
+            return distanceToMines.Count > 0 ? distanceToMines.Values.Min() : MaxBoardDistance;
         }
 
         /// <summary>
@@ -175,7 +177,7 @@ namespace vindinium.Algorithm
 
             foreach (var t in _allTavernsPositions)
             {
-                var x = FindPathLength(from ?? ServerStuff.MyHero.pos, t);
+                var x = FindPathLength(from ?? new Pos { x = ServerStuff.MyHero.pos.y, y = ServerStuff.MyHero.pos.x }, t);
                 dict.Add(t, x);
             }
 
@@ -212,20 +214,35 @@ namespace vindinium.Algorithm
 
             foreach (var t in enemiesList)
             {
-                var x = FindPathLength(from ?? ServerStuff.MyHero.pos, t.Key);
+                var x = FindPathLength(from ?? new Pos { x = ServerStuff.MyHero.pos.y, y = ServerStuff.MyHero.pos.x } , t.Key);
                 dict.Add(t.Value, x);
             }
 
             return dict;
         }
 
-        protected double GetDistanceToClosestEnemy(Pos pos = null, int? numberOfEnemy = null)
+        protected double GetDistanceToClosestEnemy(Pos pos = null, int? option = null)
         {
             var distanceToEnemies = GetDistancesToEnemies(pos);
 
-            if (!numberOfEnemy.HasValue) return distanceToEnemies.Values.Min();
+            if (!option.HasValue) return distanceToEnemies.Values.Min();
 
-            var specificEnemy = distanceToEnemies.Keys.First(e => e.id == numberOfEnemy.Value);
+            Hero specificEnemy;
+            switch (option.Value)
+            {
+                case 1:
+                    specificEnemy = distanceToEnemies.Keys.Aggregate((i, j) => i.gold > j.gold ? i : j);
+                    break;
+                case 2:
+                    specificEnemy = distanceToEnemies.Keys.Aggregate((i, j) => i.life < j.life ? i : j);
+                    break;
+                case 3:
+                    specificEnemy = distanceToEnemies.Keys.Aggregate((i, j) => i.mineCount > j.mineCount ? i : j);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             return distanceToEnemies[specificEnemy];
         }
 
@@ -323,7 +340,11 @@ namespace vindinium.Algorithm
             if (x >= 0)
             {
                 value = delegateFunction(new Pos { x = x, y = y }, par);
-                if (value < closestObject) bestDirection = Direction.West;
+                if (value < closestObject && (closestObject <= 2 || board[x][y] == Tile.FREE))
+                {
+                    bestDirection = Direction.West;
+                    closestObject = value;
+                }
             }
             
             // ------ RIGHT ------
@@ -333,7 +354,11 @@ namespace vindinium.Algorithm
             if (x < board.Length)
             {
                 value = delegateFunction(new Pos { x = x, y = y }, par);
-                if (value < closestObject) bestDirection = Direction.East;
+                if (value < closestObject && (closestObject <= 2 || board[x][y] == Tile.FREE))
+                {
+                    bestDirection = Direction.East;
+                    closestObject = value;
+                }
             }
             
             // ------ UP ------
@@ -343,7 +368,11 @@ namespace vindinium.Algorithm
             if (y >= 0)
             {
                 value = delegateFunction(new Pos { x = x, y = y }, par);
-                if (value < closestObject) bestDirection = Direction.North;
+                if (value < closestObject && (closestObject <= 2 || board[x][y] == Tile.FREE))
+                {
+                    bestDirection = Direction.North;
+                    closestObject = value;
+                }
             }
             
             // ------ DOWN ------
@@ -353,7 +382,8 @@ namespace vindinium.Algorithm
             if (y < board.Length)
             {
                 value = delegateFunction(new Pos { x = x, y = y }, par);
-                if (value < closestObject) bestDirection = Direction.South;
+                if (value < closestObject && (closestObject <= 2 || board[x][y] == Tile.FREE))
+                    bestDirection = Direction.South;
             }
             
             return bestDirection;
