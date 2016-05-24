@@ -20,6 +20,7 @@ namespace vindinium.NEAT
         {
             this.crossoverProvider = crossoverProvider;
             this.mutationProvider = mutationProvider;
+            CreateNodeGeneParameters();
         }
 
         private void CreateNodeGeneParameters()
