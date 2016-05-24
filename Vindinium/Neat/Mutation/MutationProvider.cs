@@ -100,7 +100,7 @@ namespace vindinium.NEAT.Mutation
                     OutNode = outNode,
                     Weight = (double)RandomGenerator.Next(0, 100) / 100,
                     Status = ConnectionStatus.Enabled,
-                    Innovation = currentInnovaton + 1,
+                    Innovation = currentInnovaton,
                 });
 
                 genotype.NodeGens[inNode].TargetNodes.Add(outNode);

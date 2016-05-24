@@ -18,8 +18,8 @@ namespace Test
         static void Main(string[] args)
         {
             MutationAddConnecionTest();
-            AddConnectionTest();
-            AddNodeTest();
+           // AddConnectionTest();
+           // AddNodeTest();
             //CrossoverTest();
 
         }
@@ -234,6 +234,7 @@ namespace Test
                 RandomGenerator = new MockRandom {ValueToReturn = new[] {2, 4}}
             };
             var newGenotype = mutationProvider.MutateAddConnection(genotype1, innovationList);
+            WriteToFile(newGenotype, "ttt.txt");
         }
 
         public static void WriteToFile(List<Genotype> genotype, string nameFile)
