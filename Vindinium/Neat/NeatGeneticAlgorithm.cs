@@ -50,6 +50,7 @@ namespace vindinium.NEAT
             {
                 var genomeId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette.RemoveOutcome(genomeId);
+                if(mutatedGenomesId.Contains(genomeId)) continue;;
                 mutatedGenomesId.Add(genomeId);
                 outputPopulation.Add(mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters,ref innovationsList));
             }
@@ -79,8 +80,12 @@ namespace vindinium.NEAT
             for (int i = 0; i < attemptsCount; i++)
             {
                 var parentOneId = DiscreteDistributionUtils.Sample(roulette, random);
+                while (crossoveredGenomesId.Contains(parentOneId))
+                    parentOneId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette.RemoveOutcome(parentOneId);
                 var parentTwoId = DiscreteDistributionUtils.Sample(roulette, random);
+                while (crossoveredGenomesId.Contains(parentTwoId))
+                    parentTwoId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette.RemoveOutcome(parentTwoId);
                 crossoveredGenomesId.Add(parentOneId);
                 crossoveredGenomesId.Add(parentTwoId);

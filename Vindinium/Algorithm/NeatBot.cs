@@ -270,7 +270,7 @@ namespace vindinium.Algorithm
                 var innovationsList = _initialGenomeBuilder.InitInnovationList(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount);
                 var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
                 var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
-
+                changedPartBestPopulation2.AddRange(partBestPopulation2.Take(partBestPopulation2.Count-changedPartBestPopulation2.Count));
                 parentPopulation = new List<Genotype>();
                 parentPopulation.AddRange(changedPartBestPopulation1);
                 parentPopulation.AddRange(changedPartBestPopulation2);
