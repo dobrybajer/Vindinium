@@ -53,5 +53,20 @@ namespace vindinium.Singletons
                 reader?.Close();
             }
         }
+
+        public static bool FileExist(int generationNumber, int populationCount, string map, string activationFunction, uint turns)
+        {
+            return File.Exists(Parameters.DefaultPathToWrittenFiles + "generation" + generationNumber + "_populationCount" + populationCount + "_" + map + "_activationFunction" + activationFunction + "_turns" + turns + ".txt");
+        }
+
+        public static void WriteGenerationToFile<T>(T objectToWrite, int generationNumber, int populationCount, string map, string activationFunction, uint turns) where T : new()
+        {
+            WriteToJsonFile("generation" + generationNumber + "_populationCount" + populationCount + "_" + map + "_activationFunction" + activationFunction + "_turns" + turns + ".txt", objectToWrite);
+        }
+
+        public static T ReadGenerationFromFile<T>(int generationNumber, int populationCount, string map, string activationFunction, uint turns) where T : new()
+        {
+            return ReadFromJsonFile<T>("generation" + generationNumber + "_populationCount" + populationCount + "_" + map + "_activationFunction" + activationFunction + "_turns" + turns + ".txt");
+        }
     }
 }
