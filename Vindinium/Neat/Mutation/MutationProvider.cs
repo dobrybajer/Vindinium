@@ -127,7 +127,8 @@ namespace vindinium.NEAT.Mutation
                 chooseConnection = random.Next(1, connectionNumber);
                 if (genotype.GenomeConnection[chooseConnection].Status == ConnectionStatus.Enabled)
                     stop = true;
-            }
+            }            
+
             genotype.GenomeConnection[chooseConnection].Status = ConnectionStatus.Disabled;
 
             var inNodeIdx = genotype.GenomeConnection[chooseConnection].InNode;
@@ -141,7 +142,7 @@ namespace vindinium.NEAT.Mutation
 
             var newNodeGen = new NodeGenesModel
             {
-                NodeNumber = genotype.NodeGens.Count-1,
+                NodeNumber = genotype.NodeGens.Count ,
                 Type = NodeType.Hidden,
                 TargetNodes = new HashSet<int>(),
                 SourceNodes = new HashSet<int>(),
@@ -184,8 +185,8 @@ namespace vindinium.NEAT.Mutation
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = genotype.NodeGens.Count,
-                OutNode = genotype.GenomeConnection[chooseConnection].OutNode,
+                InNode = newNodeGen.NodeNumber,
+                OutNode = outNodeIdx,
                 Weight = (double)random.Next(0, 100) / 100,
                 Status = ConnectionStatus.Enabled,
                 Innovation = currentInnovaton + 1,
