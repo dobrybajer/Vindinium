@@ -84,19 +84,13 @@ namespace vindinium.NEAT
                 var parentTwoId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette = roulette.RemoveOutcome(parentTwoId);
 
-                if (genotypes[parentOneId].Value < genotypes[parentTwoId].Value)
-                    crossoveredGenomesId.Add(parentOneId);
-                else
-                    crossoveredGenomesId.Add(parentTwoId);
+                crossoveredGenomesId.Add(genotypes[parentOneId].Value < genotypes[parentTwoId].Value
+                    ? parentOneId
+                    : parentTwoId);
                 outputPopulation.Add(crossoverProvider.CrossoverGenotype(genotypes[parentOneId], genotypes[parentTwoId]));
             }
 
-            for (int i = 0; i < genotypes.Count; i++)
-            {
-                var genotype = genotypes[i];
-                if (!crossoveredGenomesId.Contains(i))
-                    outputPopulation.Add(genotype);
-            }
+            outputPopulation.AddRange(genotypes.Where((genotype, i) => !crossoveredGenomesId.Contains(i)));
 
             return outputPopulation;
         }

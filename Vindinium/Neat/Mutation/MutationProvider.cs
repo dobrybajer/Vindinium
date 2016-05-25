@@ -23,10 +23,10 @@ namespace vindinium.NEAT.Mutation
                 switch (outcome)
                 {
                     case 0:
-                        mutatedGenotype = MutateAddNode(genotype, innovations); //zmienić
+                        mutatedGenotype = MutateAddNode(genotype, ref innovations); 
                         break;
                     case 1:
-                        mutatedGenotype = MutateAddConnection(genotype, innovations);//Zmienić 
+                        mutatedGenotype = MutateAddConnection(genotype, ref innovations); 
                         break;
                     case 2:
                         mutatedGenotype = MutateDeleteConnection(genotype);
@@ -37,7 +37,7 @@ namespace vindinium.NEAT.Mutation
                     default:
                         throw new ArgumentException(nameof(outcome));
                 }
-                if (mutatedGenotype == null && OnMutationFailed(rouletteWheelLayoutCurrent, outcome)) return null;
+                //if (mutatedGenotype == null && OnMutationFailed(rouletteWheelLayoutCurrent, outcome)) return null;
             }
             return mutatedGenotype;
         }
@@ -50,7 +50,7 @@ namespace vindinium.NEAT.Mutation
             return false;
         }
 
-        public Genotype MutateAddConnection(Genotype genotype, List<Innovations> innovation)
+        public Genotype MutateAddConnection(Genotype genotype, ref List<Innovations> innovation)
         {
             var nodeNumber = genotype.NodeGens.Count;
 
@@ -115,7 +115,7 @@ namespace vindinium.NEAT.Mutation
 
         }
 
-        public Genotype MutateAddNode(Genotype genotype, List<Innovations> innovation)
+        public Genotype MutateAddNode(Genotype genotype, ref List<Innovations> innovation)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
 

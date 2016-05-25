@@ -12,7 +12,7 @@ namespace vindinium.NEAT
             var inputNodes = new List<NodeGenesModel>();
             var outputNodes = new List<NodeGenesModel>();
             var connections = new List<ConnectionGenesModel>();
-
+            var innovationCout = 1;
             for (var i = 0; i < inputNodesCount; i++)
             {
                 var targetNodes = new HashSet<int>();
@@ -24,9 +24,11 @@ namespace vindinium.NEAT
                         OutNode = j,
                         IsMutated = false,
                         Status = ConnectionStatus.Enabled,
-                        Weight = (double) random.Next(0, 100)/100
+                        Weight = (double) random.Next(0, 100)/100,
+                        Innovation = innovationCout
                     });
                     targetNodes.Add(j);
+                    innovationCout++;
                 }
 
                 var node = new NodeGenesModel
@@ -37,6 +39,7 @@ namespace vindinium.NEAT
                     TargetNodes = targetNodes
                 };
                 inputNodes.Add(node);
+
             }
 
             for (var i = inputNodesCount; i < outputNodesCount + inputNodesCount; i++)
