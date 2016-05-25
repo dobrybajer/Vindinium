@@ -215,7 +215,7 @@ namespace vindinium.Algorithm
             {
                 if (ObjectManager.FileExist(j, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns))
                 {
-                    startIndex = j + 1;
+                    startIndex = j;
                     readFromFile = true;
                 }
             }
@@ -268,11 +268,11 @@ namespace vindinium.Algorithm
                 var partBestPopulation1 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
                 var partBestPopulation2 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
 
-                var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
+                //var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
                 var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
 
                 parentPopulation = new List<Genotype>();
-                parentPopulation.AddRange(changedPartBestPopulation1);
+                parentPopulation.AddRange(changedPartBestPopulation2);
                 parentPopulation.AddRange(changedPartBestPopulation2);
             }
 

@@ -8,6 +8,7 @@ namespace vindinium.NEAT.Mutation
     public class MutationProvider : IMutationProvider
     {
         public IRandomGenerator RandomGenerator { get; set; } = new RandomGenerator();
+
         public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters, ref List<Innovations> innovations)
         {
             var xorRandom = new XorShiftRandom();
@@ -37,7 +38,8 @@ namespace vindinium.NEAT.Mutation
                     default:
                         throw new ArgumentException(nameof(outcome));
                 }
-                //if (mutatedGenotype == null && OnMutationFailed(rouletteWheelLayoutCurrent, outcome)) return null;
+                if (mutatedGenotype == null && OnMutationFailed(rouletteWheelLayoutCurrent, outcome))
+                    throw new ArgumentException($"Empty mutated genotype (null) from case: {outcome}");
             }
             return mutatedGenotype;
         }
@@ -45,9 +47,7 @@ namespace vindinium.NEAT.Mutation
         private bool OnMutationFailed(DiscreteDistribution rouletteWheelLayoutCurrent, int outcome)
         {
             rouletteWheelLayoutCurrent = rouletteWheelLayoutCurrent.RemoveOutcome(outcome);
-            if (0 == rouletteWheelLayoutCurrent.Probabilities.Length)
-                return true;
-            return false;
+            return 0 == rouletteWheelLayoutCurrent.Probabilities.Length;
         }
 
         public Genotype MutateAddConnection(Genotype genotype, ref List<Innovations> innovation)
@@ -60,71 +60,68 @@ namespace vindinium.NEAT.Mutation
             var outNode = 0;
             while (!stop)
             {
-                outNode = RandomGenerator.Next(0, nodeNumber-1);
+                outNode = RandomGenerator.Next(1, nodeNumber);
                 if (isInNodeInput && genotype.NodeGens[outNode - 1].Type != NodeType.Input && outNode != inNode)
                     stop = true;
                 else if (!isInNodeInput && outNode != inNode)
                     stop = true;
             }
 
-            //if (inNode > outNode)
-            //{
-            //    var tmp = inNode;
-            //    inNode = outNode;
-            //    outNode = tmp;
-            //}
-            var isConnection = IsConnectionInGenotype(inNode, outNode, genotype);
-            var currentInnovaton = 0;
-
-            if (!isConnection)
+            if (inNode > outNode)
             {
-
-                currentInnovaton = innovation.Count == 0 ? 0 : innovation[innovation.Count - 1].InnovationNumber + 1;
-
-                foreach (var el in innovation)
-                    if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
-                        currentInnovaton = el.InnovationNumber;
-
-
-                if ((currentInnovaton == 1 && innovation.Count == 0 )|| currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
-                {
-                    innovation.Add(new Innovations
-                    {
-                        InnovationNumber = currentInnovaton ,
-                        InNode = inNode,
-                        OutNode = outNode
-                    });
-                }
-                genotype.GenomeConnection.Add(new ConnectionGenesModel
-                {
-                    InNode = inNode,
-                    OutNode = outNode,
-                    Weight = (double)RandomGenerator.Next(0, 100) / 100,
-                    Status = ConnectionStatus.Enabled,
-                    Innovation = currentInnovaton,
-                });
-
-                var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
-                var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
-
-                genotype.NodeGens[sourceNode[0]].TargetNodes.Add(outNode);
-                genotype.NodeGens[targetNode[0]].SourceNodes.Add(inNode);
+                var tmp = inNode;
+                inNode = outNode;
+                outNode = tmp;
             }
 
-            return genotype;
+            var isConnection = IsConnectionInGenotype(inNode, outNode, genotype);
 
+            if (isConnection) return genotype;
+
+            //var currentInnovaton = innovation.Count == 0 ? 0 : innovation[innovation.Count - 1].InnovationNumber + 1;
+            var currentInnovaton = innovation.LastOrDefault()?.InnovationNumber + 1 ?? 1;
+            foreach (var el in innovation)
+                if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
+                    currentInnovaton = el.InnovationNumber;
+
+            if (currentInnovaton == 1 || currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
+            {
+                innovation.Add(new Innovations
+                {
+                    InnovationNumber = currentInnovaton,
+                    InNode = inNode,
+                    OutNode = outNode
+                });
+            }
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = inNode,
+                OutNode = outNode,
+                Weight = (double)RandomGenerator.Next(0, 100) / 100,
+                Status = ConnectionStatus.Enabled,
+                Innovation = currentInnovaton,
+            });
+
+            //var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
+            //var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
+            genotype.NodeGens[inNode].TargetNodes.Add(outNode);
+            genotype.NodeGens[outNode].SourceNodes.Add(inNode);
+            //genotype.NodeGens[sourceNode[0]].TargetNodes.Add(outNode);
+            //genotype.NodeGens[targetNode[0]].SourceNodes.Add(inNode);
+
+            return genotype;
         }
 
         public Genotype MutateAddNode(Genotype genotype, ref List<Innovations> innovation)
         {
-            var connectionNumber = genotype.GenomeConnection.Count;
+            var connectionNumber = genotype.GenomeConnection.Count - 1;
 
             var random = new Random();
             var stop = false;
             var chooseConnection = 0;
             while (!stop)
             {
-                chooseConnection = random.Next(1, connectionNumber);
+                chooseConnection = random.Next(0, connectionNumber);
                 if (genotype.GenomeConnection[chooseConnection].Status == ConnectionStatus.Enabled)
                     stop = true;
             }            
@@ -134,31 +131,32 @@ namespace vindinium.NEAT.Mutation
             var inNodeIdx = genotype.GenomeConnection[chooseConnection].InNode;
             var outNodeIdx = genotype.GenomeConnection[chooseConnection].OutNode;
 
-            var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNodeIdx).Select(s => s.NodeNumber).ToList();
-            var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNodeIdx).Select(s => s.NodeNumber).ToList();
+            //var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNodeIdx).Select(s => s.NodeNumber).ToList();
+            //var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNodeIdx).Select(s => s.NodeNumber).ToList();
 
-            genotype.NodeGens[sourceNode[0]].TargetNodes.Remove(outNodeIdx);
-            genotype.NodeGens[targetNode[0]].SourceNodes.Remove(inNodeIdx);
+            //genotype.NodeGens[sourceNode[0]].TargetNodes.Remove(outNodeIdx);
+            //genotype.NodeGens[targetNode[0]].SourceNodes.Remove(inNodeIdx);
+            genotype.NodeGens[inNodeIdx].TargetNodes.Remove(outNodeIdx);
+            genotype.NodeGens[outNodeIdx].SourceNodes.Remove(inNodeIdx);
 
             var newNodeGen = new NodeGenesModel
             {
-                NodeNumber = genotype.NodeGens.Count ,
+                NodeNumber = genotype.NodeGens.Count,
                 Type = NodeType.Hidden,
-                TargetNodes = new HashSet<int>(),
-                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> {outNodeIdx},
+                SourceNodes = new HashSet<int> {inNodeIdx},
             };
 
             genotype.NodeGens.Add(newNodeGen);
 
-            int currentInnovaton;
-
-            currentInnovaton = innovation.Count == 0 ? 1 : innovation[innovation.Count - 1].InnovationNumber + 1;
+            //var currentInnovaton = innovation.Count == 0 ? 1 : innovation[innovation.Count - 1].InnovationNumber + 1;
+            var currentInnovaton = innovation.LastOrDefault()?.InnovationNumber + 1 ?? 1;
 
             foreach (var el in innovation)
                 if (el.InNode == inNodeIdx && el.OutNode == newNodeGen.NodeNumber || el.InNode == newNodeGen.NodeNumber && el.OutNode == inNodeIdx)
                     currentInnovaton = el.InnovationNumber;
 
-            if ((currentInnovaton == 1 && innovation.Count == 0 )|| currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
+            if (currentInnovaton == 1 || currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
             {
                 innovation.Add(new Innovations
                 {
@@ -192,15 +190,14 @@ namespace vindinium.NEAT.Mutation
                 Innovation = currentInnovaton + 1,
             });
 
-            genotype.NodeGens[sourceNode[0]].TargetNodes.Add(newNodeGen.NodeNumber);
-            genotype.NodeGens[targetNode[0]].SourceNodes.Add(newNodeGen.NodeNumber);
-            var tmp = newNodeGen.NodeNumber;
-            genotype.NodeGens[tmp].TargetNodes.Add(outNodeIdx);
-            genotype.NodeGens[tmp].SourceNodes.Add(inNodeIdx);
+            genotype.NodeGens[inNodeIdx].TargetNodes.Add(newNodeGen.NodeNumber);
+            genotype.NodeGens[outNodeIdx].SourceNodes.Add(newNodeGen.NodeNumber);
+            //var tmp = newNodeGen.NodeNumber;
+            //genotype.NodeGens[tmp].TargetNodes.Add(outNodeIdx);
+            //genotype.NodeGens[tmp].SourceNodes.Add(inNodeIdx);
 
             return genotype;
         }
-
 
         private Genotype MutateDeleteConnection(Genotype genotype)
         {
@@ -208,16 +205,18 @@ namespace vindinium.NEAT.Mutation
             var random = new Random();
             var choosenConnectionId = random.Next(1, connectionNumber);
 
-            genotype.GenomeConnection[choosenConnectionId].Status = ConnectionStatus.Disabled;
+            genotype.GenomeConnection[choosenConnectionId - 1].Status = ConnectionStatus.Disabled;
 
             var inNode = genotype.GenomeConnection[choosenConnectionId].InNode;
             var outNode = genotype.GenomeConnection[choosenConnectionId].OutNode;
 
-            var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
-            var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
+            //var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
+            //var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
 
-            genotype.NodeGens[sourceNode[0]].TargetNodes.Remove(outNode);
-            genotype.NodeGens[targetNode[0]].SourceNodes.Remove(inNode);
+            genotype.NodeGens[inNode].TargetNodes.Remove(outNode);
+            genotype.NodeGens[outNode].SourceNodes.Remove(inNode);
+            //genotype.NodeGens[sourceNode[0]].TargetNodes.Remove(outNode);
+            //genotype.NodeGens[targetNode[0]].SourceNodes.Remove(inNode);
 
             return genotype;
         }
@@ -228,7 +227,7 @@ namespace vindinium.NEAT.Mutation
             var random = new Random();
             var choosenConnectionId = random.Next(1, connectionNumber);
 
-            genotype.GenomeConnection[choosenConnectionId].Weight = (double)random.Next(0, 100) / 100;
+            genotype.GenomeConnection[choosenConnectionId - 1].Weight = (double)random.Next(0, 100) / 100;
             return genotype;
         }
 
