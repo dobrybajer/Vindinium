@@ -39,7 +39,6 @@ namespace vindinium.Algorithm
         protected override string GetDirection()
         {
             return Compute();
-            //return Direction.GetRandomDirection();
         }
 
         #endregion
@@ -208,50 +207,69 @@ namespace vindinium.Algorithm
         {
             ServerStuff = new ServerStuff(Parameters.ServerSecretKey, true, Parameters.ServerNumberOfTurns, Parameters.ServerUrl, map);
 
-            var parentPopulation = new List<Genotype>();
-
             Console.Out.WriteLine($"-------------------------------------PHASE ONE STARTED (map {map})-------------------------------------");
 
+            var readFromFile = false;
+            var startIndex = 0;
             for (var j = 0; j < Parameters.GenerationsPhaseOneCount; j++)
             {
-                var population = new List<Genotype>();
-
-                Console.Out.WriteLine("-------------------------------------");
-                Console.Out.WriteLine($"Generation nr: {j}");
-
-                var watch = new Stopwatch();
-                watch.Start();
-
-                for (var i = 0; i < Parameters.PopulationCount; i++)
+                if (ObjectManager.FileExist(j, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns))
                 {
-                    var genotype = j == 0 ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount) : parentPopulation[i];
-
-                    CurrentModel = genotype;
-
-                    Console.Out.WriteLine($"Genotype nr: {i}");
-
-                    Run();
-
-                    Console.Out.WriteLine($"Score (gold): {ServerStuff.MyHero.gold}");
-
-                    genotype.Value = ServerStuff.MyHero.gold;
-                    population.Add(genotype);
+                    startIndex = j + 1;
+                    readFromFile = true;
                 }
+            }
 
-                watch.Stop();
+            var parentPopulation = startIndex != 0 ? ObjectManager.ReadGenerationFromFile<List<Genotype>>(startIndex - 1, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns) : new List<Genotype>();
 
-                Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
+            for (var j = startIndex; j < Parameters.GenerationsPhaseOneCount; j++)
+            {
+                var population = new List<Genotype>();
+                
+                if (!readFromFile)
+                {
+                    Console.Out.WriteLine($"Generation nr: {j}");
+                    Console.Out.WriteLine("-------------------------------------");
 
+                    var watch = new Stopwatch();
+                    watch.Start();
 
+                    for (var i = 0; i < Parameters.PopulationCount; i++)
+                    {
+                        var genotype = j == 0 ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount,  Parameters.OutputLayerNeuronsCount) : parentPopulation[i];
+
+                        CurrentModel = genotype;
+
+                        Console.Out.WriteLine($"Genotype nr: {i}");
+
+                        Run(true);
+
+                        Console.Out.WriteLine($"Score (gold): {ServerStuff.MyHero.gold}");
+                        Console.Out.WriteLine("________________________________________");
+
+                        genotype.Value = ServerStuff.MyHero.gold;
+                        population.Add(genotype);
+                    }
+
+                    ObjectManager.WriteGenerationToFile(population, j, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns);
+
+                    watch.Stop();
+
+                    Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
+                }
+                else
+                {
+                    readFromFile = false;
+                    population = parentPopulation;
+                    Console.Out.WriteLine($"Generation {j - 1} read from file.");
+                }
+                
                 var partBestPopulation1 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
                 var partBestPopulation2 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
-                //var partWorsePopulation = population.OrderBy(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
 
                 var innovationsList = _initialGenomeBuilder.InitInnovationList(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount);
                 var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
                 var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
-                //var changedPartWorsePopulation = _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partWorsePopulation);
-
 
                 parentPopulation = new List<Genotype>();
                 parentPopulation.AddRange(changedPartBestPopulation1);
