@@ -60,19 +60,19 @@ namespace vindinium.NEAT.Mutation
             var outNode = 0;
             while (!stop)
             {
-                outNode = RandomGenerator.Next(1, nodeNumber);
+                outNode = RandomGenerator.Next(0, nodeNumber-1);
                 if (isInNodeInput && genotype.NodeGens[outNode - 1].Type != NodeType.Input && outNode != inNode)
                     stop = true;
                 else if (!isInNodeInput && outNode != inNode)
                     stop = true;
             }
 
-            if (inNode > outNode)
-            {
-                var tmp = inNode;
-                inNode = outNode;
-                outNode = tmp;
-            }
+            //if (inNode > outNode)
+            //{
+            //    var tmp = inNode;
+            //    inNode = outNode;
+            //    outNode = tmp;
+            //}
             var isConnection = IsConnectionInGenotype(inNode, outNode, genotype);
             var currentInnovaton = 0;
 
@@ -86,7 +86,7 @@ namespace vindinium.NEAT.Mutation
                         currentInnovaton = el.InnovationNumber;
 
 
-                if (currentInnovaton == 1 || currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
+                if ((currentInnovaton == 1 && innovation.Count == 0 )|| currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
                 {
                     innovation.Add(new Innovations
                     {
@@ -158,7 +158,7 @@ namespace vindinium.NEAT.Mutation
                 if (el.InNode == inNodeIdx && el.OutNode == newNodeGen.NodeNumber || el.InNode == newNodeGen.NodeNumber && el.OutNode == inNodeIdx)
                     currentInnovaton = el.InnovationNumber;
 
-            if (currentInnovaton == 1 || currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
+            if ((currentInnovaton == 1 && innovation.Count == 0 )|| currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
             {
                 innovation.Add(new Innovations
                 {
@@ -211,7 +211,7 @@ namespace vindinium.NEAT.Mutation
             genotype.GenomeConnection[choosenConnectionId].Status = ConnectionStatus.Disabled;
 
             var inNode = genotype.GenomeConnection[choosenConnectionId].InNode;
-            var outNode = genotype.GenomeConnection[choosenConnectionId].InNode;
+            var outNode = genotype.GenomeConnection[choosenConnectionId].OutNode;
 
             var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
             var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();

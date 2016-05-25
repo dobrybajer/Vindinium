@@ -17,9 +17,9 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            MutationAddConnecionTest();
-           // AddConnectionTest();
-           // AddNodeTest();
+           // MutationAddConnecionTest();
+            AddConnectionTest();
+            AddNodeTest();
             //CrossoverTest();
 
         }
@@ -83,11 +83,11 @@ namespace Test
         public static void AddNodeTest()
         {
             var NodeGens = new List<NodeGenesModel>() {
-                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  },
-                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>()  }
+         new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 4 }  },
+                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 }  },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3 }  },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4, 2 }, TargetNodes=new HashSet<int>()   },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 1 }, TargetNodes=new HashSet<int>() { 3 } }
             };
 
             var Connectionlist = new List<ConnectionGenesModel>()
@@ -98,10 +98,10 @@ namespace Test
                 new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
                 new ConnectionGenesModel { InNode=4, OutNode=3, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
                 new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-                new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
+               
             };
 
-            var innovationList = new List<Innovations>();
+            var innovationList = new List<Innovations>() ;
 
             var genotyp1 = new Genotype(Connectionlist, NodeGens);
 
@@ -117,7 +117,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                var newGenotyp = MutationProvider.MutateAddNode(genotypeList[i], innovationList);
+                var newGenotyp = MutationProvider.MutateAddNode(genotypeList[i],ref innovationList);
                 genotypeList.Add(
                     new Genotype()
                     {
@@ -163,7 +163,7 @@ namespace Test
 
             };
 
-            var innovationList = new List<Innovations>();
+            var innovationList = new List<Innovations>() { new Innovations { InNode = 9, OutNode = 7, InnovationNumber = 0 } };
 
             // var genotyp1 = new Genotype(Connectionlist, NodeGens);
 
@@ -181,7 +181,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                var newGenotyp = MutationProvider.MutateAddConnection(genotypeList[i], innovationList);
+                var newGenotyp = MutationProvider.MutateAddConnection(genotypeList[i],ref innovationList);
                 genotypeList.Add(
                     new Genotype()
                     {
@@ -233,7 +233,7 @@ namespace Test
             {
                 RandomGenerator = new MockRandom {ValueToReturn = new[] {2, 4}}
             };
-            var newGenotype = mutationProvider.MutateAddConnection(genotype1, innovationList);
+            var newGenotype = mutationProvider.MutateAddConnection(genotype1, ref innovationList);
             WriteToFile(newGenotype, "ttt.txt");
         }
 
