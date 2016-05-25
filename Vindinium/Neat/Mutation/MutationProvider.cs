@@ -1,6 +1,7 @@
 ﻿using System;
 using Redzen.Numerics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace vindinium.NEAT.Mutation
 {
@@ -103,8 +104,11 @@ namespace vindinium.NEAT.Mutation
                     Innovation = currentInnovaton,
                 });
 
-                genotype.NodeGens[inNode].TargetNodes.Add(outNode);
-                genotype.NodeGens[outNode].SourceNodes.Add(inNode);
+                var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
+                var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
+
+                genotype.NodeGens[sourceNode[0]].TargetNodes.Add(outNode);
+                genotype.NodeGens[targetNode[0]].SourceNodes.Add(inNode);
             }
 
             return genotype;
@@ -129,9 +133,15 @@ namespace vindinium.NEAT.Mutation
             var inNodeIdx = genotype.GenomeConnection[chooseConnection].InNode;
             var outNodeIdx = genotype.GenomeConnection[chooseConnection].OutNode;
 
+            var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNodeIdx).Select(s => s.NodeNumber).ToList();
+            var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNodeIdx).Select(s => s.NodeNumber).ToList();
+
+            genotype.NodeGens[sourceNode[0]].TargetNodes.Remove(outNodeIdx);
+            genotype.NodeGens[targetNode[0]].SourceNodes.Remove(inNodeIdx);
+
             var newNodeGen = new NodeGenesModel
             {
-                NodeNumber = genotype.NodeGens.Count,
+                NodeNumber = genotype.NodeGens.Count-1,
                 Type = NodeType.Hidden,
                 TargetNodes = new HashSet<int>(),
                 SourceNodes = new HashSet<int>(),
@@ -181,8 +191,8 @@ namespace vindinium.NEAT.Mutation
                 Innovation = currentInnovaton + 1,
             });
 
-            genotype.NodeGens[inNodeIdx].TargetNodes.Add(newNodeGen.NodeNumber);
-            genotype.NodeGens[outNodeIdx].SourceNodes.Add(newNodeGen.NodeNumber);
+            genotype.NodeGens[sourceNode[0]].TargetNodes.Add(newNodeGen.NodeNumber);
+            genotype.NodeGens[targetNode[0]].SourceNodes.Add(newNodeGen.NodeNumber);
             var tmp = newNodeGen.NodeNumber;
             genotype.NodeGens[tmp].TargetNodes.Add(outNodeIdx);
             genotype.NodeGens[tmp].SourceNodes.Add(inNodeIdx);
@@ -202,8 +212,11 @@ namespace vindinium.NEAT.Mutation
             var inNode = genotype.GenomeConnection[choosenConnectionId].InNode;
             var outNode = genotype.GenomeConnection[choosenConnectionId].InNode;
 
-            genotype.NodeGens[inNode].TargetNodes.Remove(outNode);
-            genotype.NodeGens[outNode].SourceNodes.Remove(inNode);
+            var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
+            var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
+
+            genotype.NodeGens[sourceNode[0]].TargetNodes.Remove(outNode);
+            genotype.NodeGens[targetNode[0]].SourceNodes.Remove(inNode);
 
             return genotype;
         }

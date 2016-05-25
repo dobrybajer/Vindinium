@@ -154,6 +154,7 @@ namespace vindinium.NEAT.Crossover
             }
             foreach (var connection in offspringGenome.GenomeConnection)
             {
+                if (connection.Status == ConnectionStatus.Disabled) continue;
                 var sourceNode = offspringGenome.NodeGens.First(node => node.NodeNumber == connection.InNode);
                 var targetNode = offspringGenome.NodeGens.First(node => node.NodeNumber == connection.OutNode);
                 sourceNode.TargetNodes.Add(connection.OutNode);
