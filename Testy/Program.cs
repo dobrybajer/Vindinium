@@ -53,21 +53,21 @@ namespace Test
 
             var connectionlist1 = new List<ConnectionGenesModel>()
             {
+                new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
                 new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
                 new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
                 new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
                 new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
                 new ConnectionGenesModel { InNode=4, OutNode=3, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
-                new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
             };
 
             var connectionlist2 = new List<ConnectionGenesModel>()
             {
-                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
                 new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
                 new ConnectionGenesModel { InNode=2, OutNode=3, Innovation=3, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.5 },
                 new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
                 new ConnectionGenesModel { InNode=3, OutNode=4, Innovation=5, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.4 },
+                new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
                 new ConnectionGenesModel { InNode=4, OutNode=5, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
                 new ConnectionGenesModel { InNode=5, OutNode=3, Innovation=7, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
                 new ConnectionGenesModel { InNode=2, OutNode=4, Innovation=9, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },

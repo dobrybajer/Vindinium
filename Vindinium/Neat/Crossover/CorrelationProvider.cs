@@ -8,6 +8,8 @@ namespace vindinium.NEAT.Crossover
     {
         public CorrelationResults CorrelateConnections(List<ConnectionGenesModel> list1, List<ConnectionGenesModel> list2)
         {
+            list1 = list1.OrderBy(c => c.Innovation).ToList();
+            list2 = list2.OrderBy(c => c.Innovation).ToList();
             var crossoverResults = new CorrelationResults
             {
                 CorrelationItems = new List<CorrelationItem>(),
