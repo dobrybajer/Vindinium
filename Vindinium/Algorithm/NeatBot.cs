@@ -213,14 +213,12 @@ namespace vindinium.Algorithm
             var startIndex = 0;
             for (var j = 0; j < Parameters.GenerationsPhaseOneCount; j++)
             {
-                if (ObjectManager.FileExist(j, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns))
-                {
-                    startIndex = j;
-                    readFromFile = true;
-                }
+                if (!ObjectManager.FileExist(j, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns)) continue;
+                startIndex = j;
+                readFromFile = true;
             }
 
-            var parentPopulation = startIndex != 0 ? ObjectManager.ReadGenerationFromFile<List<Genotype>>(startIndex - 1, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns) : new List<Genotype>();
+            var parentPopulation = readFromFile ? ObjectManager.ReadGenerationFromFile<List<Genotype>>(startIndex, Parameters.PopulationCount, map, Parameters.ActivationFunction.ToString(), Parameters.ServerNumberOfTurns) : new List<Genotype>();
             var innovationsList = _initialGenomeBuilder.InitInnovationList(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount);
 
             for (var j = startIndex; j < Parameters.GenerationsPhaseOneCount; j++)
@@ -262,17 +260,17 @@ namespace vindinium.Algorithm
                 {
                     readFromFile = false;
                     population = parentPopulation;
-                    Console.Out.WriteLine($"Generation {j - 1} read from file.");
+                    Console.Out.WriteLine($"Generation {j} read from file.");
                 }
                 
                 var partBestPopulation1 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
                 var partBestPopulation2 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
 
-                //var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
+                var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
                 var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
 
                 parentPopulation = new List<Genotype>();
-                parentPopulation.AddRange(changedPartBestPopulation2);
+                parentPopulation.AddRange(changedPartBestPopulation1);
                 parentPopulation.AddRange(changedPartBestPopulation2);
             }
 

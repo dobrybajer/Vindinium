@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Redzen.Numerics;
 using vindinium.NEAT.Crossover;
 using vindinium.NEAT.Mutation;
@@ -13,13 +10,13 @@ namespace vindinium.NEAT
     public class NeatGeneticAlgorithm
     {
         public NodeGeneParameters NodeGeneParameters { get; set; }
-        private readonly ICrossoverProvider crossoverProvider;
-        private readonly IMutationProvider mutationProvider;
+        private readonly ICrossoverProvider _crossoverProvider;
+        private readonly IMutationProvider _mutationProvider;
 
         public NeatGeneticAlgorithm(ICrossoverProvider crossoverProvider, IMutationProvider mutationProvider)
         {
-            this.crossoverProvider = crossoverProvider;
-            this.mutationProvider = mutationProvider;
+            _crossoverProvider = crossoverProvider;
+            _mutationProvider = mutationProvider;
             CreateNodeGeneParameters();
         }
 
@@ -46,20 +43,15 @@ namespace vindinium.NEAT
 
             var attemptsCount = genotypes.Count / Parameters.MutationWheelPart;
             var mutatedGenomesId = new List<int>();
-            for (int i = 0; i < attemptsCount; i++)
+            for (var i = 0; i < attemptsCount; i++)
             {
                 var genomeId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette = roulette.RemoveOutcome(genomeId);
                 mutatedGenomesId.Add(genomeId);
-                outputPopulation.Add(mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters, ref innovationsList));
+                outputPopulation.Add(_mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters, ref innovationsList));
             }
 
-            for (int i = 0; i < genotypes.Count; i++)
-            {
-                var genotype = genotypes[i];
-                if (!mutatedGenomesId.Contains(i))
-                    outputPopulation.Add(genotype);
-            }
+            outputPopulation.AddRange(genotypes.Where((genotype, i) => !mutatedGenomesId.Contains(i)));
 
             return outputPopulation;
         }
@@ -76,10 +68,9 @@ namespace vindinium.NEAT
 
             var attemptsCount = genotypes.Count / Parameters.CrossoverWheelPart;
             var crossoveredGenomesId = new List<int>();
-            for (int i = 0; i < attemptsCount; i++)
+            for (var i = 0; i < attemptsCount; i++)
             {
                 var parentOneId = DiscreteDistributionUtils.Sample(roulette, random);
-
                 roulette = roulette.RemoveOutcome(parentOneId);
                 var parentTwoId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette = roulette.RemoveOutcome(parentTwoId);
@@ -87,7 +78,7 @@ namespace vindinium.NEAT
                 crossoveredGenomesId.Add(genotypes[parentOneId].Value < genotypes[parentTwoId].Value
                     ? parentOneId
                     : parentTwoId);
-                outputPopulation.Add(crossoverProvider.CrossoverGenotype(genotypes[parentOneId], genotypes[parentTwoId]));
+                outputPopulation.Add(_crossoverProvider.CrossoverGenotype(genotypes[parentOneId], genotypes[parentTwoId]));
             }
 
             outputPopulation.AddRange(genotypes.Where((genotype, i) => !crossoveredGenomesId.Contains(i)));
