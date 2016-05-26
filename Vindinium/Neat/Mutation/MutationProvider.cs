@@ -67,12 +67,14 @@ namespace vindinium.NEAT.Mutation
                     stop = true;
             }
 
-            if (inNode > outNode)
+            if (genotype.NodeGens[inNode].Type == NodeType.Output || genotype.NodeGens[outNode].Type== NodeType.Input)
             {
                 var tmp = inNode;
                 inNode = outNode;
                 outNode = tmp;
             }
+
+
 
             var isConnection = IsConnectionInGenotype(inNode, outNode, genotype);
 
