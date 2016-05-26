@@ -13,7 +13,7 @@ namespace vindinium.NEAT.Extensions
         {
             if (sourceNodeId == targetNodeId)
                 return true;
-            var sourceNode = nodeGenesModels[sourceNodeId];
+            var sourceNode = nodeGenesModels.Find(n => n.NodeNumber == sourceNodeId);
 
             var visitedNeurons = new HashSet<int>();
             visitedNeurons.Add(sourceNodeId);
@@ -33,7 +33,7 @@ namespace vindinium.NEAT.Extensions
 
                 visitedNeurons.Add(currentNodeId);
 
-                var currentNode = nodeGenesModels[currentNodeId];
+                var currentNode = nodeGenesModels.Find(n => n.NodeNumber == currentNodeId);
                 foreach (var nodeId in currentNode.SourceNodes)
                     workStack.Push(nodeId);
             }
