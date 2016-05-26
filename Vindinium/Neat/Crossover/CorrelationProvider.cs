@@ -27,13 +27,11 @@ namespace vindinium.NEAT.Crossover
                 return crossoverResults;
             }
 
-            if (!list1.Any())
+            if (!list2.Any())
             {   
                 crossoverResults.CorrelationStats.ExcessConnectionGeneCount = list1.Count;
                 foreach (var connectionGene in list1)
-                {
                     crossoverResults.CorrelationItems.Add(new CorrelationItem(CorrelationItemType.Excess, connectionGene, null));
-                }
                 return crossoverResults;
             }
 

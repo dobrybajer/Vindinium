@@ -181,7 +181,8 @@ namespace vindinium.NEAT.Crossover
             {
                 if (node.SourceNodes != null && node.SourceNodes.Count != 0)
                     node.SourceNodes.Clear();
-                if (node.TargetNodes != null && node.TargetNodes.Count != 0) node.TargetNodes.Clear();
+                if (node.TargetNodes != null && node.TargetNodes.Count != 0)
+                    node.TargetNodes.Clear();
             }
         }
     }
