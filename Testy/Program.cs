@@ -10,6 +10,7 @@ using vindinium.NEAT.Crossover;
 using System.Threading;
 using System.IO;
 using Testy;
+using vindinium.NEAT.Extensions;
 
 namespace Test
 {
@@ -27,8 +28,8 @@ namespace Test
             //AddNodeTest();
 
             //Comp();
-            CrossoverTest();
-
+            //CrossoverTest();
+            IsCyclicTest();
         }
 
         public static void CrossoverTest()
@@ -399,6 +400,22 @@ namespace Test
 
 
             CurrentModel = genotype;
+        }
+
+        public static void IsCyclicTest()
+        {
+            var nodeGens2 = new List<NodeGenesModel>()
+            {
+                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 5 }  },
+                new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 } },
+                new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 3} },
+                new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 0, 5, 2 }, TargetNodes=new HashSet<int>()  },
+                new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 2 }, TargetNodes=new HashSet<int>() { 5 }  },
+                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4 }, TargetNodes=new HashSet<int>() { 3 } },
+            };
+            var result = nodeGens2.IsConnectionCyclic(5, 4);
+            var result2 = nodeGens2.IsConnectionCyclic(5, 2);
+
         }
 
         public static void WriteToFile(List<Genotype> genotype, string nameFile)
