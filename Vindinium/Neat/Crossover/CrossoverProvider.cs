@@ -20,6 +20,8 @@ namespace vindinium.NEAT.Crossover
         private Genotype offspringGenome;
         private HashSet<int> addedNodes;
         private CrossoverMasterType crossoverMasterType;
+        private Genotype crossoverMaster;
+        private Genotype crossoverSecond;
 
         public CrossoverProvider(ICorrelationProvider correlationProvider)
         {
@@ -29,13 +31,13 @@ namespace vindinium.NEAT.Crossover
         public Genotype CrossoverGenotype(Genotype genotype1, Genotype genotype2)
         {
             correlationResults = correlationProvider.CorrelateConnections(genotype1.GenomeConnection, genotype2.GenomeConnection);
-            var crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2);
-            var crossoverSecond = ChooseCrossoverSecond(genotype1, genotype2);
+            crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2);
+            crossoverSecond = ChooseCrossoverSecond(genotype1, genotype2);
 
             offspringGenome = new Genotype
             {
                 GenomeConnection = new List<ConnectionGenesModel>(),
-                NodeGens = GetNodesForOffspring(crossoverMaster, crossoverSecond),
+                NodeGens = GetNodesForOffspring(genotype1, genotype2),
                 Value = crossoverMaster.Value
             };
             offspringGenome.GenomeConnection.AddRange(GetConnectionsForMatch());
@@ -111,7 +113,7 @@ namespace vindinium.NEAT.Crossover
             return connectionWithGivenType;
         }
 
-        private List<NodeGenesModel> GetNodesForOffspring(Genotype master, Genotype second)
+        private List<NodeGenesModel> GetNodesForOffspring(Genotype genotype1, Genotype genotype2)
         {
             var nodesForCorrelationType = new List<NodeGenesModel>();
             addedNodes = new HashSet<int>();
@@ -120,14 +122,14 @@ namespace vindinium.NEAT.Crossover
                 switch (correlationItem.CorrelationItemType)
                 {
                     case CorrelationItemType.Match:
-                        nodesForCorrelationType.AddRange(SelectNodesFromConnection(master, correlationItem.ConnectionGene1));
+                        nodesForCorrelationType.AddRange(SelectNodesFromConnection(crossoverMaster, correlationItem.ConnectionGene1));
                         break;
                     case CorrelationItemType.Disjoint:
                     case CorrelationItemType.Excess:
                         if (correlationItem.ConnectionGene1 != null)
-                            nodesForCorrelationType.AddRange(SelectNodesFromConnection(master, correlationItem.ConnectionGene1));
+                            nodesForCorrelationType.AddRange(SelectNodesFromConnection(genotype1, correlationItem.ConnectionGene1));
                         else
-                            nodesForCorrelationType.AddRange(SelectNodesFromConnection(second, correlationItem.ConnectionGene2));
+                            nodesForCorrelationType.AddRange(SelectNodesFromConnection(genotype2, correlationItem.ConnectionGene2));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -139,6 +141,7 @@ namespace vindinium.NEAT.Crossover
         private List<NodeGenesModel> SelectNodesFromConnection(Genotype genotype, ConnectionGenesModel connectionGenesModel)
         {
             var nodeGenesModelsToAdd = new List<NodeGenesModel>();
+
             if (!addedNodes.Contains(connectionGenesModel.InNode))
             {
                 nodeGenesModelsToAdd.Add(
