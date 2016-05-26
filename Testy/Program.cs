@@ -15,11 +15,18 @@ namespace Test
 {
     class Program
     {
+        public static Genotype CurrentModel { get; set; } 
+
         static void Main(string[] args)
         {
-           // MutationAddConnecionTest();
-            AddConnectionTest();
+            // MutationAddConnecionTest();
+            //Genotype();
+            //Comp();
+            // AddConnectionTest();
+            Genotype();
             AddNodeTest();
+         
+            Comp();
             //CrossoverTest();
 
         }
@@ -115,19 +122,20 @@ namespace Test
 
             var MutationProvider = new MutationProvider();
 
-            for (int i = 0; i < 10; i++)
-            {
-                var newGenotyp = MutationProvider.MutateAddNode(genotypeList[i],ref innovationList);
-                genotypeList.Add(
-                    new Genotype()
-                    {
-                        GenomeConnection = new List<ConnectionGenesModel>(newGenotyp.GenomeConnection),
-                        NodeGens = new List<NodeGenesModel>(newGenotyp.NodeGens),
-                        Value = 0
-                    }
-                    );
-                Thread.Sleep(100);
-            }
+            //for (int i = 0; i < 10; i++)
+            //{
+            //CurrentModel = MutationProvider.MutateAddNode(CurrentModel, ref innovationList);
+            CurrentModel = MutationProvider.MutateDeleteConnection(CurrentModel);
+            //genotypeList.Add(
+            //    new Genotype()
+            //    {
+            //        GenomeConnection = new List<ConnectionGenesModel>(newGenotyp.GenomeConnection),
+            //        NodeGens = new List<NodeGenesModel>(newGenotyp.NodeGens),
+            //        Value = 0
+            //    }
+            //    );
+            //Thread.Sleep(100);
+            // }
 
             WriteToFile(genotypeList, "ConnectionTest.txt");
         }
@@ -235,6 +243,164 @@ namespace Test
             };
             var newGenotype = mutationProvider.MutateAddConnection(genotype1, ref innovationList);
             WriteToFile(newGenotype, "ttt.txt");
+        }
+
+        public static void Comp()
+        {
+            //var input = MapBoardToNeuralNetworskInput();
+            var input = new List<double>() { 1, 1 };
+
+            var nextLevelNodes = new List<Tuple<int, int, double>>();
+            var inputNodes = CurrentModel.NodeGens.Where(n => n.Type == NodeType.Input).ToList();
+
+            foreach (var sn in inputNodes)
+            {
+                sn.FeedForwardValue = input[sn.NodeNumber];
+                nextLevelNodes.AddRange(sn.TargetNodes.Select(en => new Tuple<int, int, double>(sn.NodeNumber, en, sn.FeedForwardValue)));
+            }
+
+            while (nextLevelNodes.Any())
+            {
+                var currentLevelNodes = new List<Tuple<int, int, double>>(nextLevelNodes);
+                nextLevelNodes.Clear();
+
+                foreach (var en in currentLevelNodes)
+                {
+                    var node = CurrentModel.GetNodeById(en.Item2);
+                    var edge = CurrentModel.GetEnabledConnectionByIds(en.Item1, en.Item2);
+                    if (node == null || edge == null) throw new ArgumentOutOfRangeException();
+
+                    node.FeedForwardCount++;
+                    node.FeedForwardValue += edge.Weight * en.Item3;
+                }
+
+                foreach (var sn in currentLevelNodes.Select(n => n.Item2).Distinct())
+                {
+                    var node = CurrentModel.GetNodeById(sn);
+                    nextLevelNodes.AddRange(from nn in node.TargetNodes where node.FeedForwardCount == node.SourceNodes.Count select new Tuple<int, int, double>(sn, nn, node.FeedForwardValue));
+                }
+            }
+
+            var outputNodes = CurrentModel.NodeGens.Where(n => n.Type == NodeType.Output).ToList();
+            // var output = MapNeuralNetowrkOutputToMove(outputNodes);
+
+            //Console.Out.WriteLine($"Direction: {output}");
+            //ClearGenome();
+            var o = 0;
+            
+        }
+
+        public static void Genotype()
+        {
+            var genotype = new Genotype
+            {
+                NodeGens = new List<NodeGenesModel>(),
+                GenomeConnection = new List<ConnectionGenesModel>()
+            };
+
+            // ---- INPUT ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 0,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 2 },
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 1,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 3 },
+                Type = NodeType.Input
+            });
+            
+
+            // ---- HIDDEN ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 2,
+                SourceNodes = new HashSet<int> { 0,3 },
+                TargetNodes = new HashSet<int> { 4 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 3,
+                SourceNodes = new HashSet<int> { 1 },
+                TargetNodes = new HashSet<int> { 2,4 },
+                Type = NodeType.Hidden
+            });
+
+         
+
+            // ---- OUTPUT ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 4,
+                SourceNodes = new HashSet<int> { 2,3},
+                TargetNodes = new HashSet<int>(),
+                Type = NodeType.Output
+            });
+
+         
+
+            // ---- EDGES ----
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 0,
+                OutNode = 2,
+                Status = ConnectionStatus.Enabled,
+                Weight = 1
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode =1,
+                OutNode = 3,
+                Status = ConnectionStatus.Enabled,
+                Weight = 2
+            });
+
+            //genotype.GenomeConnection.Add(new ConnectionGenesModel
+            //{
+            //    InNode = 2,
+            //    OutNode = 3,
+            //    Status = ConnectionStatus.Enabled,
+            //    Weight = 1
+            //});
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 3,
+                OutNode = 2,
+                Status = ConnectionStatus.Enabled,
+                Weight = 2
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 2,
+                OutNode = 4,
+                Status = ConnectionStatus.Enabled,
+                Weight = 1
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 3,
+                OutNode = 4,
+                Status = ConnectionStatus.Enabled,
+                Weight = 2
+            });
+
+
+            CurrentModel = genotype;
         }
 
         public static void WriteToFile(List<Genotype> genotype, string nameFile)

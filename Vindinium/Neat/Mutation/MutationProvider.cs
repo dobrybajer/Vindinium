@@ -2,6 +2,7 @@
 using Redzen.Numerics;
 using System.Collections.Generic;
 using System.Linq;
+using vindinium.NEAT.Extensions;
 
 namespace vindinium.NEAT.Mutation
 {
@@ -54,36 +55,35 @@ namespace vindinium.NEAT.Mutation
         {
             var nodeNumber = genotype.NodeGens.Count;
 
-            var inNode = RandomGenerator.Next(1, nodeNumber);
-            var isInNodeInput = genotype.NodeGens[inNode - 1].Type == NodeType.Input;
+            var sourceNode = RandomGenerator.Next(1, nodeNumber);
+            var isInNodeInput = genotype.NodeGens[sourceNode - 1].Type == NodeType.Input;
             var stop = false;
-            var outNode = 0;
+            var targetNode = 0;
             while (!stop)
             {
-                outNode = RandomGenerator.Next(1, nodeNumber);
-                if (isInNodeInput && genotype.NodeGens[outNode - 1].Type != NodeType.Input && outNode != inNode)
+                targetNode = RandomGenerator.Next(1, nodeNumber);
+                if (isInNodeInput && genotype.NodeGens[targetNode - 1].Type != NodeType.Input && targetNode != sourceNode)
                     stop = true;
-                else if (!isInNodeInput && outNode != inNode)
+                else if (!isInNodeInput && targetNode != sourceNode)
                     stop = true;
             }
 
-            if (genotype.NodeGens[inNode].Type == NodeType.Output || genotype.NodeGens[outNode].Type== NodeType.Input)
+            if (genotype.NodeGens[sourceNode].Type == NodeType.Output || genotype.NodeGens[targetNode].Type== NodeType.Input)
             {
-                var tmp = inNode;
-                inNode = outNode;
-                outNode = tmp;
+                var tmp = sourceNode;
+                sourceNode = targetNode;
+                targetNode = tmp;
             }
 
+            var isConnection = IsConnectionInGenotype(sourceNode, targetNode, genotype);
+            var isCycle = NodeListExtensions.IsConnectionCyclic(genotype.NodeGens, sourceNode, targetNode);
 
-
-            var isConnection = IsConnectionInGenotype(inNode, outNode, genotype);
-
-            if (isConnection) return genotype;
+            if (isConnection || isCycle) return genotype;
 
             //var currentInnovaton = innovation.Count == 0 ? 0 : innovation[innovation.Count - 1].InnovationNumber + 1;
             var currentInnovaton = innovation.LastOrDefault()?.InnovationNumber + 1 ?? 1;
             foreach (var el in innovation)
-                if (el.InNode == inNode && el.OutNode == outNode || el.InNode == outNode && el.OutNode == inNode)
+                if (el.InNode == sourceNode && el.OutNode == targetNode || el.InNode == targetNode && el.OutNode == sourceNode)
                     currentInnovaton = el.InnovationNumber;
 
             if (currentInnovaton == 1 || currentInnovaton == innovation[innovation.Count - 1].InnovationNumber + 1)
@@ -91,14 +91,14 @@ namespace vindinium.NEAT.Mutation
                 innovation.Add(new Innovations
                 {
                     InnovationNumber = currentInnovaton,
-                    InNode = inNode,
-                    OutNode = outNode
+                    InNode = sourceNode,
+                    OutNode = targetNode
                 });
             }
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode = inNode,
-                OutNode = outNode,
+                InNode = sourceNode,
+                OutNode = targetNode,
                 Weight = (double)RandomGenerator.Next(0, 100) / 100,
                 Status = ConnectionStatus.Enabled,
                 Innovation = currentInnovaton,
@@ -106,8 +106,8 @@ namespace vindinium.NEAT.Mutation
 
             //var sourceNode = genotype.NodeGens.Where(node => node.NodeNumber == inNode).Select(s => s.NodeNumber).ToList();
             //var targetNode = genotype.NodeGens.Where(node => node.NodeNumber == outNode).Select(s => s.NodeNumber).ToList();
-            genotype.NodeGens[inNode].TargetNodes.Add(outNode);
-            genotype.NodeGens[outNode].SourceNodes.Add(inNode);
+            genotype.NodeGens[sourceNode].TargetNodes.Add(targetNode);
+            genotype.NodeGens[targetNode].SourceNodes.Add(sourceNode);
             //genotype.NodeGens[sourceNode[0]].TargetNodes.Add(outNode);
             //genotype.NodeGens[targetNode[0]].SourceNodes.Add(inNode);
 
@@ -201,13 +201,13 @@ namespace vindinium.NEAT.Mutation
             return genotype;
         }
 
-        private Genotype MutateDeleteConnection(Genotype genotype)
+        public Genotype MutateDeleteConnection(Genotype genotype)
         {
             var connectionNumber = genotype.GenomeConnection.Count;
             var random = new Random();
-            var choosenConnectionId = random.Next(1, connectionNumber);
+            var choosenConnectionId = random.Next(0, connectionNumber-1);
 
-            genotype.GenomeConnection[choosenConnectionId - 1].Status = ConnectionStatus.Disabled;
+            genotype.GenomeConnection[choosenConnectionId].Status = ConnectionStatus.Disabled;
 
             var inNode = genotype.GenomeConnection[choosenConnectionId].InNode;
             var outNode = genotype.GenomeConnection[choosenConnectionId].OutNode;
