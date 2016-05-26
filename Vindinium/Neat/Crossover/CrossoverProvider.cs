@@ -101,9 +101,12 @@ namespace vindinium.NEAT.Crossover
             var connectionWithGivenType = new List<ConnectionGenesModel>();
             foreach (var correlationItem in correlationResults.CorrelationItems)
             {
-                var connection = correlationItem.ConnectionGene1 ?? correlationItem.ConnectionGene2;
-                if (!offspringGenome.NodeGens.IsConnectionCyclic(connection.InNode, connection.OutNode))
-                    connectionWithGivenType.Add(connection);
+                if (correlationItem.CorrelationItemType == CorrelationItemType.Excess)
+                {
+                    var connection = correlationItem.ConnectionGene1 ?? correlationItem.ConnectionGene2;
+                    if (!offspringGenome.NodeGens.IsConnectionCyclic(connection.InNode, connection.OutNode))
+                        connectionWithGivenType.Add(connection);
+                }
             }
             return connectionWithGivenType;
         }
