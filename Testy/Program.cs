@@ -15,7 +15,7 @@ namespace Test
 {
     class Program
     {
-        public static Genotype CurrentModel { get; set; } 
+        public static Genotype CurrentModel { get; set; }
 
         static void Main(string[] args)
         {
@@ -23,17 +23,17 @@ namespace Test
             //Genotype();
             //Comp();
             // AddConnectionTest();
-            Genotype();
-            AddNodeTest();
-         
-            Comp();
-            //CrossoverTest();
+            //Genotype();
+            //AddNodeTest();
+
+            //Comp();
+            CrossoverTest();
 
         }
 
         public static void CrossoverTest()
         {
-            var NodeGens1 = new List<NodeGenesModel>() {
+            var nodeGens1 = new List<NodeGenesModel>() {
                 new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 4 }  },
                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 }  },
                 new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3 }  },
@@ -41,17 +41,17 @@ namespace Test
                 new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 1 }, TargetNodes=new HashSet<int>() { 3 } }
             };
 
-            var NodeGens2 = new List<NodeGenesModel>()
+            var nodeGens2 = new List<NodeGenesModel>()
             {
-                 new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 5 }  },
+                new NodeGenesModel { NodeNumber=0, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 3, 5 }  },
                 new NodeGenesModel { NodeNumber=1, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4 } },
                 new NodeGenesModel { NodeNumber=2, FeedForwardValue=0, Type=NodeType.Input, SourceNodes=new HashSet<int>(), TargetNodes=new HashSet<int>() { 4, 3} },
                 new NodeGenesModel { NodeNumber=3, FeedForwardValue=0, Type=NodeType.Output, SourceNodes=new HashSet<int>() { 0, 5, 2 }, TargetNodes=new HashSet<int>()  },
                 new NodeGenesModel { NodeNumber=4, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 1, 2 }, TargetNodes=new HashSet<int>() { 5 }  },
-                 new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4 }, TargetNodes=new HashSet<int>() { 3 } },
+                new NodeGenesModel { NodeNumber=5, FeedForwardValue=0, Type=NodeType.Hidden, SourceNodes=new HashSet<int>() { 0, 4 }, TargetNodes=new HashSet<int>() { 3 } },
             };
 
-            var Connectionlist1 = new List<ConnectionGenesModel>()
+            var connectionlist1 = new List<ConnectionGenesModel>()
             {
                 new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
                 new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
@@ -61,7 +61,7 @@ namespace Test
                 new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=8, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
             };
 
-            var Connectionlist2 = new List<ConnectionGenesModel>()
+            var connectionlist2 = new List<ConnectionGenesModel>()
             {
                 new ConnectionGenesModel { InNode=0, OutNode=3, Innovation=1, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.7 },
                 new ConnectionGenesModel { InNode=1, OutNode=3, Innovation=2, IsMutated=false, Status=ConnectionStatus.Disabled, Weight=0.5 },
@@ -74,15 +74,13 @@ namespace Test
                 new ConnectionGenesModel { InNode=0, OutNode=5, Innovation=10, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 }
             };
 
-            var innovationList = new List<Innovations>();
+            var genotype1 = new Genotype { GenomeConnection = new List<ConnectionGenesModel>(connectionlist1), NodeGens = new List<NodeGenesModel>(nodeGens1), Value = 0 };
 
-            var genotype1 = new Genotype { GenomeConnection = new List<ConnectionGenesModel>(Connectionlist1), NodeGens = new List<NodeGenesModel>(NodeGens1), Value = 0 };
+            var genotype2 = new Genotype {GenomeConnection = new List<ConnectionGenesModel>(connectionlist2), NodeGens = new List<NodeGenesModel>(nodeGens2), Value = 5 };
 
-            var genotype2 = new Genotype { GenomeConnection = new List<ConnectionGenesModel>(Connectionlist2), NodeGens = new List<NodeGenesModel>(NodeGens2), Value = 0 };
-
-            var CorrelationProvider = new CorrelationProvider();
-            var CrossoverProvider = new CrossoverProvider(CorrelationProvider);
-            var newGenotype = CrossoverProvider.CrossoverGenotype(genotype1, genotype2);
+            var correlationProvider = new CorrelationProvider();
+            var crossoverProvider = new CrossoverProvider(correlationProvider);
+            var newGenotype = crossoverProvider.CrossoverGenotype(genotype1, genotype2);
 
             WriteToFile(newGenotype, "Crossover.txt");
         }
@@ -105,10 +103,10 @@ namespace Test
                 new ConnectionGenesModel { InNode=1, OutNode=4, Innovation=4, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.2 },
                 new ConnectionGenesModel { InNode=4, OutNode=3, Innovation=5, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.4 },
                 new ConnectionGenesModel { InNode=0, OutNode=4, Innovation=6, IsMutated=false, Status=ConnectionStatus.Enabled, Weight=0.6 },
-               
+
             };
 
-            var innovationList = new List<Innovations>() ;
+            var innovationList = new List<Innovations>();
 
             var genotyp1 = new Genotype(Connectionlist, NodeGens);
 
@@ -189,7 +187,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                var newGenotyp = MutationProvider.MutateAddConnection(genotypeList[i],ref innovationList);
+                var newGenotyp = MutationProvider.MutateAddConnection(genotypeList[i], ref innovationList);
                 genotypeList.Add(
                     new Genotype()
                     {
@@ -239,7 +237,7 @@ namespace Test
 
             var mutationProvider = new MutationProvider
             {
-                RandomGenerator = new MockRandom {ValueToReturn = new[] {2, 4}}
+                RandomGenerator = new MockRandom { ValueToReturn = new[] { 2, 4 } }
             };
             var newGenotype = mutationProvider.MutateAddConnection(genotype1, ref innovationList);
             WriteToFile(newGenotype, "ttt.txt");
@@ -287,7 +285,7 @@ namespace Test
             //Console.Out.WriteLine($"Direction: {output}");
             //ClearGenome();
             var o = 0;
-            
+
         }
 
         public static void Genotype()
@@ -315,14 +313,14 @@ namespace Test
                 TargetNodes = new HashSet<int> { 3 },
                 Type = NodeType.Input
             });
-            
+
 
             // ---- HIDDEN ----
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
                 NodeNumber = 2,
-                SourceNodes = new HashSet<int> { 0,3 },
+                SourceNodes = new HashSet<int> { 0, 3 },
                 TargetNodes = new HashSet<int> { 4 },
                 Type = NodeType.Hidden
             });
@@ -331,23 +329,23 @@ namespace Test
             {
                 NodeNumber = 3,
                 SourceNodes = new HashSet<int> { 1 },
-                TargetNodes = new HashSet<int> { 2,4 },
+                TargetNodes = new HashSet<int> { 2, 4 },
                 Type = NodeType.Hidden
             });
 
-         
+
 
             // ---- OUTPUT ----
 
             genotype.NodeGens.Add(new NodeGenesModel
             {
                 NodeNumber = 4,
-                SourceNodes = new HashSet<int> { 2,3},
+                SourceNodes = new HashSet<int> { 2, 3 },
                 TargetNodes = new HashSet<int>(),
                 Type = NodeType.Output
             });
 
-         
+
 
             // ---- EDGES ----
 
@@ -361,7 +359,7 @@ namespace Test
 
             genotype.GenomeConnection.Add(new ConnectionGenesModel
             {
-                InNode =1,
+                InNode = 1,
                 OutNode = 3,
                 Status = ConnectionStatus.Enabled,
                 Weight = 2
