@@ -74,7 +74,7 @@ namespace vindinium
                 catch (WebException exception)
                 {
                     Errored = true;
-                    using (var reader = new StreamReader(exception.Response.GetResponseStream()))
+                    using (var reader = new StreamReader(exception.Response?.GetResponseStream() ?? Stream.Null))
                     {
                         ErrorText = reader.ReadToEnd();
                     }
@@ -122,7 +122,7 @@ namespace vindinium
                 catch(WebException exception)
                 {
                     Errored = true;
-                    using(var reader = new StreamReader(exception.Response.GetResponseStream()))
+                    using(var reader = new StreamReader(exception.Response?.GetResponseStream() ?? Stream.Null))
                     {
                         ErrorText = reader.ReadToEnd();
                     }
