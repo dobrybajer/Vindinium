@@ -107,7 +107,7 @@ namespace vindinium.NEAT.Crossover
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            return nodesForCorrelationType;
+            return nodesForCorrelationType.OrderBy(n => n.NodeNumber).ToList();
         }
 
         private List<NodeGenesModel> SelectNodesFromConnection(Genotype genotype, ConnectionGenesModel connectionGenesModel)
