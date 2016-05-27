@@ -31,9 +31,7 @@ namespace vindinium.NEAT.Crossover
             {   
                 crossoverResults.CorrelationStats.ExcessConnectionGeneCount = list1.Count;
                 foreach (var connectionGene in list1)
-                {
                     crossoverResults.CorrelationItems.Add(new CorrelationItem(CorrelationItemType.Excess, connectionGene, null));
-                }
                 return crossoverResults;
             }
 

@@ -28,7 +28,7 @@ namespace vindinium.NEAT.Crossover
         {
             _correlationResults = _correlationProvider.CorrelateConnections(genotype1.GenomeConnection, genotype2.GenomeConnection);
             _crossoverMaster = ChooseCrossoverMaster(genotype1, genotype2);
-    
+
             _offspringGenome = new Genotype
             {
                 GenomeConnection = new List<ConnectionGenesModel>(),
