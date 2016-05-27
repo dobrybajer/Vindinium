@@ -42,6 +42,7 @@ namespace vindinium.NEAT.Mutation
                 if (mutatedGenotype == null && OnMutationFailed(rouletteWheelLayoutCurrent, outcome))
                     throw new ArgumentException($"Empty mutated genotype (null) from case: {outcome}");
             }
+            mutatedGenotype.NodeGens = mutatedGenotype.NodeGens.OrderBy(n => n.NodeNumber).ToList();
             return mutatedGenotype;
         }
 
