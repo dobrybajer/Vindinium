@@ -8,15 +8,13 @@ namespace vindinium.NEAT.Extensions
 {
     public static class NodeListExtensions
     {
-        public static bool IsConnectionCyclic(this List<NodeGenesModel> nodeGenesModels, int sourceNodeId,
-            int targetNodeId)
+        public static bool IsConnectionCyclic(this List<NodeGenesModel> nodeGenesModels, int sourceNodeId, int targetNodeId)
         {
-            if (sourceNodeId == targetNodeId)
-                return true;
+            if (sourceNodeId == targetNodeId) return true;
+
             var sourceNode = nodeGenesModels.Find(n => n.NodeNumber == sourceNodeId);
 
-            var visitedNeurons = new HashSet<int>();
-            visitedNeurons.Add(sourceNodeId);
+            var visitedNeurons = new HashSet<int> {sourceNodeId};
 
             var workStack = new Stack<int>();
             foreach (var neuronId in sourceNode.SourceNodes)

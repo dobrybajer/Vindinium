@@ -27,7 +27,7 @@ namespace vindinium.NEAT.Crossover
                 return crossoverResults;
             }
 
-            if (!list1.Any())
+            if (!list2.Any())
             {   
                 crossoverResults.CorrelationStats.ExcessConnectionGeneCount = list1.Count;
                 foreach (var connectionGene in list1)
@@ -50,7 +50,7 @@ namespace vindinium.NEAT.Crossover
 
                     list2Idx++;
                 }
-                else if (connectionGene1.Innovation == connectionGene2.Innovation)
+                else if (connectionGene2.Innovation == connectionGene1.Innovation)
                 {
                     crossoverResults.CorrelationItems.Add(new CorrelationItem(CorrelationItemType.Match, connectionGene1, connectionGene2));
                     crossoverResults.CorrelationStats.ConnectionWeightDelta += Math.Abs(connectionGene1.Weight - connectionGene2.Weight);
