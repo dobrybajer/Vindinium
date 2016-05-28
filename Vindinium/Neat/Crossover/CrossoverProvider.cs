@@ -38,8 +38,8 @@ namespace vindinium.NEAT.Crossover
 
             _offspringGenome.GenomeConnection.AddRange(GetConnectionsForMatch());
             RebuildNodesInfo();
-            _offspringGenome.GenomeConnection.AddRange(GetConnectionsForDisjoint());
-            _offspringGenome.GenomeConnection.AddRange(GetConnectionsForExcess());
+            _offspringGenome.GenomeConnection.AddRange(GetConnectionsForDisjointOrExcess(CorrelationItemType.Disjoint));
+            _offspringGenome.GenomeConnection.AddRange(GetConnectionsForDisjointOrExcess(CorrelationItemType.Excess));
             UpdateNodesInfo();
             return _offspringGenome;
         }
@@ -69,27 +69,14 @@ namespace vindinium.NEAT.Crossover
             return connectionWithGivenType;
         }
 
-        private IEnumerable<ConnectionGenesModel> GetConnectionsForDisjoint()
+        private IEnumerable<ConnectionGenesModel> GetConnectionsForDisjointOrExcess(CorrelationItemType correlationItemType)
         {
+            if (correlationItemType == CorrelationItemType.Match)
+                throw new ArgumentException("Match type is not allowed here");
             var connectionWithGivenType = new List<ConnectionGenesModel>();
             foreach (var correlationItem in _correlationResults.CorrelationItems)
             {
-                if (correlationItem.CorrelationItemType == CorrelationItemType.Disjoint)
-                {
-                    var connection = correlationItem.ConnectionGene1 ?? correlationItem.ConnectionGene2;
-                    if (!_offspringGenome.NodeGens.IsConnectionCyclic(connection.InNode, connection.OutNode))
-                        connectionWithGivenType.Add(connection);
-                }
-            }
-            return connectionWithGivenType;
-        }
-
-        private IEnumerable<ConnectionGenesModel> GetConnectionsForExcess()
-        {
-            var connectionWithGivenType = new List<ConnectionGenesModel>();
-            foreach (var correlationItem in _correlationResults.CorrelationItems)
-            {
-                if (correlationItem.CorrelationItemType == CorrelationItemType.Excess)
+                if (correlationItem.CorrelationItemType == correlationItemType)
                 {
                     var connection = correlationItem.ConnectionGene1 ?? correlationItem.ConnectionGene2;
                     if (!_offspringGenome.NodeGens.IsConnectionCyclic(connection.InNode, connection.OutNode))
@@ -120,7 +107,7 @@ namespace vindinium.NEAT.Crossover
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            return nodesForCorrelationType;
+            return nodesForCorrelationType.OrderBy(n => n.NodeNumber).ToList();
         }
 
         private List<NodeGenesModel> SelectNodesFromConnection(Genotype genotype, ConnectionGenesModel connectionGenesModel)
