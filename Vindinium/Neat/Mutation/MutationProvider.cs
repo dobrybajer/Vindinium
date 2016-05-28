@@ -25,16 +25,28 @@ namespace vindinium.NEAT.Mutation
                 switch (outcome)
                 {
                     case 0:
-                        mutatedGenotype = MutateAddNode(genotype, ref innovations); 
+                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        //mutatedGenotype = MutateDeleteConnection(genotype);
+                        //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     case 1:
-                        mutatedGenotype = MutateAddConnection(genotype, ref innovations); 
+                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        //mutatedGenotype = MutateDeleteConnection(genotype);
+                        //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     case 2:
-                        mutatedGenotype = MutateDeleteConnection(genotype);
+                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        //mutatedGenotype = MutateDeleteConnection(genotype);
+                        //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     case 3:
-                        mutatedGenotype = ChangeWeight(genotype);
+                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        //mutatedGenotype = MutateDeleteConnection(genotype);
+                        //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     default:
                         throw new ArgumentException(nameof(outcome));
@@ -57,23 +69,21 @@ namespace vindinium.NEAT.Mutation
             var nodeNumber = genotype.NodeGens.Count - 1;
 
             var sourceNode = RandomGenerator.Next(0, nodeNumber);
-            var isInNodeInput = genotype.NodeGens.Find(n => n.NodeNumber == sourceNode).Type == NodeType.Input;
-            var stop = false;
-            var targetNode = 0;
-            while (!stop)
+            var isSourceNodeOutput = genotype.NodeGens.Find(n => n.NodeNumber == sourceNode).Type == NodeType.Output;
+            
+            while (isSourceNodeOutput)
             {
-                targetNode = RandomGenerator.Next(0, nodeNumber);
-                if (isInNodeInput && genotype.NodeGens.Find(n => n.NodeNumber == targetNode).Type != NodeType.Input && targetNode != sourceNode)
-                    stop = true;
-                else if (!isInNodeInput && targetNode != sourceNode)
-                    stop = true;
+                sourceNode = RandomGenerator.Next(0, nodeNumber);
+                isSourceNodeOutput = genotype.NodeGens.Find(n => n.NodeNumber == sourceNode).Type == NodeType.Output;
             }
 
-            if (genotype.NodeGens.Find(n => n.NodeNumber == sourceNode).Type == NodeType.Output || genotype.NodeGens.Find(n => n.NodeNumber == targetNode).Type == NodeType.Input)
+            var targetNode = RandomGenerator.Next(0, nodeNumber);
+            var isTargetNodeInput = genotype.NodeGens.Find(n => n.NodeNumber == targetNode).Type == NodeType.Input;
+
+            while (isTargetNodeInput || sourceNode == targetNode)
             {
-                var tmp = sourceNode;
-                sourceNode = targetNode;
-                targetNode = tmp;
+                targetNode = RandomGenerator.Next(0, nodeNumber);
+                isTargetNodeInput = genotype.NodeGens.Find(n => n.NodeNumber == targetNode).Type == NodeType.Input;
             }
 
             var isConnection = IsConnectionInGenotype(sourceNode, targetNode, genotype);
