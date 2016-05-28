@@ -79,14 +79,15 @@ namespace vindinium.Algorithm
             {
                 var watch = new Stopwatch();
                 if (onlyComputation) watch.Start();
-
-                ServerStuff.MoveHero(GetDirection());
-
+                var direction = GetDirection();
+                
                 if (onlyComputation)
                 {
                     watch.Stop();
                     Console.Out.WriteLine($"Computation time: {watch.ElapsedMilliseconds} ms");
                 }
+
+                ServerStuff.MoveHero(direction);
 
                 Console.Out.WriteLine("Completed turn " + ServerStuff.CurrentTurn);
             }
