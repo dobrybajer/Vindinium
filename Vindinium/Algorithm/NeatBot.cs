@@ -262,16 +262,20 @@ namespace vindinium.Algorithm
                     population = parentPopulation;
                     Console.Out.WriteLine($"Generation {j} read from file.");
                 }
-                
-                var partBestPopulation1 = new List<Genotype>(population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList());
-                var partBestPopulation2 = new List<Genotype>(population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList());
+
+                population = population.OrderByDescending(i => i.Value).ToList();
+                var numberToTake = (int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage);
+                var halfBestOfPopulation = population.GetRange(0, numberToTake);
+
+                var partBestPopulation1 = halfBestOfPopulation.Select(x => x.DeepCopy()).ToList();
+                var partBestPopulation2 = halfBestOfPopulation.Select(x => x.DeepCopy()).ToList();
 
                 var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
                 var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
 
                 parentPopulation = new List<Genotype>();
-                parentPopulation.AddRange(changedPartBestPopulation1);
-                parentPopulation.AddRange(changedPartBestPopulation2);
+                parentPopulation.AddRange(changedPartBestPopulation1.Select(x => x.DeepCopy()).ToList());
+                parentPopulation.AddRange(changedPartBestPopulation2.Select(x => x.DeepCopy()).ToList());
             }
 
             Console.Out.WriteLine($"-------------------------------------PHASE ONE ENDED (map {map})-------------------------------------");

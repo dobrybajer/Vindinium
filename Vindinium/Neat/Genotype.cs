@@ -19,6 +19,20 @@ namespace vindinium.NEAT
         {
         }
 
+        public Genotype DeepCopy()
+        {
+            return new Genotype
+            {
+                GenomeConnection = this.NodeGens != null
+                    ? new List<ConnectionGenesModel>(this.GenomeConnection.Select(x => x.DeepCopy()).ToList())
+                    : null,
+                NodeGens = this.NodeGens != null
+                    ? new List<NodeGenesModel>(this.NodeGens.Select(x => x.DeepCopy()).ToList())
+                    : null
+
+            };
+        }
+
         public int GetCurrentInnovation() => GenomeConnection[GenomeConnection.Count - 1].Innovation;
 
         public NodeGenesModel GetNodeById(int id) => NodeGens.FirstOrDefault(n => n.NodeNumber == id);

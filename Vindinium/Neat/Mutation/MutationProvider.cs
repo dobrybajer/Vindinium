@@ -13,7 +13,7 @@ namespace vindinium.NEAT.Mutation
         public Genotype Mutate(Genotype genotype, NodeGeneParameters nodeGeneParameters, ref List<Innovations> innovations)
         {
             var xorRandom = new XorShiftRandom();
-            var rouletteWheelLayoutInitial = (genotype.GenomeConnection.Count < 2) ?
+            var rouletteWheelLayoutInitial = genotype.GenomeConnection.Count < 2 ?
                   nodeGeneParameters.RouletteWheelLayoutNonDestructive
                 : nodeGeneParameters.RouletteWheelLayout;
 

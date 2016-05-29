@@ -19,6 +19,19 @@
 
         }
 
+        public ConnectionGenesModel DeepCopy()
+        {
+            return new ConnectionGenesModel
+            {
+                InNode = this.InNode,
+                OutNode = this.OutNode,
+                Weight = this.Weight,
+                Status = this.Status,
+                Innovation = this.Innovation,
+                IsMutated = this.IsMutated
+            };
+        }
+
         public ConnectionGenesModel(int inNode, int outNode, double weight, ConnectionStatus status, int innovation)
         {
             InNode = inNode;

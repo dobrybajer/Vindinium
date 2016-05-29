@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Redzen.Numerics;
 using vindinium.NEAT.Crossover;
 using vindinium.NEAT.Mutation;
@@ -36,6 +37,7 @@ namespace vindinium.NEAT
             var outputPopulation = new List<Genotype>();
             var random = new XorShiftRandom();
             var maxValue = genotypes.Max(g => g.Value);
+            maxValue = maxValue <= 0 ? 1 : maxValue;
             var probabilities = new List<double>(genotypes.Count);
             probabilities.AddRange(genotypes.Select(genotype => genotype.Value / maxValue));
 
@@ -48,6 +50,7 @@ namespace vindinium.NEAT
                 var genomeId = DiscreteDistributionUtils.Sample(roulette, random);
                 roulette = roulette.RemoveOutcome(genomeId);
                 mutatedGenomesId.Add(genomeId);
+                Thread.Sleep(10);
                 outputPopulation.Add(_mutationProvider.Mutate(genotypes[genomeId], NodeGeneParameters, ref innovationsList));
             }
 
@@ -61,6 +64,7 @@ namespace vindinium.NEAT
             var outputPopulation = new List<Genotype>();
             var random = new XorShiftRandom();
             var maxValue = genotypes.Max(g => g.Value);
+            maxValue = maxValue <= 0 ? 1 : maxValue;
             var probabilities = new List<double>(genotypes.Count);
             probabilities.AddRange(genotypes.Select(genotype => genotype.Value / maxValue));
 
@@ -78,6 +82,7 @@ namespace vindinium.NEAT
                 crossoveredGenomesId.Add(genotypes[parentOneId].Value < genotypes[parentTwoId].Value
                     ? parentOneId
                     : parentTwoId);
+                Thread.Sleep(10);
                 outputPopulation.Add(_crossoverProvider.CrossoverGenotype(genotypes[parentOneId], genotypes[parentTwoId]));
             }
 

@@ -18,6 +18,19 @@ namespace vindinium.NEAT
 
         public NodeGenesModel() { }
 
+        public NodeGenesModel DeepCopy()
+        {
+            return new NodeGenesModel
+            {
+                NodeNumber = this.NodeNumber,
+                Type = this.Type,
+                FeedForwardValue = this.FeedForwardValue,
+                FeedForwardCount = this.FeedForwardCount,
+                SourceNodes = this.SourceNodes != null ? new HashSet<int>(this.SourceNodes) : null,
+                TargetNodes = this.TargetNodes != null ? new HashSet<int>(this.TargetNodes) : null
+            };
+        }
+
         public NodeGenesModel(int nodeNumber, NodeType type, double feedForwardVelue)
         {
             NodeNumber = nodeNumber;
