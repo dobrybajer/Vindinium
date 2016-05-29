@@ -25,26 +25,26 @@ namespace vindinium.NEAT.Mutation
                 switch (outcome)
                 {
                     case 0:
-                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
-                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        //mutatedGenotype = MutateAddConnection(genotype, ref innovations);
                         //mutatedGenotype = MutateDeleteConnection(genotype);
                         //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     case 1:
-                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
-                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        //mutatedGenotype = MutateAddConnection(genotype, ref innovations);
                         //mutatedGenotype = MutateDeleteConnection(genotype);
                         //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     case 2:
-                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
-                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        //mutatedGenotype = MutateAddConnection(genotype, ref innovations);
                         //mutatedGenotype = MutateDeleteConnection(genotype);
                         //mutatedGenotype = ChangeWeight(genotype);
                         break;
                     case 3:
-                        //mutatedGenotype = MutateAddNode(genotype, ref innovations);
-                        mutatedGenotype = MutateAddConnection(genotype, ref innovations);
+                        mutatedGenotype = MutateAddNode(genotype, ref innovations);
+                        //mutatedGenotype = MutateAddConnection(genotype, ref innovations);
                         //mutatedGenotype = MutateDeleteConnection(genotype);
                         //mutatedGenotype = ChangeWeight(genotype);
                         break;
@@ -66,23 +66,28 @@ namespace vindinium.NEAT.Mutation
 
         public Genotype MutateAddConnection(Genotype genotype, ref List<Innovations> innovation)
         {
-            var nodeNumber = genotype.NodeGens.Count - 1;
+            var nodesCount = genotype.NodeGens.Count - 1;
+            var inputCount = genotype.NodeGens.Count(n => n.Type == NodeType.Input);
+            var outputCount = genotype.NodeGens.Count(n => n.Type == NodeType.Output);
 
-            var sourceNode = RandomGenerator.Next(0, nodeNumber);
+            if (nodesCount + 1 == inputCount + outputCount && genotype.GenomeConnection.Count == inputCount * outputCount)
+                return genotype;
+
+            var sourceNode = RandomGenerator.Next(0, nodesCount);
             var isSourceNodeOutput = genotype.NodeGens.Find(n => n.NodeNumber == sourceNode).Type == NodeType.Output;
             
             while (isSourceNodeOutput)
             {
-                sourceNode = RandomGenerator.Next(0, nodeNumber);
+                sourceNode = RandomGenerator.Next(0, nodesCount);
                 isSourceNodeOutput = genotype.NodeGens.Find(n => n.NodeNumber == sourceNode).Type == NodeType.Output;
             }
 
-            var targetNode = RandomGenerator.Next(0, nodeNumber);
+            var targetNode = RandomGenerator.Next(0, nodesCount);
             var isTargetNodeInput = genotype.NodeGens.Find(n => n.NodeNumber == targetNode).Type == NodeType.Input;
 
             while (isTargetNodeInput || sourceNode == targetNode)
             {
-                targetNode = RandomGenerator.Next(0, nodeNumber);
+                targetNode = RandomGenerator.Next(0, nodesCount);
                 isTargetNodeInput = genotype.NodeGens.Find(n => n.NodeNumber == targetNode).Type == NodeType.Input;
             }
 
@@ -123,16 +128,17 @@ namespace vindinium.NEAT.Mutation
 
         public Genotype MutateAddNode(Genotype genotype, ref List<Innovations> innovation)
         {
-            var connectionNumber = genotype.GenomeConnection.Count - 1;
-
             var random = new Random();
-            var stop = false;
-            var chooseConnection = 0;
-            while (!stop)
+
+            var connectionsCount = genotype.GenomeConnection.Count - 1;
+
+            var chooseConnection = random.Next(0, connectionsCount);
+            var isEnabled = genotype.GenomeConnection[chooseConnection].Status == ConnectionStatus.Enabled;
+
+            while(!isEnabled)
             {
-                chooseConnection = random.Next(0, connectionNumber);
-                if (genotype.GenomeConnection[chooseConnection].Status == ConnectionStatus.Enabled)
-                    stop = true;
+                chooseConnection = random.Next(0, connectionsCount);
+                isEnabled = genotype.GenomeConnection[chooseConnection].Status == ConnectionStatus.Enabled;
             }            
 
             genotype.GenomeConnection[chooseConnection].Status = ConnectionStatus.Disabled;
@@ -142,13 +148,13 @@ namespace vindinium.NEAT.Mutation
 
             genotype.NodeGens.Find(n => n.NodeNumber == inNodeIdx).TargetNodes.Remove(outNodeIdx);
             genotype.NodeGens.Find(n => n.NodeNumber == outNodeIdx).SourceNodes.Remove(inNodeIdx);
-            
+
             var newNodeGen = new NodeGenesModel
             {
                 NodeNumber = genotype.NodeGens.Count,
                 Type = NodeType.Hidden,
                 TargetNodes = new HashSet<int> {outNodeIdx},
-                SourceNodes = new HashSet<int> {inNodeIdx},
+                SourceNodes = new HashSet<int> {inNodeIdx}
             };
 
             genotype.NodeGens.Find(n => n.NodeNumber == inNodeIdx).TargetNodes.Add(newNodeGen.NodeNumber);
