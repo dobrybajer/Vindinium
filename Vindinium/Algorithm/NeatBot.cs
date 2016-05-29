@@ -263,8 +263,8 @@ namespace vindinium.Algorithm
                     Console.Out.WriteLine($"Generation {j} read from file.");
                 }
                 
-                var partBestPopulation1 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
-                var partBestPopulation2 = population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList();
+                var partBestPopulation1 = new List<Genotype>(population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList());
+                var partBestPopulation2 = new List<Genotype>(population.OrderByDescending(i => i.Value).Take((int)(Parameters.PopulationCount * Parameters.BestOfPopulationPercentage)).ToList());
 
                 var changedPartBestPopulation1 =  _neatGeneticAlgorithm.CreateNewPopulationWithMutation(partBestPopulation1, ref innovationsList);
                 var changedPartBestPopulation2 = _neatGeneticAlgorithm.CreateNewPopulationWithCrossover(partBestPopulation2);
