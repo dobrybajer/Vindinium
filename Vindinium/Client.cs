@@ -38,11 +38,14 @@ namespace vindinium
 
             // ---------------------- Creating bot and run ----------------------
 
-            var neatBot = new NeatBot();
-            neatBot.Train();             // Training: only Phase One
+            //var neatBot = new NeatBot();
+            //neatBot.Train();             // Training: only Phase One
             //neatBot.Train(true);         // Training: Phase One and Two
             //neatBot.Play();              // Playing on arena using Trained Model (required)
             //neatBot.TestGraphCompute();  // Test graph created in order to test Compute() function
+
+            var training = new Training();
+            training.Train();
 
             Console.Out.WriteLine("done");
             Console.Read();

@@ -25,8 +25,7 @@ namespace vindinium.Algorithm
         private MyPathNode[,] _pathGrid;
         private SpatialAStar<MyPathNode, object> _aStar;
         private List<Pos> _allTavernsPositions;
-        private List<Pos> _allMinesPositions;
-
+        
         #endregion
 
         #region Properties
@@ -37,20 +36,22 @@ namespace vindinium.Algorithm
 
         protected ServerStuff ServerStuff { get; set; }
 
+        protected readonly int CurrentGenotype;
+
         #endregion
 
         #region Constructor and game initialization (do not change!)
 
-        public Bot(string botName = "Evaluation")
+        public Bot(int genotypeNumber = 0, string botName = "Evaluation")
         {
             _botName = botName;
+            CurrentGenotype = genotypeNumber;
         }
 
         private void Initialize()
         {
             MaxBoardDistance = (ServerStuff.Board.Length - 1) * 2;
             _allTavernsPositions = GetAllTaverns();
-            _allMinesPositions = GetAllMines();
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace vindinium.Algorithm
         /// </summary>
         public virtual void Run(bool onlyComputation = false)
         {
-            Console.Out.WriteLine(_botName + " bot running");
+            //Console.Out.WriteLine($"Genotype: {CurrentGenotype}. Bot {_botName} running");
 
             ServerStuff.CreateGame();
             
@@ -77,34 +78,34 @@ namespace vindinium.Algorithm
 
             while (ServerStuff.Finished == false && ServerStuff.Errored == false)
             {
-                var watch = new Stopwatch();
-                if (onlyComputation) watch.Start();
+                //var watch = new Stopwatch();
+                //if (onlyComputation) watch.Start();
                 var direction = GetDirection();
                 
-                if (onlyComputation)
-                {
-                    watch.Stop();
-                    Console.Out.WriteLine($"Computation time: {watch.ElapsedMilliseconds} ms");
-                }
+                //if (onlyComputation)
+                //{
+                    //watch.Stop();
+                    //Console.Out.WriteLine($"Genotype: {CurrentGenotype}. Computation time: {watch.ElapsedMilliseconds} ms");
+                //}
 
                 ServerStuff.MoveHero(direction);
 
-                Console.Out.WriteLine("Completed turn " + ServerStuff.CurrentTurn);
+                //Console.Out.WriteLine($"Genotype: {CurrentGenotype}. Completed turn " + ServerStuff.CurrentTurn);
             }
 
             if (ServerStuff.Errored)
             {
-                Console.Out.WriteLine("Error: " + ServerStuff.ErrorText);
+                Console.Out.WriteLine($"Genotype: {CurrentGenotype}. Error: " + ServerStuff.ErrorText);
             }
 
-            Console.Out.WriteLine(_botName + " bot finished");
+            //Console.Out.WriteLine($"Genotype: {CurrentGenotype}. Bot {_botName} finished");
         }
 
         #endregion
 
         #region Methods for calculating closest distances to different objects on board (taverns, mines, enemies) that specify some criterias
 
-        private List<Pos> GetAllMines(bool notNeutral = false)
+        private IEnumerable<Pos> GetAllMines(bool notNeutral = false)
         {
             var minesList = new List<Pos>();
 

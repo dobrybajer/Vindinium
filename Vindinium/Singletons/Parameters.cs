@@ -16,7 +16,7 @@ namespace vindinium.Singletons
 
         #region Training using genetic algorithm
 
-        public static int PopulationCount { get; set; } = 50;
+        public static int PopulationCount { get; set; } = 30;
 
         public static double BestOfPopulationPercentage { get; set; } = 0.5;
 
@@ -50,7 +50,7 @@ namespace vindinium.Singletons
 
         public static string ServerUrl { get; set; } = DefaultServerUrl;
 
-        public static uint ServerNumberOfTurns { get; set; } = 40;
+        public static uint ServerNumberOfTurns { get; set; } = 10;
 
         #endregion
 

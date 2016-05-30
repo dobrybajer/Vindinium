@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using vindinium;
 using vindinium.NEAT.Mutation;
 using vindinium.NEAT;
 using vindinium.NEAT.Crossover;
 using System.Threading;
 using System.IO;
 using Testy;
+using vindinium.Algorithm;
 using vindinium.NEAT.Extensions;
 
 namespace Test
@@ -30,6 +29,281 @@ namespace Test
             //Comp();
             //CrossoverTest();
             IsCyclicTest();
+        }
+
+        // To test please change Compute() function to not use map board method
+        public void TestGraphCompute()
+        {
+            var genotype = new Genotype
+            {
+                NodeGens = new List<NodeGenesModel>(),
+                GenomeConnection = new List<ConnectionGenesModel>()
+            };
+
+            // ---- INPUT ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 0,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 4, 5 },
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 1,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 4, 6 },
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 2,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 5, 6 },
+                Type = NodeType.Input
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 3,
+                SourceNodes = new HashSet<int>(),
+                TargetNodes = new HashSet<int> { 6 },
+                Type = NodeType.Input
+            });
+
+            // ---- HIDDEN ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 4,
+                SourceNodes = new HashSet<int> { 0, 1 },
+                TargetNodes = new HashSet<int> { 7 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 5,
+                SourceNodes = new HashSet<int> { 0, 2 },
+                TargetNodes = new HashSet<int> { 7 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 6,
+                SourceNodes = new HashSet<int> { 1, 2, 3 },
+                TargetNodes = new HashSet<int> { 8, 10 }, // 10 is 2 "layers" after
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 7,
+                SourceNodes = new HashSet<int> { 4, 5 },
+                TargetNodes = new HashSet<int> { 9 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 8,
+                SourceNodes = new HashSet<int> { 6 },
+                TargetNodes = new HashSet<int> { 9, 10 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 9,
+                SourceNodes = new HashSet<int> { 7, 8 },
+                TargetNodes = new HashSet<int> { 11, 12 },
+                Type = NodeType.Hidden
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 10,
+                SourceNodes = new HashSet<int> { 6, 8 },
+                TargetNodes = new HashSet<int> { 11, 12 },
+                Type = NodeType.Hidden
+            });
+
+            // ---- OUTPUT ----
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 11,
+                SourceNodes = new HashSet<int> { 9, 10 },
+                TargetNodes = new HashSet<int>(),
+                Type = NodeType.Output
+            });
+
+            genotype.NodeGens.Add(new NodeGenesModel
+            {
+                NodeNumber = 12,
+                SourceNodes = new HashSet<int> { 9, 10 },
+                TargetNodes = new HashSet<int>(),
+                Type = NodeType.Output
+            });
+
+            // ---- EDGES ----
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 0,
+                OutNode = 4,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.1
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 0,
+                OutNode = 5,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.3
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 1,
+                OutNode = 4,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.2
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 1,
+                OutNode = 6,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.4
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 2,
+                OutNode = 5,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.5
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 2,
+                OutNode = 6,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.3
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 3,
+                OutNode = 6,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.4
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 4,
+                OutNode = 7,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.35
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 5,
+                OutNode = 7,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.42
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 6,
+                OutNode = 8,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.18
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 6,
+                OutNode = 10,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.03
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 7,
+                OutNode = 9,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.2
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 8,
+                OutNode = 9,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.7
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 8,
+                OutNode = 10,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.28
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 9,
+                OutNode = 11,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.82
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 9,
+                OutNode = 12,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.3
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 10,
+                OutNode = 11,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.7
+            });
+
+            genotype.GenomeConnection.Add(new ConnectionGenesModel
+            {
+                InNode = 10,
+                OutNode = 12,
+                Status = ConnectionStatus.Enabled,
+                Weight = 0.5
+            });
+
+            CurrentModel = genotype;
+
+            var watch = new Stopwatch();
+            watch.Start();
+            var neatbot = new NeatBot();
+            //neatbot.Compute();
+            watch.Stop();
+            Console.WriteLine($"elapsed: {watch.ElapsedMilliseconds}ms");
         }
 
         public static void CrossoverTest()
