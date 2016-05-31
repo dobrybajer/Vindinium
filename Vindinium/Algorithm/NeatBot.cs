@@ -25,6 +25,11 @@ namespace vindinium.Algorithm
         {
         }
 
+        public NeatBot(Genotype genotype) : base(0, "Neat")
+        {
+            CurrentModel = genotype;
+        }
+
         public NeatBot(int genotypeNumber, string map = null) : base(genotypeNumber, "Neat")
         {
             ServerStuff = new ServerStuff(Parameters.ServerSecretKey, true, Parameters.ServerNumberOfTurns, Parameters.ServerUrl, map);
@@ -34,10 +39,28 @@ namespace vindinium.Algorithm
 
         #region Main functions
 
+        public string GetInfoAboutGame()
+        {
+            var info = "";
+
+            for(var i = 0; i < ServerStuff.Heroes.Count; ++i)
+            {
+                info += $"Bot: {i} / ID: {ServerStuff.Heroes[i].id} / Name: {ServerStuff.Heroes[i].name} / Score: {ServerStuff.Heroes[i].gold} / Elo: {ServerStuff.Heroes[i].elo} / Crashed: {ServerStuff.Heroes[i].crashed}";
+            }
+ 
+            return info;
+        }
+
+        public string GetBoardSize()
+        {
+            return ServerStuff.Board.Length.ToString();
+        }
+
         public void Play()
         {
             ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.ServerUrl, "");
-            CurrentModel = ObjectManager.ReadFromJsonFile<Genotype>(Parameters.TrainedModel);
+            if(CurrentModel == null)
+                CurrentModel = ObjectManager.ReadFromJsonFile<Genotype>(Parameters.TrainedModel);
             Run();
         }
 

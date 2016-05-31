@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using vindinium.Algorithm;
+using vindinium.NEAT;
 using vindinium.Singletons;
 
 namespace vindinium
@@ -20,7 +22,7 @@ namespace vindinium
             // ----------------------- Setting Parameters -----------------------
 
             if (args.Length == 0) throw new Exception("Private key missing in program parameters... Ending.");
-            Parameters.ServerSecretKey = args[0];
+            Parameters.ServerSecretKey = args[0];//"e5ua10cb";
             if (args.Length >= 2) Parameters.ServerNumberOfTurns = uint.Parse(args[1]);
             if (args.Length >= 3) Parameters.ServerUrl = args[2]; // Parameters.CustomServerUrl
             if (args.Length >= 4) Parameters.PopulationCount = int.Parse(args[3]);
@@ -44,8 +46,11 @@ namespace vindinium
             //neatBot.Play();              // Playing on arena using Trained Model (required)
             //neatBot.TestGraphCompute();  // Test graph created in order to test Compute() function
 
-            var training = new Training();
-            training.Train();
+            //var training = new Training();
+            //training.Train();
+
+            var playing = new Playing();
+            playing.Play(new List<Genotype>());
 
             Console.Out.WriteLine("done");
             Console.Read();

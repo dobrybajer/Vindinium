@@ -20,11 +20,11 @@ namespace vindinium.Singletons
 
         public static double BestOfPopulationPercentage { get; set; } = 0.5;
 
-        public static int GenerationsPhaseOneCount { get; set; } = 10;
+        public static int GenerationsPhaseOneCount { get; set; } = 25;
 
         public static int BestGenotypesOfPhaseOneCount { get; set; } = 6;
 
-        public static int GenerationsPhaseTwoCount { get; set; } = 10;
+        public static int GenerationsPhaseTwoCount { get; set; } = 25;
 
         #endregion
 
@@ -44,13 +44,13 @@ namespace vindinium.Singletons
         #region Server settings
 
         public const string DefaultServerUrl = "http://vindinium.org";
-        public const string CustomServerUrl = "http://192.168.0.18:9000";
+        public const string CustomServerUrl = "http://192.168.56.101:9000";
 
         public static string ServerSecretKey { get; set; }
 
-        public static string ServerUrl { get; set; } = DefaultServerUrl;
+        public static string ServerUrl { get; set; } = CustomServerUrl;
 
-        public static uint ServerNumberOfTurns { get; set; } = 10;
+        public static uint ServerNumberOfTurns { get; set; } = 150;
 
         #endregion
 

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithm\Bot.cs" />
+    <Compile Include="Algorithm\Playing.cs" />
     <Compile Include="Algorithm\Training.cs" />
     <Compile Include="Algorithm\NeatBot.cs" />
     <Compile Include="DataContracts.cs" />

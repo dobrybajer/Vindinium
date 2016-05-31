@@ -56,8 +56,6 @@ namespace vindinium.Algorithm
             ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap5, bestOfPopulation5.First());
             ObjectManager.WriteToJsonFile(Parameters.TrainedPhaseOneMap6, bestOfPopulation6.First());
 
-            if (!withPhaseTwo) return;
-
             var startPopulationToPhaseTwo = new List<Genotype>();
             startPopulationToPhaseTwo.AddRange(bestOfPopulation1);
             startPopulationToPhaseTwo.AddRange(bestOfPopulation2);
@@ -66,6 +64,10 @@ namespace vindinium.Algorithm
             startPopulationToPhaseTwo.AddRange(bestOfPopulation5);
             startPopulationToPhaseTwo.AddRange(bestOfPopulation6);
 
+            ObjectManager.WriteToJsonFile("startPopulationToPhaseTwo.txt", startPopulationToPhaseTwo);
+
+
+            if (!withPhaseTwo) return;
             TrainPhaseTwo(startPopulationToPhaseTwo);
         }
 
@@ -109,8 +111,16 @@ namespace vindinium.Algorithm
 
                     var watch = new Stopwatch();
                     watch.Start();
+                    //for (int i = 0; i < Parameters.PopulationCount; ++i)
+                    //{
+                    //    var neatBot = new NeatBot(i, map);
+                    //    var parentGenotype = parallelParentPopulation[i];
+                    //    var genotype = neatBot.TrainOneGame(parentGenotype);
 
-                    Parallel.For(0, 6, i =>
+                    //        parallelPopulation.Add(genotype);
+
+                    //}
+                    Parallel.For(0, Parameters.PopulationCount /*/ 5*/, i =>
                     {
                         var neatBot = new NeatBot(i, map);
                         var parentGenotype = parallelParentPopulation[i];
@@ -121,49 +131,49 @@ namespace vindinium.Algorithm
                         }
                     });
 
-                    Parallel.For(6, 12, i =>
-                    {
-                        var neatBot = new NeatBot(i, map);
-                        var parentGenotype = parallelParentPopulation[i];
-                        var genotype = neatBot.TrainOneGame(parentGenotype);
-                        lock (syncLock)
-                        {
-                            parallelPopulation.Add(genotype);
-                        }
-                    });
+                    //Parallel.For(Parameters.PopulationCount / 5, Parameters.PopulationCount / 5 * 2, i =>
+                    //{
+                    //    var neatBot = new NeatBot(i, map);
+                    //    var parentGenotype = parallelParentPopulation[i];
+                    //    var genotype = neatBot.TrainOneGame(parentGenotype);
+                    //    lock (syncLock)
+                    //    {
+                    //        parallelPopulation.Add(genotype);
+                    //    }
+                    //});
 
-                    Parallel.For(12, 18, i =>
-                    {
-                        var neatBot = new NeatBot(i, map);
-                        var parentGenotype = parallelParentPopulation[i];
-                        var genotype = neatBot.TrainOneGame(parentGenotype);
-                        lock (syncLock)
-                        {
-                            parallelPopulation.Add(genotype);
-                        }
-                    });
+                    //Parallel.For(Parameters.PopulationCount / 5 * 2, Parameters.PopulationCount / 5 * 3, i =>
+                    //{
+                    //    var neatBot = new NeatBot(i, map);
+                    //    var parentGenotype = parallelParentPopulation[i];
+                    //    var genotype = neatBot.TrainOneGame(parentGenotype);
+                    //    lock (syncLock)
+                    //    {
+                    //        parallelPopulation.Add(genotype);
+                    //    }
+                    //});
 
-                    Parallel.For(18, 24, i =>
-                    {
-                        var neatBot = new NeatBot(i, map);
-                        var parentGenotype = parallelParentPopulation[i];
-                        var genotype = neatBot.TrainOneGame(parentGenotype);
-                        lock (syncLock)
-                        {
-                            parallelPopulation.Add(genotype);
-                        }
-                    });
+                    //Parallel.For(Parameters.PopulationCount / 5 * 3, Parameters.PopulationCount / 5 * 4, i =>
+                    //{
+                    //    var neatBot = new NeatBot(i, map);
+                    //    var parentGenotype = parallelParentPopulation[i];
+                    //    var genotype = neatBot.TrainOneGame(parentGenotype);
+                    //    lock (syncLock)
+                    //    {
+                    //        parallelPopulation.Add(genotype);
+                    //    }
+                    //});
 
-                    Parallel.For(24, Parameters.PopulationCount, i =>
-                    {
-                        var neatBot = new NeatBot(i, map);
-                        var parentGenotype = parallelParentPopulation[i];
-                        var genotype = neatBot.TrainOneGame(parentGenotype);
-                        lock (syncLock)
-                        {
-                            parallelPopulation.Add(genotype);
-                        }
-                    });
+                    //Parallel.For(Parameters.PopulationCount / 5 * 4, Parameters.PopulationCount, i =>
+                    //{
+                    //    var neatBot = new NeatBot(i, map);
+                    //    var parentGenotype = parallelParentPopulation[i];
+                    //    var genotype = neatBot.TrainOneGame(parentGenotype);
+                    //    lock (syncLock)
+                    //    {
+                    //        parallelPopulation.Add(genotype);
+                    //    }
+                    //});
 
                     watch.Stop();
                     Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
