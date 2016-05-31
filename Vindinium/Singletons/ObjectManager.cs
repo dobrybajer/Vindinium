@@ -54,6 +54,21 @@ namespace vindinium.Singletons
             }
         }
 
+        public static T ReadFromJsonFileWithoutDefaultPath<T>(string relativePath) where T : new()
+        {
+            TextReader reader = null;
+            try
+            {
+                reader = new StreamReader(relativePath);
+                var fileContents = reader.ReadToEnd();
+                return JsonConvert.DeserializeObject<T>(fileContents);
+            }
+            finally
+            {
+                reader?.Close();
+            }
+        }
+
         public static bool FileExist(int generationNumber, int populationCount, string map, string activationFunction, uint turns)
         {
             return File.Exists(Parameters.DefaultPathToWrittenFiles + "generation" + generationNumber + "_populationCount" + populationCount + "_" + map + "_activationFunction" + activationFunction + "_turns" + turns + ".txt");

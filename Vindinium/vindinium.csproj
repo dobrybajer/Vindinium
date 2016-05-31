@@ -56,6 +56,7 @@
     <Compile Include="Algorithm\Training.cs" />
     <Compile Include="Algorithm\NeatBot.cs" />
     <Compile Include="DataContracts.cs" />
+    <Compile Include="FileIterator.cs" />
     <Compile Include="NEAT\Extensions\NodeListExtensions.cs" />
     <Compile Include="NEAT\IRandomGenerator.cs" />
     <Compile Include="Singletons\ObjectManager.cs" />
