@@ -60,5 +60,11 @@ namespace vindinium
                     FilesPerMapDictionary[key] = genotypesList.OrderBy(g => g.Value).Last();
             }
         }
+
+        public void WriteBestsToFile()
+        {
+            foreach (var key in FilesPerMapDictionary.Keys)
+                ObjectManager.WriteToJsonFile($"{key}_best.txt", FilesPerMapDictionary[key]);
+        }
     }
 }
