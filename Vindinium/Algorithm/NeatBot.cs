@@ -46,7 +46,9 @@ namespace vindinium.Algorithm
             for(var i = 0; i < ServerStuff.Heroes.Count; ++i)
             {
                 info += $"Bot: {i} / ID: {ServerStuff.Heroes[i].id} / Name: {ServerStuff.Heroes[i].name} / Score: {ServerStuff.Heroes[i].gold} / Elo: {ServerStuff.Heroes[i].elo} / Crashed: {ServerStuff.Heroes[i].crashed}";
+                info += Environment.NewLine;
             }
+
  
             return info;
         }

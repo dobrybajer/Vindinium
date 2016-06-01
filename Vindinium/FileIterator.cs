@@ -56,7 +56,8 @@ namespace vindinium
                 var genotypesList = new List<Genotype>();
                 foreach (var filePath in filesPerMap[key])
                     genotypesList.AddRange(ObjectManager.ReadFromJsonFileWithoutDefaultPath<List<Genotype>>(filePath));
-                FilesPerMapDictionary[key] = genotypesList.OrderBy(g => g.Value).Last();
+                if (genotypesList.Any())
+                    FilesPerMapDictionary[key] = genotypesList.OrderBy(g => g.Value).Last();
             }
         }
     }

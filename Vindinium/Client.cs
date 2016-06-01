@@ -48,12 +48,25 @@ namespace vindinium
 
             //var training = new Training();
             //training.Train();
-
-            var playing = new Playing();
-            playing.Play(new List<Genotype>());
+            Play();
 
             Console.Out.WriteLine("done");
             Console.Read();
+        }
+
+        private static void Play()
+        {
+            var bestGenotypesBuilder = new BestGenerationBuilder();
+            bestGenotypesBuilder.Build();
+            var bestGenotypes = new List<Genotype>();
+            foreach (var key in bestGenotypesBuilder.FilesPerMapDictionary.Keys)
+            {
+                var genotype = bestGenotypesBuilder.FilesPerMapDictionary[key];
+                if (genotype != null)
+                    bestGenotypes.Add(genotype);
+            }
+            var playing = new Playing();
+            playing.Play(bestGenotypes);
         }
     }
 }
