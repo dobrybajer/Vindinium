@@ -5,7 +5,9 @@ namespace vindinium.NEAT
 {
     public class Genotype
     {
+        public List<int> ValuePhaseTwo { get; set; }
         public double Value { get; set; }
+        public int DeathCount { get; set; }
         public List<ConnectionGenesModel> GenomeConnection { get; set; }
         public List<NodeGenesModel> NodeGens { get; set; }
 
@@ -28,8 +30,8 @@ namespace vindinium.NEAT
                     : null,
                 NodeGens = this.NodeGens != null
                     ? new List<NodeGenesModel>(this.NodeGens.Select(x => x.DeepCopy()).ToList())
-                    : null
-
+                    : null,
+                ValuePhaseTwo = this.ValuePhaseTwo != null ? new List<int>(this.ValuePhaseTwo.Select(x => x)) : null
             };
         }
 

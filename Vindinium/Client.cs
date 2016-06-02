@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using vindinium.Algorithm;
 using vindinium.NEAT;
 using vindinium.Singletons;
@@ -9,50 +10,50 @@ namespace vindinium
 {
     public class Client
     {
-        /**
-         * Launch client.
-         * @param args args[0] Private key
-         * @param args args[1] [training|arena]
-         * @param args args[2] number of turns
-         * @param args args[3] HTTP URL of Vindinium server (optional)
-         */
-
         private static void Main(string[] args)
         {
             // ----------------------- Setting Parameters -----------------------
-
             if (args.Length == 0) throw new Exception("Private key missing in program parameters... Ending.");
-            Parameters.ServerSecretKey = args[0];//"e5ua10cb";
-            if (args.Length >= 2) Parameters.ServerNumberOfTurns = uint.Parse(args[1]);
-            if (args.Length >= 3) Parameters.ServerUrl = args[2]; // Parameters.CustomServerUrl
-            if (args.Length >= 4) Parameters.PopulationCount = int.Parse(args[3]);
-            if (args.Length >= 5) Parameters.BestOfPopulationPercentage = double.Parse(args[4], CultureInfo.InvariantCulture);
-            if (args.Length >= 6) Parameters.GenerationsPhaseOneCount = int.Parse(args[5]);
-            if (args.Length >= 7) Parameters.GenerationsPhaseTwoCount = int.Parse(args[6]);
-            if (args.Length >= 8) Parameters.BestGenotypesOfPhaseOneCount = int.Parse(args[7]);
-            if (args.Length >= 9) Parameters.ActivationFunction = (ActivationFunction)Enum.Parse(typeof(ActivationFunction), args[8], true);
-            if (args.Length >= 10) Parameters.AddConnectionMutationProbablity = double.Parse(args[9], CultureInfo.InvariantCulture);
-            if (args.Length >= 11) Parameters.DeleteConnectionMutationProbablity = double.Parse(args[10], CultureInfo.InvariantCulture);
-            if (args.Length >= 12) Parameters.AddNodeMutationProbablity = double.Parse(args[11], CultureInfo.InvariantCulture);
-            if (args.Length >= 13) Parameters.ConnectionWeightMutationProbablity = double.Parse(args[12], CultureInfo.InvariantCulture);
-            if (args.Length >= 14) Parameters.MutationWheelPart = double.Parse(args[13], CultureInfo.InvariantCulture);
-            if (args.Length >= 15) Parameters.CrossoverWheelPart = double.Parse(args[14], CultureInfo.InvariantCulture);
 
-            // ---------------------- Creating bot and run ----------------------
+            if(args[0].Length < 10)
+            { 
+                Parameters.ServerSecretKey = args[0];
+                if (args.Length >= 2) Parameters.ServerNumberOfTurns = uint.Parse(args[1]);
+                if (args.Length >= 3) Parameters.ServerUrl = args[2]; // Parameters.CustomServerUrl
+                if (args.Length >= 4) Parameters.PopulationCount = int.Parse(args[3]);
+                if (args.Length >= 5) Parameters.BestOfPopulationPercentage = double.Parse(args[4], CultureInfo.InvariantCulture);
+                if (args.Length >= 6) Parameters.GenerationsPhaseOneCount = int.Parse(args[5]);
+                if (args.Length >= 7) Parameters.GenerationsPhaseTwoCount = int.Parse(args[6]);
+                if (args.Length >= 8) Parameters.BestGenotypesOfPhaseOneCount = int.Parse(args[7]);
+                if (args.Length >= 9) Parameters.ActivationFunction = (ActivationFunction)Enum.Parse(typeof(ActivationFunction), args[8], true);
+                if (args.Length >= 10) Parameters.AddConnectionMutationProbablity = double.Parse(args[9], CultureInfo.InvariantCulture);
+                if (args.Length >= 11) Parameters.DeleteConnectionMutationProbablity = double.Parse(args[10], CultureInfo.InvariantCulture);
+                if (args.Length >= 12) Parameters.AddNodeMutationProbablity = double.Parse(args[11], CultureInfo.InvariantCulture);
+                if (args.Length >= 13) Parameters.ConnectionWeightMutationProbablity = double.Parse(args[12], CultureInfo.InvariantCulture);
+                if (args.Length >= 14) Parameters.MutationWheelPart = double.Parse(args[13], CultureInfo.InvariantCulture);
+                if (args.Length >= 15) Parameters.CrossoverWheelPart = double.Parse(args[14], CultureInfo.InvariantCulture);
 
-            //var neatBot = new NeatBot();
-            //neatBot.Train();             // Training: only Phase One
-            //neatBot.Train(true);         // Training: Phase One and Two
-            //neatBot.Play();              // Playing on arena using Trained Model (required)
-            //neatBot.TestGraphCompute();  // Test graph created in order to test Compute() function
+                // ---------------------- Creating bot and run ----------------------
 
-            //var training = new Training();
-            //training.Train();
+                var training = new Training();
+                training.Train(false, true);
 
-            var playing = new Playing();
-            playing.Play(new List<Genotype>());
+                //var g = ObjectManager.ReadFromJsonFile<List<Genotype>>("generation29_populationCount30_m1_activationFunctionLinear_turns150.txt");
 
-            Console.Out.WriteLine("done");
+                //var playing = new Playing();
+                //playing.Play(g.OrderByDescending(x => x.Value).Take(5).ToList());
+            }
+            else
+            {
+                Parameters.ServerSecretKey = "e5ua10cb"; // TODO na serwerze stworzyc nowego bota i wpisac tu na sztywno jego wygenerowany klucz
+                Parameters.ServerUrl = Parameters.CustomServerUrl;
+
+                var genotype = ObjectManager.ReadFromJsonFile<Genotype>(args[0]); // TODO tu ma byc podawana (jako argument uruchomienia exe) sciezka do pliku z botem z danej mapy trenowanym w fazie 1 (ścieżka względna w stousnku do folderu "CreatedObjects/")
+
+                var playing = new Playing();
+                playing.Play(genotype);
+            }
+
             Console.Read();
         }
     }

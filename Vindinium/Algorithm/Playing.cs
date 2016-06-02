@@ -8,15 +8,6 @@ namespace vindinium.Algorithm
 {
     public class Playing
     {
-        #region Constructor
-
-        public Playing()
-        {
-
-        }
-
-        #endregion
-
         #region Playing
 
         public void Play(List<Genotype> bestGenotypes)
@@ -35,10 +26,16 @@ namespace vindinium.Algorithm
                 result += neatbot.GetInfoAboutGame();
                 result += Environment.NewLine;
 
-                count++;
+               count++;
             }
 
             File.WriteAllText(Parameters.DefaultPathToWrittenFiles + "ArenaLog" + DateTime.Now + ".txt", result);
+        }
+
+        public void Play(Genotype genotype)
+        {
+            var neatbot = new NeatBot(genotype);
+            neatbot.Play(true);
         }
 
         #endregion

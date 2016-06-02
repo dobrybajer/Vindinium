@@ -46,6 +46,7 @@ namespace vindinium.Algorithm
             for(var i = 0; i < ServerStuff.Heroes.Count; ++i)
             {
                 info += $"Bot: {i} / ID: {ServerStuff.Heroes[i].id} / Name: {ServerStuff.Heroes[i].name} / Score: {ServerStuff.Heroes[i].gold} / Elo: {ServerStuff.Heroes[i].elo} / Crashed: {ServerStuff.Heroes[i].crashed}";
+                info += Environment.NewLine;
             }
  
             return info;
@@ -56,12 +57,12 @@ namespace vindinium.Algorithm
             return ServerStuff.Board.Length.ToString();
         }
 
-        public void Play()
+        public void Play(bool onlyComputation = false)
         {
             ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.ServerUrl, "");
             if(CurrentModel == null)
                 CurrentModel = ObjectManager.ReadFromJsonFile<Genotype>(Parameters.TrainedModel);
-            Run();
+            Run(onlyComputation);
         }
 
         public Genotype TrainOneGame(Genotype parentGenotype)
@@ -72,6 +73,24 @@ namespace vindinium.Algorithm
             Run(true);
             Console.Out.WriteLine($"Genotype: {CurrentGenotype}. END - Score (gold): {ServerStuff.MyHero.gold}");
 
+            CurrentModel.Value = ServerStuff.MyHero.gold; // TODO dodac uwzglednianie DeathCount jako kary za bezsensowne giniecie
+
+            return CurrentModel;
+        }
+
+        public Genotype TrainOneGameInArena(Genotype parentGenotype)
+        {
+            ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.CustomServerUrl, "");
+            CurrentModel = parentGenotype.DeepCopy();
+
+            Run(true);
+            Console.Out.WriteLine($"Genotype: {CurrentGenotype}. END - Score (gold): {ServerStuff.MyHero.gold}");
+
+            var isBotWinner = ServerStuff.Heroes.Max(h => h.gold) == ServerStuff.MyHero.gold ? 1 : 0;
+            var bestEnemyGold = ServerStuff.Heroes.Where(h => h.id != 0).Max(h => h.gold);
+
+            CurrentModel.ValuePhaseTwo = new List<int> {isBotWinner, ServerStuff.MyHero.gold, bestEnemyGold};
+            CurrentModel.DeathCount = DeathCount;
             CurrentModel.Value = ServerStuff.MyHero.gold;
 
             return CurrentModel;

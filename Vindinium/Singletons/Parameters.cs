@@ -48,7 +48,7 @@ namespace vindinium.Singletons
 
         public static string ServerSecretKey { get; set; }
 
-        public static string ServerUrl { get; set; } = CustomServerUrl;
+        public static string ServerUrl { get; set; } = DefaultServerUrl;
 
         public static uint ServerNumberOfTurns { get; set; } = 150;
 

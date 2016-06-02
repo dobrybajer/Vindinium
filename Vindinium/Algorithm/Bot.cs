@@ -36,6 +36,8 @@ namespace vindinium.Algorithm
 
         protected ServerStuff ServerStuff { get; set; }
 
+        protected int DeathCount { get; set; }
+
         protected readonly int CurrentGenotype;
 
         #endregion
@@ -76,6 +78,8 @@ namespace vindinium.Algorithm
             InitializePathGrid();
             InitializeAStarModel();
 
+            var life = 100;
+
             while (ServerStuff.Finished == false && ServerStuff.Errored == false)
             {
                 //var watch = new Stopwatch();
@@ -89,6 +93,9 @@ namespace vindinium.Algorithm
                 //}
 
                 ServerStuff.MoveHero(direction);
+
+                if (Math.Abs(life - ServerStuff.MyHero.life) > 50) DeathCount++;
+                life = ServerStuff.MyHero.life;
 
                 //Console.Out.WriteLine($"Genotype: {CurrentGenotype}. Completed turn " + ServerStuff.CurrentTurn);
             }
