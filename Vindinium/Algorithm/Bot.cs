@@ -73,6 +73,10 @@ namespace vindinium.Algorithm
                     Process.Start(ServerStuff.ViewUrl);
                 }).Start();
             }
+            else
+            {
+                Console.Out.WriteLine($"Hello, it is {ServerStuff.MyHero.name}");
+            }
 
             Initialize();
             InitializePathGrid();

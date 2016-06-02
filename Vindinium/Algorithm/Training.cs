@@ -251,25 +251,24 @@ namespace vindinium.Algorithm
 
                     for (var i = 0; i < Parameters.PopulationCount; ++i)
                     {
+                        new Thread(delegate ()
+                        {
+                            Process.Start("client.exe", "Best/m1_best.txt");
+                        }).Start();
+
+                        new Thread(delegate ()
+                        {
+                            Process.Start("client.exe", "Best/m2_best.txt");
+                        }).Start();
+
+                        new Thread(delegate ()
+                        {
+                            Process.Start("client.exe", "Best/m3_best.txt");
+                        }).Start();
+
                         var neatBot = new NeatBot();
                         var g = j == 0 && startPopulation == null ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount) : parentPopulation[i];
                         var genotype = neatBot.TrainOneGameInArena(g);
-
-                        // TODO czy potrzeba odpalac to w nowych watkach?
-                        new Thread(delegate ()
-                        {
-                            Process.Start("client.exe", "PATH_BOT_1"); // TODO dodac poprawne sciezki do pliku z aplikacja i do plikow z botami
-                        }).Start();
-
-                        new Thread(delegate ()
-                        {
-                            Process.Start("client.exe", "PATH_BOT_1"); // TODO dodac poprawne sciezki do pliku z aplikacja i do plikow z botami
-                        }).Start();
-
-                        new Thread(delegate ()
-                        {
-                            Process.Start("client.exe", "PATH_BOT_1"); // TODO dodac poprawne sciezki do pliku z aplikacja i do plikow z botami
-                        }).Start();
 
                         population.Add(genotype);
                     }

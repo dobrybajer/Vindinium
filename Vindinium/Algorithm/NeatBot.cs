@@ -61,7 +61,8 @@ namespace vindinium.Algorithm
         public void Play(bool onlyComputation = false)
         {
             ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.ServerUrl, "");
-            if(CurrentModel == null)
+
+            if (CurrentModel == null)
                 CurrentModel = ObjectManager.ReadFromJsonFile<Genotype>(Parameters.TrainedModel);
             Run(onlyComputation);
         }
@@ -81,7 +82,7 @@ namespace vindinium.Algorithm
 
         public Genotype TrainOneGameInArena(Genotype parentGenotype)
         {
-            ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.CustomServerUrl, "");
+            ServerStuff = new ServerStuff(Parameters.ServerSecretKey, false, 0, Parameters.ServerUrl, "");
             CurrentModel = parentGenotype.DeepCopy();
 
             Run(true);

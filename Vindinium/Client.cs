@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using vindinium.Algorithm;
 using vindinium.NEAT;
 using vindinium.Singletons;
@@ -35,23 +37,28 @@ namespace vindinium
 
                 // ---------------------- Creating bot and run ----------------------
 
+                Parameters.ServerUrl = Parameters.CustomServerUrl;
+
                 var training = new Training();
                 training.Train(false, true);
 
                 //var g = ObjectManager.ReadFromJsonFile<List<Genotype>>("generation29_populationCount30_m1_activationFunctionLinear_turns150.txt");
-
                 //var playing = new Playing();
                 //playing.Play(g.OrderByDescending(x => x.Value).Take(5).ToList());
             }
             else
             {
-                Parameters.ServerSecretKey = "e5ua10cb"; // TODO na serwerze stworzyc nowego bota i wpisac tu na sztywno jego wygenerowany klucz
+                Console.Out.WriteLine("Started training bot as a new proces...");
+
+                Parameters.ServerSecretKey = "8pe3wfos"; // TODO na serwerze stworzyc nowego bota i wpisac tu na sztywno jego wygenerowany klucz
                 Parameters.ServerUrl = Parameters.CustomServerUrl;
 
                 var genotype = ObjectManager.ReadFromJsonFile<Genotype>(args[0]); // TODO tu ma byc podawana (jako argument uruchomienia exe) sciezka do pliku z botem z danej mapy trenowanym w fazie 1 (ścieżka względna w stousnku do folderu "CreatedObjects/")
 
                 var playing = new Playing();
                 playing.Play(genotype);
+
+                Console.Out.WriteLine("Ending training bot as a new proces...");
             }
 
             Console.Read();
