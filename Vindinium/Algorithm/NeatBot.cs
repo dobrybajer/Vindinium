@@ -48,6 +48,7 @@ namespace vindinium.Algorithm
                 info += $"Bot: {i} / ID: {ServerStuff.Heroes[i].id} / Name: {ServerStuff.Heroes[i].name} / Score: {ServerStuff.Heroes[i].gold} / Elo: {ServerStuff.Heroes[i].elo} / Crashed: {ServerStuff.Heroes[i].crashed}";
                 info += Environment.NewLine;
             }
+
  
             return info;
         }

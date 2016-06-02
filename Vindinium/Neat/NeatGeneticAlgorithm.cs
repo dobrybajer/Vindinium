@@ -39,7 +39,7 @@ namespace vindinium.NEAT
             var maxValue = genotypes.Max(g => g.Value);
             maxValue = maxValue <= 0 ? 1 : maxValue;
             var probabilities = new List<double>(genotypes.Count);
-            probabilities.AddRange(genotypes.Select(genotype => genotype.Value / maxValue));
+            probabilities.AddRange(genotypes.Select(genotype => 1 - genotype.Value / maxValue));
 
             var roulette = new DiscreteDistribution(probabilities.ToArray());
 
@@ -66,7 +66,7 @@ namespace vindinium.NEAT
             var maxValue = genotypes.Max(g => g.Value);
             maxValue = maxValue <= 0 ? 1 : maxValue;
             var probabilities = new List<double>(genotypes.Count);
-            probabilities.AddRange(genotypes.Select(genotype => genotype.Value / maxValue));
+            probabilities.AddRange(genotypes.Select(genotype => 1 - genotype.Value / maxValue));
 
             var roulette = new DiscreteDistribution(probabilities.ToArray());
 
