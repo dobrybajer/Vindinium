@@ -89,11 +89,12 @@ namespace vindinium.Algorithm
             Console.Out.WriteLine($"Genotype: {CurrentGenotype}. END - Score (gold): {ServerStuff.MyHero.gold}");
 
             var isBotWinner = ServerStuff.Heroes.Max(h => h.gold) == ServerStuff.MyHero.gold ? 1 : 0;
-            var bestEnemyGold = ServerStuff.Heroes.Where(h => h.id != 0).Max(h => h.gold);
+            var bestEnemyGold = ServerStuff.Heroes.Where(h => h.name != "dobrybajer").Max(h => h.gold);
 
             CurrentModel.ValuePhaseTwo = new List<int> {isBotWinner, ServerStuff.MyHero.gold, bestEnemyGold};
             CurrentModel.DeathCount = DeathCount;
             CurrentModel.Value = ServerStuff.MyHero.gold;
+            CurrentModel.MapSize = ServerStuff.Board.Length;
 
             return CurrentModel;
         }

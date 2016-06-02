@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using vindinium.Algorithm;
 using vindinium.NEAT;
 using vindinium.Singletons;
@@ -17,11 +14,11 @@ namespace vindinium
             // ----------------------- Setting Parameters -----------------------
             if (args.Length == 0) throw new Exception("Private key missing in program parameters... Ending.");
 
-            if(args[0].Length < 10)
+            if (args[0].Length < 10)
             { 
                 Parameters.ServerSecretKey = args[0];
                 if (args.Length >= 2) Parameters.ServerNumberOfTurns = uint.Parse(args[1]);
-                if (args.Length >= 3) Parameters.ServerUrl = args[2]; // Parameters.CustomServerUrl
+                if (args.Length >= 3) Parameters.ServerUrl = args[2];
                 if (args.Length >= 4) Parameters.PopulationCount = int.Parse(args[3]);
                 if (args.Length >= 5) Parameters.BestOfPopulationPercentage = double.Parse(args[4], CultureInfo.InvariantCulture);
                 if (args.Length >= 6) Parameters.GenerationsPhaseOneCount = int.Parse(args[5]);
@@ -50,10 +47,10 @@ namespace vindinium
             {
                 Console.Out.WriteLine("Started training bot as a new proces...");
 
-                Parameters.ServerSecretKey = "8pe3wfos"; // TODO na serwerze stworzyc nowego bota i wpisac tu na sztywno jego wygenerowany klucz
+                Parameters.ServerSecretKey = "e5ua10cb"; // TODO na serwerze stworzyc nowego bota i wpisac tu na sztywno jego wygenerowany klucz
                 Parameters.ServerUrl = Parameters.CustomServerUrl;
 
-                var genotype = ObjectManager.ReadFromJsonFile<Genotype>(args[0]); // TODO tu ma byc podawana (jako argument uruchomienia exe) sciezka do pliku z botem z danej mapy trenowanym w fazie 1 (ścieżka względna w stousnku do folderu "CreatedObjects/")
+                var genotype = ObjectManager.ReadFromJsonFile<Genotype>(args[0]);
 
                 var playing = new Playing();
                 playing.Play(genotype);
@@ -68,13 +65,7 @@ namespace vindinium
         {
             var bestGenotypesBuilder = new BestGenerationBuilder();
             bestGenotypesBuilder.Build();
-            var bestGenotypes = new List<Genotype>();
-            foreach (var key in bestGenotypesBuilder.FilesPerMapDictionary.Keys)
-            {
-                var genotype = bestGenotypesBuilder.FilesPerMapDictionary[key];
-                if (genotype != null)
-                    bestGenotypes.Add(genotype);
-            }
+            var bestGenotypes = bestGenotypesBuilder.FilesPerMapDictionary.Keys.Select(key => bestGenotypesBuilder.FilesPerMapDictionary[key]).Where(genotype => genotype != null).ToList();
             var playing = new Playing();
             playing.Play(bestGenotypes);
         }

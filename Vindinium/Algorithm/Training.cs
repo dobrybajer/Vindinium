@@ -218,7 +218,6 @@ namespace vindinium.Algorithm
             return parentPopulation;
         }
 
-        // TODO dodac zapisywanie/wczytywanie po restarcie innowacji
         private void TrainPhaseTwo(List<Genotype> startPopulation = null)
         {
             Console.Out.WriteLine("-------------------------------------PHASE TWO STARTED (map random on arena)-------------------------------------");
@@ -233,9 +232,11 @@ namespace vindinium.Algorithm
             }
 
             var parentPopulation = readFromFile ? ObjectManager.ReadGenerationFromFile<List<Genotype>>(startIndex, Parameters.PopulationCount, "PHASE_TWO", Parameters.ActivationFunction.ToString(), 0) : startPopulation ?? new List<Genotype>();
-            var innovationsList = _initialGenomeBuilder.InitInnovationList(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount);
+            var innovationsList = readFromFile
+                ? ObjectManager.ReadGenerationFromFile<List<Innovations>>(startIndex, Parameters.PopulationCount, "PHASE_TWO", Parameters.ActivationFunction.ToString(), 0)
+                : _initialGenomeBuilder.InitInnovationList(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount);
 
-            for (var j = startIndex; j < Parameters.GenerationsPhaseOneCount; j++)
+            for (var j = startIndex; j < Parameters.GenerationsPhaseTwoCount; j++)
             {
                 List<Genotype> population;
 
@@ -251,33 +252,55 @@ namespace vindinium.Algorithm
 
                     for (var i = 0; i < Parameters.PopulationCount; ++i)
                     {
-                        new Thread(delegate ()
+                        var p1StartInfo = new ProcessStartInfo
                         {
-                            Process.Start("client.exe", "Best/m1_best.txt");
-                        }).Start();
+                            FileName = "client.exe",
+                            Arguments = "Best/m1_best.txt",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
 
-                        new Thread(delegate ()
+                        var p2StartInfo = new ProcessStartInfo
                         {
-                            Process.Start("client.exe", "Best/m2_best.txt");
-                        }).Start();
+                            FileName = "client.exe",
+                            Arguments = "Best/m2_best.txt",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
 
-                        new Thread(delegate ()
+                        var p3StartInfo = new ProcessStartInfo
                         {
-                            Process.Start("client.exe", "Best/m3_best.txt");
-                        }).Start();
+                            FileName = "client.exe",
+                            Arguments = "Best/m3_best.txt",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
 
+                        var p1 = Process.Start(p1StartInfo);
+                        var p2 = Process.Start(p2StartInfo);
+                        var p3 = Process.Start(p3StartInfo);
+                        
                         var neatBot = new NeatBot();
                         var g = j == 0 && startPopulation == null ? _initialGenomeBuilder.CreateInitialGenotype(Parameters.InputLayerNeuronsCount, Parameters.OutputLayerNeuronsCount) : parentPopulation[i];
                         var genotype = neatBot.TrainOneGameInArena(g);
+
+                        p1?.Kill();
+                        p2?.Kill();
+                        p3?.Kill();
 
                         population.Add(genotype);
                     }
 
                     watch.Stop();
                     Console.Out.WriteLine($"FINISHED Generation nr: {j}. Time elapsed: {watch.ElapsedMilliseconds} ms");
-
-                    population = parentPopulation;
                     ObjectManager.WriteGenerationToFile(population, j, Parameters.PopulationCount, "PHASE_TWO", Parameters.ActivationFunction.ToString(), 0);
+                    ObjectManager.WriteGenerationToFile(innovationsList, j, Parameters.PopulationCount, "PHASE_TWO", Parameters.ActivationFunction.ToString(), 0);
                 }
                 else
                 {
@@ -286,12 +309,25 @@ namespace vindinium.Algorithm
                     Console.Out.WriteLine($"Generation {j} read from file.");
                 }
 
-                var maxValueInPopulation = population.Max(p => p.Value);
-                var maxDifferenceBetweenBotAndBestEnemyInPopulation = population.Max(p => Math.Abs(p.ValuePhaseTwo[1] - p.ValuePhaseTwo[2]));
+                var results = population
+                    .GroupBy(d => d.MapSize)
+                    .Select(g => new
+                    {
+                        GroupName = g.Key,
+                        MaxValue = g.Max(i => i.Value)
+                    }).ToDictionary(p => p.GroupName, p => p.MaxValue);
+
+                var results2 = population
+                    .GroupBy(d => d.MapSize)
+                    .Select(g => new
+                    {
+                        GroupName = g.Key,
+                        MaxValue = (double) g.Max(p => p.ValuePhaseTwo[1] - p.ValuePhaseTwo[2])
+                    }).ToDictionary(p => p.GroupName, p => p.MaxValue);
 
                 foreach (var p in population)
                 {
-                    p.Value = 0.2*p.ValuePhaseTwo[0] + 0.5*p.ValuePhaseTwo[1]/maxValueInPopulation + 0.3*p.ValuePhaseTwo[2]/maxDifferenceBetweenBotAndBestEnemyInPopulation;
+                    p.Value = 0.2*p.ValuePhaseTwo[0] + 0.5*p.ValuePhaseTwo[1]/results[p.MapSize] + 0.3*p.ValuePhaseTwo[2]/results2[p.MapSize];
                 }
 
                 population = population.OrderByDescending(i => i.Value).ToList();
@@ -310,6 +346,7 @@ namespace vindinium.Algorithm
             }
 
             ObjectManager.WriteToJsonFile(Parameters.TrainedModel, parentPopulation.OrderByDescending(g => g.Value).First());
+            ObjectManager.WriteToJsonFile(Parameters.TrainedModel + ".innovation", innovationsList);
 
             Console.Out.WriteLine("-------------------------------------PHASE ONE ENDED (map random on arena)-------------------------------------");
         }

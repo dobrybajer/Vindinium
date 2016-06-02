@@ -8,6 +8,7 @@ namespace vindinium.NEAT
         public List<int> ValuePhaseTwo { get; set; }
         public double Value { get; set; }
         public int DeathCount { get; set; }
+        public int MapSize { get; set; }
         public List<ConnectionGenesModel> GenomeConnection { get; set; }
         public List<NodeGenesModel> NodeGens { get; set; }
 
